@@ -15,6 +15,8 @@ builder.Services.AddRazorComponents()
 
 
 builder.Services.AddHttpClient();
+builder.Services.AddBlazorBootstrap();
+
 
 builder.Services.AddScoped<AppState>();
 builder.Services.AddSingleton<AppState>();

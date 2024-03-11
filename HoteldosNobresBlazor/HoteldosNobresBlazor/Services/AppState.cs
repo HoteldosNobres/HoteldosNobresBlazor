@@ -9,7 +9,7 @@ namespace HoteldosNobresBlazor.Services
         public List<Reserva> ListReservas { get; set; } = new List<Reserva>();
 
 
-        public string MyMessageFNRH { get; set; } = "Mansagem FNRH";
+        public string MyMessageFNRH { get; set; } = "Execução do FNRH";
 
 
     }
