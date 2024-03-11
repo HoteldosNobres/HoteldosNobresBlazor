@@ -1,0 +1,57 @@
+﻿@page "/addreserva"
+@using Microsoft.AspNetCore.Antiforgery
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Mvc
+@using Newtonsoft.Json
+@using System.Net
+@inject HttpClient Http
+@inject AppState appState 
+@using Microsoft.AspNetCore.Antiforgery;
+@attribute [AutoValidateAntiforgeryToken] 
+
+
+.. .. .. .. .. ..
+@teste
+<br />
+@appState.MyMessageReservation
+.. .. .. .. .. ..
+
+
+
+@code {
+    static string teste = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        // convert response data to Article object
+        // article = await response.Content;
+         
+
+    }
+     
+    [IgnoreAntiforgeryToken]
+    [HttpPost] 
+    public async Task<IActionResult> Edit([FromBody] String jsonString)
+    {
+        try
+        {
+            // add reference to Newtonsoft.Json
+            //  using Newtonsoft.Json;
+
+            // jsonString to myJsonObj
+            //var myJsonObj = JsonConvert.DeserializeObject<Dictionary<string, dynamic>>(jsonString);
+
+            // value1 is myJsonObj[key1]
+
+            teste = jsonString;
+            appState.MyMessageReservation += jsonString.ToString();
+
+            return null;
+        }
+        catch (Exception ex)
+        {
+            return null;
+        }
+
+    }
+}   

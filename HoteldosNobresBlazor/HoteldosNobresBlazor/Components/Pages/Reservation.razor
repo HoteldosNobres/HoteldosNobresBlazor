@@ -1,0 +1,27 @@
+﻿@page "/reserva/{ReservationId}"
+@rendermode InteractiveAuto
+@inject AppState appState
+
+<PageTitle>Counter</PageTitle>
+
+<h1>Counter</h1>
+
+<p role="status">
+    Reserva: @novaReservationId;
+    Reserva: @appState.MyMessageReservation;
+</p>
+
+
+@code {
+    [Parameter]
+    public string id { get; set; }
+
+    string novaReservationId;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        novaReservationId = id;
+        appState.MyMessageReservation += id;
+    }
+}
