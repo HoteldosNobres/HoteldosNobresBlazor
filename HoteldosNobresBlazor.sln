@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.34607.79
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HoteldosNobresBlazor", "HoteldosNobresBlazor\HoteldosNobresBlazor\HoteldosNobresBlazor.csproj", "{A2B287F4-55FF-4C74-B3B9-006B4979ABE3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HoteldosNobresBlazor.Client", "HoteldosNobresBlazor\HoteldosNobresBlazor.Client\HoteldosNobresBlazor.Client.csproj", "{4BC5D969-3AFA-4977-8E65-6F66DB79DA78}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A2B287F4-55FF-4C74-B3B9-006B4979ABE3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A2B287F4-55FF-4C74-B3B9-006B4979ABE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A2B287F4-55FF-4C74-B3B9-006B4979ABE3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A2B287F4-55FF-4C74-B3B9-006B4979ABE3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4BC5D969-3AFA-4977-8E65-6F66DB79DA78}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4BC5D969-3AFA-4977-8E65-6F66DB79DA78}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4BC5D969-3AFA-4977-8E65-6F66DB79DA78}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4BC5D969-3AFA-4977-8E65-6F66DB79DA78}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {66F8038E-25BF-4CE8-B491-33B3D20B583C}
+	EndGlobalSection
+EndGlobal

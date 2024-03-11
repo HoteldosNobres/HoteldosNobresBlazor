@@ -1,0 +1,23 @@
+﻿@page "/fnrh"
+@inject AppState appState
+
+<PageTitle>FNRH</PageTitle>
+
+<h1>Log FNRH!</h1>
+
+@foreach (var linha in arrayDeLinhas)
+{
+     @linha <br />
+}
+
+
+
+@code
+{
+    string[] arrayDeLinhas ;
+    protected override async Task OnInitializedAsync()
+    {
+        arrayDeLinhas = appState.MyMessageFNRH.Split('\n');
+
+    }
+} 

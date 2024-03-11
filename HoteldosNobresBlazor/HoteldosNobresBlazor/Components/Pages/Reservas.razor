@@ -1,0 +1,86 @@
+﻿@page "/reservas"
+@using HoteldosNobresBlazor.Classes
+@using HoteldosNobresBlazor.Funcoes
+@inject IHttpClientFactory ClientFactory
+@attribute [StreamRendering]
+@inject AppState appState
+
+<PageTitle>Reservas</PageTitle>
+
+<h1>Reservas</h1>
+
+<p>Reservas. @appState.MyMessage </p>
+
+@if (listReserva == null) 
+    {
+        <p><em>Carregando...</em></p>
+    }
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Data Check In</th>
+                <th>Nome Hospede</th>
+                <th>Origem</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (Reserva reserva1 in listReserva)
+            {
+                var reservaaqui = new ReservaAqui(reserva1);
+                <tr>
+                    <td>@reservaaqui.DataCheckIn.ToString("dd/MM/yyyy")</td>
+                    <td>@reservaaqui.NomeHospede</td>
+                    <td>@reservaaqui.Origem</td>
+                    <td></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    public List<Reserva>? listReserva;
+    private Reserva reserva;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Simulate asynchronous loading to demonstrate streaming rendering
+        await Task.Delay(500);
+
+        appState.MyMessage += "Passou pela reserva";
+   
+        if (appState.ListReservas.Count() == 0)
+        {
+            listReserva = FunctionAPICLOUDBEDs.getReservationsAsync(DateTime.Now.ToString("yyyy-MM-dd")).Result;
+            listReserva.AddRange(FunctionAPICLOUDBEDs.getReservationsAsync(null, DateTime.Now.ToString("yyyy-MM-dd")).Result);
+            appState.ListReservas = listReserva;
+        }
+        else
+        {
+            listReserva = appState.ListReservas;
+        }
+
+
+        // listReserva = FunctionAPICLOUDBEDs.getReservationsAsync(DateTime.Now.ToString("yyyy-MM-dd")).Result;
+        // listReserva.AddRange(FunctionAPICLOUDBEDs.getReservationsAsync(null, DateTime.Now.ToString("yyyy-MM-dd")).Result);
+        //listReserva.AddRange(FunctionAPICLOUDBEDs.getReservationsAsync(null).Result);
+    }
+
+    private class ReservaAqui
+    {
+        public DateTime DataCheckIn { get; set; }
+        public string? NomeHospede { get; set; }
+        public string? Origem { get; set; }
+
+        public ReservaAqui(Reserva reserva)
+        {
+            DataCheckIn = reserva.DataCheckIn;
+            NomeHospede = reserva.NomeHospede.Substring(0, 5);
+            Origem = reserva.Origem;
+        }
+    }
+     
+}

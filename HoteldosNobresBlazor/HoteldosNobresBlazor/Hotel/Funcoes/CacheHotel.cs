@@ -1,0 +1,172 @@
+﻿using HoteldosNobresBlazor.Classes;
+using HoteldosNobresBlazor.Services;
+using System.Collections.Generic;
+using System.Net.NetworkInformation;
+
+namespace HoteldosNobresBlazor.Funcoes
+{
+    public class CacheHotel
+    {
+        static string cache = "cache";
+        static int count = 0;
+        static AppState AppState;
+
+        public CacheHotel()
+        { 
+        }
+
+
+        public CacheHotel(AppState appState)
+        {
+           AppState = appState;
+        }
+
+        public void CacheExecutanado()
+        { 
+            Thread thread = new Thread(NovoMetodo);
+            thread.Start();
+
+            Thread thread2 = new Thread(FNRHMetodo);
+            thread2.Start();
+        }
+
+        static void NovoMetodo()
+        {
+            while (true)
+            {
+                try
+                {
+                    AppState.ListReservas = FunctionAPICLOUDBEDs.getReservationsAsync(DateTime.Now.ToString("yyyy-MM-dd")).Result;
+                    AppState.ListReservas.AddRange(FunctionAPICLOUDBEDs.getReservationsAsync(null, DateTime.Now.ToString("yyyy-MM-dd")).Result);
+
+
+                    // Dorme por 5000 milissegundos, ou seja, 5 segundos
+
+                    count = count + 1;
+                    cache = count.ToString();
+                    //Console.WriteLine("Cache executando");
+
+                    AppState.MyMessage = cache + " Data: " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + " ";
+
+                    Thread.Sleep(60000);
+                }
+                catch (Exception e)
+                {
+                    AppState.MyMessage = e.Message;
+                    Thread.Sleep(5000);
+                    continue;
+                } 
+
+            }
+        }
+
+        static void FNRHMetodo()
+        {
+            while(true)
+            {
+                try
+                {
+                    string brazilTimeZoneId = "E. South America Standard Time";
+                    TimeZoneInfo brazilTimeZone = TimeZoneInfo.FindSystemTimeZoneById(brazilTimeZoneId);
+                    DateTime brazilTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone);
+                    AppState.MyMessageFNRH = "Começou a Rodar" + " Data: " + brazilTime.ToString("yyyy-MM-dd HH:mm:ss") + "\n";
+                     
+                    List<Reserva> listReserva = new List<Reserva>();
+                    Reserva reserva2 = new Reserva();
+                    reserva2.IDReserva = "5356003227500";
+                    reserva2.IDReserva = "0936839622347";
+                    //listReserva.Add(reserva2);
+
+                    listReserva = FunctionAPICLOUDBEDs.getReservationsAsync(DateTime.Now.ToString("yyyy-MM-dd")).Result;
+                    listReserva = FunctionAPICLOUDBEDs.getReservationsAsync(null, DateTime.Now.ToString("yyyy-MM-dd")).Result;
+                    listReserva.AddRange(FunctionAPICLOUDBEDs.getReservationsAsync(null).Result);
+
+                    foreach (Reserva reserva1 in listReserva)
+                    {
+                        AppState.MyMessageFNRH += "IDReserva:" + reserva1.IDReserva + " Status: " + reserva1.Status + " ";
+
+                        Reserva reserva = FunctionAPICLOUDBEDs.getReservationAsync(reserva1).Result;
+
+                        string retorno = "";
+
+                        if (string.IsNullOrEmpty(reserva.SnNum) && reserva.Status.ToUpper() != "CHECKED_OUT" && reserva.Status.ToUpper() != "CANCELED")
+                            retorno = FuncoesFNRH.Inserir(reserva);
+                        else if (!string.IsNullOrEmpty(reserva.SnNum))
+                            retorno = FuncoesFNRH.Atualizar(reserva);
+
+                        if (retorno.Contains("SNRHos-MS0001") || retorno.Contains("SNRHos-ME0026"))
+                        {
+                            retorno = retorno.Contains("SNRHos-ME0026") ? "CPF inválido" : retorno;
+                            if (reserva.Notas == null)
+                                reserva.Notas = new List<Nota>();
+                            if (reserva.Notas.Where(x => x.Texto == retorno).Count() == 0)
+                            {
+                                reserva.Notas.Add(new Nota("", retorno));
+                                if (retorno.Contains("SNRHos-MS0001"))
+                                {
+                                    reserva.SnNum = retorno.Replace("SNRHos-MS0001(", "").Replace(")", "");
+                                    if (reserva.Notas.Where(x => x.Texto == "CPF inválido").Count() > 0)
+                                    {
+                                        retorno += FunctionAPICLOUDBEDs.deleteReservationNote(reserva, "CPF inválido").Result;
+                                    }
+                                }
+                                reserva = FunctionAPICLOUDBEDs.postReservationNote(reserva, retorno).Result;
+                            }
+
+
+                        }
+
+                        if (!string.IsNullOrEmpty(reserva.SnNum))
+                        {
+                            AppState.MyMessageFNRH += " SnNum: " + reserva.SnNum + " ";
+                            string reservationNoteID = reserva.Notas.Where(x => x.Texto.Contains("SNRHos-MS0001")).FirstOrDefault().Id.ToString();
+
+                            if ((reserva.Status.ToUpper() == "HOSPEDADO" || reserva.Status.ToUpper() == "CHECKED_IN" || reserva.Status.ToUpper() == "CHECKED_OUT"
+                            || reserva.Status.ToUpper() == "CHECK OUT FEITO")
+                            && !string.IsNullOrEmpty(reservationNoteID))
+                            {
+                                // PEGAR HORARIO DO CHCKin reserva = FunctionAPICLOUDBEDs.getReservationAsync(reserva).Result;
+                                reserva.DataCheckInRealizado = DateTime.Parse(brazilTime.ToString("yyyy-MM-dd H:mm:ss"));
+                                retorno = FuncoesFNRH.CheckIn(reserva);
+
+                                if (!string.IsNullOrEmpty(reservationNoteID))
+                                    retorno += FunctionAPICLOUDBEDs.pustReservationNote(reserva.IDReserva, reservationNoteID, "SNRHos-MS0003(" + reserva.SnNum + ")").Result;
+                            }
+
+
+                            if ((reserva.Status.ToUpper() == "CHECK OUT FEITO" || reserva.Status.ToUpper() == "CHECKED_OUT")
+                                 && !string.IsNullOrEmpty(reserva.SnNum))
+                            {
+                                reserva.DataCheckOutRealizado = DateTime.Parse(brazilTime.ToString("yyyy-MM-dd H:mm:ss"));
+                                retorno = FuncoesFNRH.CheckOut(reserva);
+                            }
+
+                            if (retorno.Contains("SNRHos-MS0004"))
+                            {
+                                retorno = retorno + FunctionAPICLOUDBEDs.deleteReservationNote(reserva, "SNRHos-MS0001").Result;
+                            }
+                        }
+
+                        retorno = retorno.Replace("SNRHos-ME0024", " Checkin realizado\não permitido");
+                        retorno = retorno.Replace("SNRHos-ME0025", " Checkout realizado\não permitido");
+
+                        AppState.MyMessageFNRH += retorno + "\n";
+                    }
+
+
+                    AppState.MyMessageFNRH += "Terminou!" + "\n";
+
+                    Thread.Sleep(60000);
+                }
+                catch (Exception e)
+                {
+                    AppState.MyMessage = e.Message;
+                    Thread.Sleep(5000);
+                     
+                }
+            }
+           
+
+        }
+    }
+}

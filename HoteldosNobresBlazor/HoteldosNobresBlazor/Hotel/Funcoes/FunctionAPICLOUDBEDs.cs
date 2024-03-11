@@ -1,0 +1,216 @@
+﻿using HoteldosNobresBlazor.Classes;
+using Newtonsoft.Json;
+using System.Collections.Generic;
+using static HoteldosNobresBlazor.Components.Pages.CallApi;
+
+namespace HoteldosNobresBlazor.Funcoes
+{
+    public class FunctionAPICLOUDBEDs
+    {
+        static string token = "cbat_xcdqsfy9Zawm502A4HFscrX46LdpKqFl";
+        static string urlapi = @"https://api.cloudbeds.com/api/v1.2"; 
+
+        public static async Task<List<Reserva>?> getReservationsAsync(string checkInFrom = null, string checkOutFrom = null)
+        {
+            try
+            { 
+                string url = urlapi + "/getReservations";
+
+                if (!string.IsNullOrEmpty(checkInFrom))
+                    url += "?checkInFrom=" + checkInFrom;
+
+                if (!string.IsNullOrEmpty(checkOutFrom))
+                    url += "?checkOutFrom=" + checkOutFrom;
+
+                HttpResponseMessage response = GetApi(url).Result;
+
+                Reservations resevations = await LerRespostaComoObjetoAsync<Reservations>(response);
+
+                List<Reserva> listareserva = new List<Reserva>();
+                foreach (var item in resevations.Data)
+                {
+                    Reserva reserva = new Reserva();
+                    reserva.Converte(item);
+                    listareserva.Add(reserva);
+                }
+
+                return listareserva;
+            }
+            catch (FileNotFoundException e)
+            {
+                Console.WriteLine(e.Message);
+                return null;
+            }
+
+        }
+
+        public static async Task<Reserva> getReservationAsync(Reserva reserva)
+        {
+            try
+            {
+                string url = urlapi + "/getReservation?reservationID=" + reserva.IDReserva; 
+                HttpResponseMessage response = GetApi(url).Result;
+
+                Reservation resevation = await LerRespostaComoObjetoAsync<Reservation>(response);
+
+                reserva.Converte(resevation);
+
+                url = urlapi + "/getReservationNotes?reservationID=" + reserva.IDReserva; 
+
+                response = GetApi(url).Result;
+
+                Notes notes = await LerRespostaComoObjetoAsync<Notes>(response);
+
+                if(notes.Data.Length > 0)
+                {
+                    if(reserva.Notas == null)
+                        reserva.Notas = new List<Nota>();
+
+                    foreach(var note in notes.Data)
+                    {
+                        reserva.Notas.Add(new Nota(note.ReservationNoteId.ToString(), note.ReservationNote));
+                        if (note.ReservationNote.Contains("SNRHos"))
+                        {
+                            reserva.SnNum = note.ReservationNote.Replace("SNRHos-MS0001(", "").Replace("SNRHos-MS0003(", "").Replace(")", "");
+                        }
+
+                    }  
+                }
+                return reserva;
+            }
+            catch (FileNotFoundException e)
+            {
+                Console.WriteLine(e.Message);
+                return null;
+            }
+
+        }
+
+        public static async Task<string> pustReservationNote(string reservationID, string reservationNoteID, string note)
+        {
+            try
+            {
+                string url = "https://api.cloudbeds.com/api/v1.2/putReservationNote";
+                var client = new HttpClient();
+                var request = new HttpRequestMessage(HttpMethod.Put, url);
+                request.Headers.Add("Authorization", "Bearer " + token);
+                var content = new MultipartFormDataContent();
+                content.Add(new StringContent(reservationID), "reservationID");
+                content.Add(new StringContent(reservationNoteID), "reservationNoteID");
+                content.Add(new StringContent(note), "reservationNote");
+                request.Content = content;
+                var response = await client.SendAsync(request);
+                response.EnsureSuccessStatusCode();
+
+                return "";
+            }
+            catch (FileNotFoundException e)
+            {
+                Console.WriteLine(e.Message);
+                return e.Message;
+            }
+
+        }
+
+        public static async Task<Reserva> postReservationNote(Reserva reserva, string note)
+        {
+            try
+            {
+                string url = "https://api.cloudbeds.com/api/v1.2/postReservationNote";
+                string reservationID = reserva.IDReserva;
+
+                var client = new HttpClient();
+                var request = new HttpRequestMessage(HttpMethod.Post, "https://api.cloudbeds.com/api/v1.2/postReservationNote");
+                request.Headers.Add("Authorization", "Bearer " + token);
+                var content = new MultipartFormDataContent();
+                content.Add(new StringContent(reservationID), "reservationID");
+                content.Add(new StringContent(note), "reservationNote");
+                request.Content = content;
+                var response = await client.SendAsync(request);
+                response.EnsureSuccessStatusCode(); 
+                 
+                return reserva;
+            }
+            catch (FileNotFoundException e)
+            {
+                Console.WriteLine(e.Message);
+                return null;
+            }
+
+        }
+
+        public static async Task<string> deleteReservationNote(Reserva reserva, string deletar)
+        {
+            try
+            {
+                string  reservationNoteID = string.Empty;
+                string url  = urlapi + "/getReservationNotes?reservationID=" + reserva.IDReserva; //+ "5356003227500";
+                HttpResponseMessage response = GetApi(url).Result;
+                Notes notes = await LerRespostaComoObjetoAsync<Notes>(response);
+
+                if (notes.Data.Length > 0)
+                {
+                    foreach(var note in notes.Data)
+                    {
+                        if (note.ReservationNote.Contains(deletar))
+                        {
+                            reservationNoteID = note.ReservationNoteId.ToString();
+                            break;
+                        }
+                    }
+                    
+                }
+                 
+                response = GetApi(url).Result;
+                url = urlapi + "/deleteReservationNote?reservationID=" + reserva.IDReserva + "&reservationNoteID=" + reservationNoteID;    
+
+                var client = new HttpClient();
+                var request = new HttpRequestMessage(HttpMethod.Delete, url );
+                request.Headers.Add("Authorization", "Bearer " + token);
+                response = await client.SendAsync(request);
+                response.EnsureSuccessStatusCode();
+                  
+                return "";
+            }
+            catch (FileNotFoundException e)
+            {
+                Console.WriteLine(e.Message);
+                return e.Message;
+            }
+
+        }
+
+
+
+        private static async Task<T> LerRespostaComoObjetoAsync<T>(HttpResponseMessage response)
+        {
+            var jsonString = await response.Content.ReadAsStringAsync();
+            T obj = JsonConvert.DeserializeObject<T>(jsonString);
+            return obj;
+        }
+
+        private static async Task<HttpResponseMessage> GetApi(string url)
+        {
+            try
+            {
+                var request = new HttpRequestMessage(HttpMethod.Get, url);
+                request.Headers.Add("Authorization", "Bearer " + token); 
+                request.Headers.Add("User-Agent", "HttpClientFactory-Sample");
+
+                var client = new HttpClient();
+
+                var response = client.Send(request);
+                 
+                return 
+                    response;
+                 
+            }
+            catch (FileNotFoundException e)
+            {
+                Console.WriteLine(e.Message);
+                return null;
+            }
+        }
+
+    }
+}
