@@ -22,6 +22,47 @@ namespace HoteldosNobresBlazor.Funcoes
            AppState = appState;
         }
 
+        public string CacheNovaReserva(string json)
+        {
+            try
+            {
+                CreateReservation create = FunctionAPICLOUDBEDs.LerRespostaComoObjetoAsync<CreateReservation>(json).Result;
+
+                AppState.MyMessageReservation += "IDReserva: " + create.reservationId + " /n";
+
+                Reserva reserva2 = new Reserva();
+                reserva2.IDReserva = create.reservationId;
+                reserva2 = FunctionAPICLOUDBEDs.getReservationAsync(reserva2).Result;
+                  
+                if (!reserva2.Equals(null) && reserva2.Origem.Contains("Airbnb"))
+                {
+                    AppState.MyMessageReservation += " Status: " + reserva2.Status + " ";
+                    Payment payment = FunctionAPICLOUDBEDs.getPaymentsAsync(reserva2).Result;
+                    if (payment.Success)
+                    {
+                        if (payment.Data.Count() > 0)
+                            AppState.MyMessageReservation += "Ja tem Pagamento!" + "\n";
+                        else
+                            AppState.MyMessageReservation += "Criado: " + FunctionAPICLOUDBEDs.postReservationNote(reserva2).Result + " \n";
+
+                    }
+
+                }
+
+                if (string.IsNullOrEmpty(reserva2.SnNum) && reserva2.Status.ToUpper() != "CHECKED_OUT" && reserva2.Status.ToUpper() != "CANCELED")
+                    AppState.MyMessageReservation += FuncoesFNRH.Inserir(reserva2);
+                else if (!string.IsNullOrEmpty(reserva2.SnNum))
+                    AppState.MyMessageReservation += FuncoesFNRH.Atualizar(reserva2);
+
+
+                return "OK " + create.reservationId;
+            }catch(Exception e)
+            {
+                return e.Message;
+            }
+           
+        }
+
         public void CacheExecutanado()
         { 
             Thread thread = new Thread(NovoMetodo);

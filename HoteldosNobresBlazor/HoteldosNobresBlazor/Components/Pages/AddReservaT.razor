@@ -1,4 +1,4 @@
-﻿@page "/addreserva"
+﻿@page "/addreservat"
 @using Microsoft.AspNetCore.Antiforgery
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Mvc
@@ -9,29 +9,27 @@
 @using Microsoft.AspNetCore.Antiforgery;
 @attribute [AutoValidateAntiforgeryToken] 
 
+ 
 
+.. .. .. .. .. ..  
+@foreach (var linha in arrayDeLinhas)
+{
+    @linha
+    <br />
+}
 .. .. .. .. .. ..
-@teste
-<br />
-@appState.MyMessageReservation
-.. .. .. .. .. ..
-
-
+ 
 
 @code {
-    static string teste = "";
-
+    string[] arrayDeLinhas;
     protected override async Task OnInitializedAsync()
     {
-        // convert response data to Article object
-        // article = await response.Content;
-         
-
+        arrayDeLinhas = appState.MyMessageReservation.Split('\n');
     }
-     
+
     [IgnoreAntiforgeryToken]
-    [HttpPost] 
-    public async Task<IActionResult> Edit([FromBody] String jsonString)
+    [HttpPost]
+    public async Task<ActionResult> Post([FromBody] String jsonString)
     {
         try
         {
@@ -43,7 +41,7 @@
 
             // value1 is myJsonObj[key1]
 
-            teste = jsonString;
+            /* teste = jsonString */;
             appState.MyMessageReservation += jsonString.ToString();
 
             return null;
@@ -54,4 +52,6 @@
         }
 
     }
+
+     
 }   

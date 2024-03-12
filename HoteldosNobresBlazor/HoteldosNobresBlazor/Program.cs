@@ -2,9 +2,16 @@ using HoteldosNobresBlazor.Client.Pages;
 using HoteldosNobresBlazor.Components;
 using HoteldosNobresBlazor.Funcoes;
 using HoteldosNobresBlazor.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using static System.Formats.Asn1.AsnWriter;
+using System.Text;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
+using System.Net.Mime;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,7 +46,9 @@ else
 app.UseHttpsRedirection();
 
 
+
 app.UseStaticFiles();
+app.UseRouting();
 app.UseAntiforgery();
 
 app.MapRazorComponents<App>()
@@ -48,11 +57,28 @@ app.MapRazorComponents<App>()
     .AddAdditionalAssemblies(typeof(HoteldosNobresBlazor.Client._Imports).Assembly);
 
 
-//IServiceScope scope = app.Services.CreateAsyncScope();
-
-
 AppState sCOPP = app.Services.GetRequiredService<AppState>();
 
+
+app.MapPost("/addreserva", async (HttpContext httpContext) =>
+{
+    try
+    {
+        using var reader = new StreamReader(httpContext.Request.Body, Encoding.UTF8);
+        string body = await reader.ReadToEndAsync();
+
+        CacheHotel cache2 = new CacheHotel(sCOPP); 
+        var bytes = Encoding.UTF8.GetBytes("Hello World"); 
+        await httpContext.Response.WriteAsync(cache2.CacheNovaReserva(body)); 
+          
+    }
+    catch (Exception ex)
+    {
+        httpContext.Response.StatusCode = 500;
+    }
+     
+});
+  
 var cache = new CacheHotel(sCOPP);
 
 cache.CacheExecutanado();

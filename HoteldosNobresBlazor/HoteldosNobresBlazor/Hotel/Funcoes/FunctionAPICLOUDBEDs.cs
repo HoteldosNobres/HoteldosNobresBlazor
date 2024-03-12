@@ -238,9 +238,15 @@ namespace HoteldosNobresBlazor.Funcoes
         #endregion Reservation
 
 
-        private static async Task<T> LerRespostaComoObjetoAsync<T>(HttpResponseMessage response)
+        public static async Task<T> LerRespostaComoObjetoAsync<T>(HttpResponseMessage response)
         {
             var jsonString = await response.Content.ReadAsStringAsync();
+            T obj = JsonConvert.DeserializeObject<T>(jsonString);
+            return obj;
+        }
+
+        public static async Task<T> LerRespostaComoObjetoAsync<T>(string jsonString)
+        { 
             T obj = JsonConvert.DeserializeObject<T>(jsonString);
             return obj;
         }
