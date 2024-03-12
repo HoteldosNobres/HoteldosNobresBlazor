@@ -361,3 +361,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# KEY
+/HoteldosNobresBlazor/HoteldosNobresBlazor/Hotel/Funcoes/KEYs.cs
