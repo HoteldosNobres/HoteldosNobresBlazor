@@ -19,6 +19,7 @@ namespace HoteldosNobresBlazor.Classes
         public string? IDReservaAgencia { get; set; }
         public string? FonteReserva { get; set; }
         public string? Valor { get; set; }
+        public string? Balance { get; set; }
         public string Status { get; set; }
         public string? SnNum { get; set; }
         public string? Snuhnum { get; set; }
@@ -28,6 +29,8 @@ namespace HoteldosNobresBlazor.Classes
 
 
         /// Hospede
+        public string? GuestID { get; set; }
+
         public string? NomeHospede { get; set; }
         public string? Cpf { get; set; }
         public DateTime DataNascimento { get; set; }
@@ -153,14 +156,16 @@ namespace HoteldosNobresBlazor.Classes
             IDReservaAgencia = reservation.Data.ThirdPartyIdentifier;
             FonteReserva = reservation.Data.Source;
             Valor = reservation.Data.Total.ToString();
+            Balance = reservation.Data.Balance.ToString(); ;
             Status = reservation.Data.Status;
             //SnNum = reservation.Data.Assigned.Length.ToString(); //numero da fnhr
             Snuhnum = reservation.Data.Assigned.Length.ToString();
 
-
+            
             NomeHospede = reservation.Data.GuestName;
 
             Guest guest = reservation.Data.GuestLista.First();
+            GuestID = guest.GuestId.ToString();    
             if (!string.IsNullOrEmpty(guest.GuestBirthdate.ToString()))
                 DataNascimento = DateTime.Parse(guest.GuestBirthdate.ToString());
 
@@ -236,6 +241,8 @@ namespace HoteldosNobresBlazor.Classes
             FonteReserva = reservation.SourceName;
             Status = reservation.Status;
             NomeHospede = reservation.GuestName;
+            GuestID = reservation.GuestId.ToString();
+            Balance = reservation.Balance.ToString();
 
         }
 

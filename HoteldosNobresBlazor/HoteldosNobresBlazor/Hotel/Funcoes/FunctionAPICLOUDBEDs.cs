@@ -8,8 +8,63 @@ namespace HoteldosNobresBlazor.Funcoes
     public class FunctionAPICLOUDBEDs
     {
         static string token = "cbat_xcdqsfy9Zawm502A4HFscrX46LdpKqFl";
-        static string urlapi = @"https://api.cloudbeds.com/api/v1.2"; 
+        static string urlapi = @"https://api.cloudbeds.com/api/v1.2";
 
+        #region Payment
+        public static async Task<Payment> getPaymentsAsync(Reserva reserva)
+        {
+            try
+            {
+                string url = urlapi + "/getPayments?reservationID=" + reserva.IDReserva + "&guestID=" + reserva.GuestID;
+                HttpResponseMessage response = GetApi(url).Result;
+
+                Payment payments = await LerRespostaComoObjetoAsync<Payment>(response);
+                 
+                return payments;
+            }
+            catch (FileNotFoundException e)
+            {
+                Console.WriteLine(e.Message);
+                return null;
+            }
+
+        }
+
+        public static async Task<String> postReservationNote(Reserva reserva)
+        {
+            try
+            {
+                string url = urlapi + @"/postPayment";
+                string reservationID = reserva.IDReserva;
+
+                var client = new HttpClient();
+                var request = new HttpRequestMessage(HttpMethod.Post, url);
+                request.Headers.Add("Authorization", "Bearer " + token);
+                var content = new MultipartFormDataContent();
+                content.Add(new StringContent(reservationID), "reservationID");
+                content.Add(new StringContent("airbnb"), "type");
+                content.Add(new StringContent(reserva.Balance), "amount");
+                content.Add(new StringContent("airbnb"), "cardType");
+                content.Add(new StringContent("AirBnB Prepaid Card"), "description"); 
+                request.Content = content;
+                var response = await client.SendAsync(request);
+
+                RespostPayment responsepayment = await LerRespostaComoObjetoAsync<RespostPayment>(response);
+
+                return responsepayment.Message.ToString();
+            }
+            catch (FileNotFoundException e)
+            {
+                Console.WriteLine(e.Message);
+                return null;
+            }
+
+        }
+
+        #endregion Payment
+
+
+        #region Reservation
         public static async Task<List<Reserva>?> getReservationsAsync(string checkInFrom = null, string checkOutFrom = null)
         {
             try
@@ -180,6 +235,7 @@ namespace HoteldosNobresBlazor.Funcoes
 
         }
 
+        #endregion Reservation
 
 
         private static async Task<T> LerRespostaComoObjetoAsync<T>(HttpResponseMessage response)

@@ -1,4 +1,5 @@
 ﻿using HoteldosNobresBlazor.Classes;
+using HoteldosNobresBlazor.Components.Pages;
 using HoteldosNobresBlazor.Services;
 using System.Collections.Generic;
 using System.Net.NetworkInformation;
@@ -28,6 +29,9 @@ namespace HoteldosNobresBlazor.Funcoes
 
             Thread thread2 = new Thread(FNRHMetodo);
             thread2.Start();
+
+            Thread thread3 = new Thread(PagamentoMetodo);
+            thread3.Start();
         }
 
         static void NovoMetodo()
@@ -166,6 +170,64 @@ namespace HoteldosNobresBlazor.Funcoes
                 }
             }
            
+
+        }
+
+        static void PagamentoMetodo()
+        {
+            while (true)
+            {
+                try
+                {
+                    string brazilTimeZoneId = "E. South America Standard Time";
+                    TimeZoneInfo brazilTimeZone = TimeZoneInfo.FindSystemTimeZoneById(brazilTimeZoneId);
+                    DateTime brazilTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone);
+                    AppState.MyMessagePagamento = "Começou a Rodar" + " Data: " + brazilTime.ToString("yyyy-MM-dd HH:mm:ss") + "\n";
+
+                    List<Reserva> listReserva = new List<Reserva>();
+
+                    //Reserva reserva2 = new Reserva();
+                    ////reserva2.IDReserva = "6034189965225";
+                    ////reserva2 = FunctionAPICLOUDBEDs.getReservationAsync(reserva2).Result;
+                    ////listReserva.Add(reserva2);
+
+                    listReserva = FunctionAPICLOUDBEDs.getReservationsAsync(DateTime.Now.ToString("yyyy-MM-dd")).Result;
+                    listReserva = FunctionAPICLOUDBEDs.getReservationsAsync(null, DateTime.Now.ToString("yyyy-MM-dd")).Result;
+                    listReserva.AddRange(FunctionAPICLOUDBEDs.getReservationsAsync(null).Result);
+
+                    foreach (Reserva reserva1 in listReserva)
+                    {
+                        if(!reserva1.Equals(null) && reserva1.Origem.Contains("Airbnb"))
+                        {
+                            AppState.MyMessagePagamento += "IDReserva: " + reserva1.IDReserva + " Status: " + reserva1.Status + " ";
+                            Payment payment = FunctionAPICLOUDBEDs.getPaymentsAsync(reserva1).Result;
+                            if(payment.Success)
+                            {
+                                if(payment.Data.Count() > 0)
+                                    AppState.MyMessagePagamento += "Ja tem Pagamento!" + "\n";
+                                else                                 
+                                    AppState.MyMessagePagamento += "Criado: " +  FunctionAPICLOUDBEDs.postReservationNote(reserva1).Result  + " \n";
+  
+                            }
+
+                        }     
+                        string retorno = "";
+                         
+                       }
+
+                    DateTime endbrazilTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone); 
+                    AppState.MyMessagePagamento += "Terminou!" + " Data: " + endbrazilTime.ToString("yyyy-MM-dd HH:mm:ss") + "\n";
+
+                    Thread.Sleep(60000);
+                }
+                catch (Exception e)
+                {
+                    AppState.MyMessage = e.Message;
+                    Thread.Sleep(5000);
+
+                }
+            }
+
 
         }
     }

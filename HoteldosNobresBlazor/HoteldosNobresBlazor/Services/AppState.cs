@@ -11,6 +11,7 @@ namespace HoteldosNobresBlazor.Services
 
         public string MyMessageFNRH { get; set; } = "Execução do FNRH";
         public string MyMessageReservation { get; set; } = " ";
+        public string MyMessagePagamento { get; set; } = "Pagamento do FNRH";
 
 
     }

@@ -1,0 +1,23 @@
+﻿@page "/pagamentoairbnb"
+@inject AppState appState
+
+<PageTitle>Pagamento Airbnb</PageTitle>
+
+<h1>Log Pagamento Airbnb!</h1>
+
+@foreach (var linha in arrayDeLinhas)
+{
+     @linha <br />
+}
+
+
+
+@code
+{
+    string[] arrayDeLinhas ;
+    protected override async Task OnInitializedAsync()
+    {
+        arrayDeLinhas = appState.MyMessagePagamento.Split('\n');
+
+    }
+} 
