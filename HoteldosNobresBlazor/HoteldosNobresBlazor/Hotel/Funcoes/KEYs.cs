@@ -1,10 +1,4 @@
-﻿using System.Net;
-using System.Text;
-using System.Xml.Serialization;
-using System.Xml.Linq;
-using HoteldosNobresBlazor.Classes;
-
-namespace HoteldosNobresBlazor.Funcoes
+﻿namespace HoteldosNobresBlazor.Funcoes
 {
     public class KEYs
     {
