@@ -6,8 +6,7 @@ using static HoteldosNobresBlazor.Components.Pages.CallApi;
 namespace HoteldosNobresBlazor.Funcoes
 {
     public class FunctionAPICLOUDBEDs
-    {
-        static string token = "cbat_xcdqsfy9Zawm502A4HFscrX46LdpKqFl";
+    { 
         static string urlapi = @"https://api.cloudbeds.com/api/v1.2";
 
         #region Payment
@@ -39,7 +38,7 @@ namespace HoteldosNobresBlazor.Funcoes
 
                 var client = new HttpClient();
                 var request = new HttpRequestMessage(HttpMethod.Post, url);
-                request.Headers.Add("Authorization", "Bearer " + token);
+                request.Headers.Add("Authorization", "Bearer " + KEYs.TOKEN_CLOUDBEDS);
                 var content = new MultipartFormDataContent();
                 content.Add(new StringContent(reservationID), "reservationID");
                 content.Add(new StringContent("airbnb"), "type");
@@ -82,12 +81,13 @@ namespace HoteldosNobresBlazor.Funcoes
                 Reservations resevations = await LerRespostaComoObjetoAsync<Reservations>(response);
 
                 List<Reserva> listareserva = new List<Reserva>();
-                foreach (var item in resevations.Data)
-                {
-                    Reserva reserva = new Reserva();
-                    reserva.Converte(item);
-                    listareserva.Add(reserva);
-                }
+                if(resevations.Data != null) 
+                    foreach (var item in resevations.Data)
+                    {
+                        Reserva reserva = new Reserva();
+                        reserva.Converte(item);
+                        listareserva.Add(reserva);
+                    }
 
                 return listareserva;
             }
@@ -148,7 +148,7 @@ namespace HoteldosNobresBlazor.Funcoes
                 string url = "https://api.cloudbeds.com/api/v1.2/putReservationNote";
                 var client = new HttpClient();
                 var request = new HttpRequestMessage(HttpMethod.Put, url);
-                request.Headers.Add("Authorization", "Bearer " + token);
+                request.Headers.Add("Authorization", "Bearer " + KEYs.TOKEN_CLOUDBEDS);
                 var content = new MultipartFormDataContent();
                 content.Add(new StringContent(reservationID), "reservationID");
                 content.Add(new StringContent(reservationNoteID), "reservationNoteID");
@@ -176,7 +176,7 @@ namespace HoteldosNobresBlazor.Funcoes
 
                 var client = new HttpClient();
                 var request = new HttpRequestMessage(HttpMethod.Post, "https://api.cloudbeds.com/api/v1.2/postReservationNote");
-                request.Headers.Add("Authorization", "Bearer " + token);
+                request.Headers.Add("Authorization", "Bearer " + KEYs.TOKEN_CLOUDBEDS);
                 var content = new MultipartFormDataContent();
                 content.Add(new StringContent(reservationID), "reservationID");
                 content.Add(new StringContent(note), "reservationNote");
@@ -221,7 +221,7 @@ namespace HoteldosNobresBlazor.Funcoes
 
                 var client = new HttpClient();
                 var request = new HttpRequestMessage(HttpMethod.Delete, url );
-                request.Headers.Add("Authorization", "Bearer " + token);
+                request.Headers.Add("Authorization", "Bearer " + KEYs.TOKEN_CLOUDBEDS);
                 response = await client.SendAsync(request);
                 response.EnsureSuccessStatusCode();
                   
@@ -256,7 +256,7 @@ namespace HoteldosNobresBlazor.Funcoes
             try
             {
                 var request = new HttpRequestMessage(HttpMethod.Get, url);
-                request.Headers.Add("Authorization", "Bearer " + token); 
+                request.Headers.Add("Authorization", "Bearer " + KEYs.TOKEN_CLOUDBEDS); 
                 request.Headers.Add("User-Agent", "HttpClientFactory-Sample");
 
                 var client = new HttpClient();

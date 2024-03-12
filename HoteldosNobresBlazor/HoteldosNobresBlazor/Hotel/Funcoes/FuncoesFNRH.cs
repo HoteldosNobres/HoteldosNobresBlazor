@@ -156,7 +156,7 @@ namespace HoteldosNobresBlazor.Funcoes
                         <soapenv:Header/>
                         <soapenv:Body>
                         <web:fnrhInserir>
-                        <chaveAcesso>{ChaveAcesso}</chaveAcesso>
+                        <chaveAcesso>{KEYs.TOKEN_FNRH}</chaveAcesso>
                         <fnrh>
                         <snnumcpf>{reserva.ProxyCPF}</snnumcpf>
                         <sntipdoc></sntipdoc>
@@ -214,7 +214,7 @@ namespace HoteldosNobresBlazor.Funcoes
                         <soapenv:Header/>
                         <soapenv:Body>
                         <web:fnrhAtualizar>
-                        <chaveAcesso>{ChaveAcesso}</chaveAcesso>
+                        <chaveAcesso>{KEYs.TOKEN_FNRH}</chaveAcesso>
                         <snNum>{reserva.SnNum}</snNum>
                         <fnrh>
                         <snnumcpf>{reserva.ProxyCPF}</snnumcpf>
@@ -274,7 +274,7 @@ namespace HoteldosNobresBlazor.Funcoes
                         <soapenv:Header/>
                         <soapenv:Body>
                         <web:fnrhCheckin>
-                        <chaveAcesso>{ChaveAcesso}</chaveAcesso>
+                        <chaveAcesso>{KEYs.TOKEN_FNRH}</chaveAcesso>
                         <snNum>{reserva.SnNum}</snNum>
                         <dataCheckin>{reserva.DataCheckInRealizado.ToString("yyyy-MM-ddTHH:mm:ss")}</dataCheckin>
                         </web:fnrhCheckin>
@@ -300,7 +300,7 @@ namespace HoteldosNobresBlazor.Funcoes
                         <soapenv:Header/>
                         <soapenv:Body>
                         <web:fnrhCheckout>
-                        <chaveAcesso>{ChaveAcesso}</chaveAcesso>
+                        <chaveAcesso>{KEYs.TOKEN_FNRH}</chaveAcesso>
                         <snNum>{reserva.SnNum}</snNum>
                         <dataCheckout>{reserva.DataCheckOutRealizado.ToString("yyyy-MM-ddTHH:mm:ss")}</dataCheckout>
                         </web:fnrhCheckout>
