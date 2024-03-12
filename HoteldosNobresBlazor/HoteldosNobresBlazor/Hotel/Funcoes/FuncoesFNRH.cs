@@ -8,7 +8,7 @@ namespace HoteldosNobresBlazor.Funcoes
 {
     public class FuncoesFNRH
     {
-        static string ChaveAcesso = "5E101D9D-E4AF-4020-94C8-3DF66E55F01B";
+        static string ChaveAcesso = "$TOKEN_FNRH";
 
 
         public static string Inserir(Reserva reserva)
