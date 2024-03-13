@@ -10,7 +10,7 @@ namespace HoteldosNobresBlazor.Funcoes
     {
         static string cache = "cache";
         static int count = 0;
-        static AppState AppState;
+        static AppState AppState; 
 
         public CacheHotel()
         { 
@@ -63,6 +63,64 @@ namespace HoteldosNobresBlazor.Funcoes
            
         }
 
+        public string CacheChangedStatus(string json)
+        {
+            try
+            {
+                ChangedReservation changed = FunctionAPICLOUDBEDs.LerRespostaComoObjetoAsync<ChangedReservation>(json).Result;
+
+                AppState.MyMessageReservation += "Change IDReserva: " + changed.reservationId + " /n";
+
+                Reserva reserva = new Reserva();
+                reserva.IDReserva = changed.reservationId;
+                reserva = FunctionAPICLOUDBEDs.getReservationAsync(reserva).Result;
+
+                string retorno = "";
+                TimeZoneInfo brazilTimeZone = TimeZoneInfo.FindSystemTimeZoneById("E. South America Standard Time");
+                DateTime brazilTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone);
+                AppState.MyMessageFNRH = "Começou a Rodar" + " Data: " + brazilTime.ToString("yyyy-MM-dd HH:mm:ss") + "\n";
+
+                if (!string.IsNullOrEmpty(reserva.SnNum))
+                {
+                    AppState.MyMessageReservation += " SnNum: " + reserva.SnNum + " ";
+                    string reservationNoteID = reserva.Notas.Where(x => x.Texto.Contains("SNRHos-MS0001")).FirstOrDefault().Id.ToString();
+
+                    if ((reserva.Status.ToUpper() == "HOSPEDADO" || reserva.Status.ToUpper() == "CHECKED_IN" || reserva.Status.ToUpper() == "CHECKED_OUT"
+                    || reserva.Status.ToUpper() == "CHECK OUT FEITO")
+                    && !string.IsNullOrEmpty(reservationNoteID))
+                    {
+                        // PEGAR HORARIO DO CHCKin reserva = FunctionAPICLOUDBEDs.getReservationAsync(reserva).Result;
+                        reserva.DataCheckInRealizado = DateTime.Parse(brazilTime.ToString("yyyy-MM-dd H:mm:ss"));
+                        retorno = FuncoesFNRH.CheckIn(reserva);
+
+                        if (!string.IsNullOrEmpty(reservationNoteID))
+                            retorno += FunctionAPICLOUDBEDs.pustReservationNote(reserva.IDReserva, reservationNoteID, "SNRHos-MS0003(" + reserva.SnNum + ")").Result;
+                    }
+
+
+                    if ((reserva.Status.ToUpper() == "CHECK OUT FEITO" || reserva.Status.ToUpper() == "CHECKED_OUT")
+                         && !string.IsNullOrEmpty(reserva.SnNum))
+                    {
+                        reserva.DataCheckOutRealizado = DateTime.Parse(brazilTime.ToString("yyyy-MM-dd H:mm:ss"));
+                        retorno = FuncoesFNRH.CheckOut(reserva);
+                    }
+
+                    if (retorno.Contains("SNRHos-MS0004"))
+                    {
+                        retorno = retorno + FunctionAPICLOUDBEDs.deleteReservationNote(reserva, "SNRHos-MS0001").Result;
+                    }
+                }
+
+
+                return "OK " + changed.reservationId;
+            }
+            catch (Exception e)
+            {
+                return e.Message;
+            }
+
+        }
+
         public void CacheExecutanado()
         { 
             Thread thread = new Thread(NovoMetodo);
@@ -110,9 +168,8 @@ namespace HoteldosNobresBlazor.Funcoes
             while(true)
             {
                 try
-                {
-                    string brazilTimeZoneId = "E. South America Standard Time";
-                    TimeZoneInfo brazilTimeZone = TimeZoneInfo.FindSystemTimeZoneById(brazilTimeZoneId);
+                { 
+                    TimeZoneInfo brazilTimeZone = TimeZoneInfo.FindSystemTimeZoneById("E. South America Standard Time");
                     DateTime brazilTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone);
                     AppState.MyMessageFNRH = "Começou a Rodar" + " Data: " + brazilTime.ToString("yyyy-MM-dd HH:mm:ss") + "\n";
                      
