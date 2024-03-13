@@ -94,7 +94,7 @@ namespace HoteldosNobresBlazor.Funcoes
                         retorno = FuncoesFNRH.CheckIn(reserva);
 
                         if (!string.IsNullOrEmpty(reservationNoteID))
-                            retorno += FunctionAPICLOUDBEDs.pustReservationNote(reserva.IDReserva, reservationNoteID, "SNRHos-MS0003(" + reserva.SnNum + ")").Result;
+                            retorno += FunctionAPICLOUDBEDs.putReservationNote(reserva.IDReserva, reservationNoteID, "SNRHos-MS0003(" + reserva.SnNum + ")").Result;
                     }
 
 
@@ -232,7 +232,7 @@ namespace HoteldosNobresBlazor.Funcoes
                                 retorno = FuncoesFNRH.CheckIn(reserva);
 
                                 if (!string.IsNullOrEmpty(reservationNoteID))
-                                    retorno += FunctionAPICLOUDBEDs.pustReservationNote(reserva.IDReserva, reservationNoteID, "SNRHos-MS0003(" + reserva.SnNum + ")").Result;
+                                    retorno += FunctionAPICLOUDBEDs.putReservationNote(reserva.IDReserva, reservationNoteID, "SNRHos-MS0003(" + reserva.SnNum + ")").Result;
                             }
 
 

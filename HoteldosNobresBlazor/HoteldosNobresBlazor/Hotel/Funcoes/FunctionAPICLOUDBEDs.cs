@@ -141,7 +141,7 @@ namespace HoteldosNobresBlazor.Funcoes
 
         }
 
-        public static async Task<string> pustReservationNote(string reservationID, string reservationNoteID, string note)
+        public static async Task<string> putReservationNote(string reservationID, string reservationNoteID, string note)
         {
             try
             {
