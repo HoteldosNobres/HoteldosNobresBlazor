@@ -3,6 +3,7 @@ using HoteldosNobresBlazor.Components.Pages;
 using HoteldosNobresBlazor.Services;
 using System.Collections.Generic;
 using System.Net.NetworkInformation;
+using System.Threading.Channels;
 
 namespace HoteldosNobresBlazor.Funcoes
 {
@@ -10,79 +11,87 @@ namespace HoteldosNobresBlazor.Funcoes
     {
         static string cache = "cache";
         static int count = 0;
-        static AppState AppState; 
+        static AppState AppState;
 
         public CacheHotel()
-        { 
+        {
         }
 
 
         public CacheHotel(AppState appState)
         {
-           AppState = appState;
+            AppState = appState;
         }
 
         public string CacheNovaReserva(string json)
         {
             try
             {
+                TimeZoneInfo brazilTimeZone = TimeZoneInfo.FindSystemTimeZoneById("E. South America Standard Time");
                 CreateReservation create = FunctionAPICLOUDBEDs.LerRespostaComoObjetoAsync<CreateReservation>(json).Result;
 
-                AppState.MyMessageReservation += "IDReserva: " + create.reservationId + "|/n";
+                Reserva novareserva = new Reserva();
+                novareserva.IDReserva = create.reservationId;
+                novareserva = FunctionAPICLOUDBEDs.getReservationAsync(novareserva).Result;
 
-                Reserva reserva2 = new Reserva();
-                reserva2.IDReserva = create.reservationId;
-                reserva2 = FunctionAPICLOUDBEDs.getReservationAsync(reserva2).Result;
-                  
-                if (!reserva2.Equals(null) && reserva2.Origem.Contains("Airbnb"))
+                LogSistema logSistema = new LogSistema();
+                logSistema.IDReserva = novareserva.IDReserva.ToString();
+                logSistema.Status = novareserva.Status;
+                logSistema.DataLog = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone);
+
+                if (!novareserva.Equals(null) && novareserva.Origem.Contains("Airbnb"))
                 {
-                    AppState.MyMessageReservation += " Status: " + reserva2.Status + "|";
-                    Payment payment = FunctionAPICLOUDBEDs.getPaymentsAsync(reserva2).Result;
+                    Payment payment = FunctionAPICLOUDBEDs.getPaymentsAsync(novareserva).Result;
                     if (payment.Success)
                     {
                         if (payment.Data.Count() > 0)
-                            AppState.MyMessageReservation += "Ja tem Pagamento!" + "\n";
+                            logSistema.Log += "Ja tem Pagamento!" + "\n";
                         else
-                            AppState.MyMessageReservation += "Criado: " + FunctionAPICLOUDBEDs.postReservationNote(reserva2).Result + " \n";
+                            logSistema.Log += "Criado: " + FunctionAPICLOUDBEDs.postReservationNote(novareserva).Result + " \n";
 
                     }
 
                 }
 
-                if (string.IsNullOrEmpty(reserva2.SnNum) && reserva2.Status.ToUpper() != "CHECKED_OUT" && reserva2.Status.ToUpper() != "CANCELED")
-                    AppState.MyMessageReservation += FuncoesFNRH.Inserir(reserva2);
-                else if (!string.IsNullOrEmpty(reserva2.SnNum))
-                    AppState.MyMessageReservation += FuncoesFNRH.Atualizar(reserva2);
 
-                AppState.MyMessageReservation +=  "| /n";
+                if (string.IsNullOrEmpty(novareserva.SnNum) && novareserva.Status.ToUpper() != "CHECKED_OUT" && novareserva.Status.ToUpper() != "CANCELED")
+                    logSistema.Log += FuncoesFNRH.Inserir(novareserva);
+                else if (!string.IsNullOrEmpty(novareserva.SnNum))
+                    logSistema.Log += FuncoesFNRH.Atualizar(novareserva);
+
+                AppState.ListLogSistemaAddReserva.Add(logSistema);
                 return "OK " + create.reservationId;
-            }catch(Exception e)
+            }
+            catch (Exception e)
             {
                 return e.Message;
             }
-           
+
         }
 
         public string CacheChangedStatus(string json)
         {
             try
             {
+                TimeZoneInfo brazilTimeZone = TimeZoneInfo.FindSystemTimeZoneById("E. South America Standard Time");
                 ChangedReservation changed = FunctionAPICLOUDBEDs.LerRespostaComoObjetoAsync<ChangedReservation>(json).Result;
-
-                AppState.MyMessageReservation += "Change IDReserva: " + changed.reservationId + " /n";
 
                 Reserva reserva = new Reserva();
                 reserva.IDReserva = changed.reservationId;
                 reserva = FunctionAPICLOUDBEDs.getReservationAsync(reserva).Result;
 
+                LogSistema logSistema = new LogSistema();
+                logSistema.IDReserva = reserva.IDReserva.ToString();
+                logSistema.Status = reserva.Status;
+                logSistema.DataLog = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone);
+
                 string retorno = "";
-                TimeZoneInfo brazilTimeZone = TimeZoneInfo.FindSystemTimeZoneById("E. South America Standard Time");
                 DateTime brazilTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone);
-                AppState.MyMessageFNRH = "Começou a Rodar" + " Data: " + brazilTime.ToString("yyyy-MM-dd HH:mm:ss") + "\n";
+                logSistema.Log += "Começou a Rodar" + " Data: " + brazilTime.ToString("yyyy-MM-dd HH:mm:ss") + "\n";
 
                 if (!string.IsNullOrEmpty(reserva.SnNum))
                 {
-                    AppState.MyMessageReservation += " SnNum: " + reserva.SnNum + " ";
+                    logSistema.Log += " SnNum: " + reserva.SnNum + " ";
                     string reservationNoteID = reserva.Notas.Where(x => x.Texto.Contains("SNRHos-MS0001")).FirstOrDefault().Id.ToString();
 
                     if ((reserva.Status.ToUpper() == "HOSPEDADO" || reserva.Status.ToUpper() == "CHECKED_IN" || reserva.Status.ToUpper() == "CHECKED_OUT"
@@ -111,7 +120,7 @@ namespace HoteldosNobresBlazor.Funcoes
                     }
                 }
 
-
+                AppState.ListLogSistemaAddReserva.Add(logSistema);
                 return "OK " + changed.reservationId;
             }
             catch (Exception e)
@@ -122,7 +131,7 @@ namespace HoteldosNobresBlazor.Funcoes
         }
 
         public void CacheExecutanado()
-        { 
+        {
             Thread thread = new Thread(NovoMetodo);
             thread.Start();
 
@@ -139,9 +148,7 @@ namespace HoteldosNobresBlazor.Funcoes
             {
                 try
                 {
-                    AppState.ListReservas = FunctionAPICLOUDBEDs.getReservationsAsync(DateTime.Now.ToString("yyyy-MM-dd")).Result;
-                    AppState.ListReservas.AddRange(FunctionAPICLOUDBEDs.getReservationsAsync(null, DateTime.Now.ToString("yyyy-MM-dd")).Result);
-
+                    AppState.ListReservas = FunctionAPICLOUDBEDs.getReservationsAsync(null).Result;
 
                     // Dorme por 5000 milissegundos, ou seja, 5 segundos
 
@@ -158,21 +165,22 @@ namespace HoteldosNobresBlazor.Funcoes
                     AppState.MyMessage = e.Message;
                     Thread.Sleep(5000);
                     continue;
-                } 
+                }
 
             }
         }
 
         static void FNRHMetodo()
         {
-            while(true)
+            while (true)
             {
                 try
-                { 
+                {
                     TimeZoneInfo brazilTimeZone = TimeZoneInfo.FindSystemTimeZoneById("E. South America Standard Time");
                     DateTime brazilTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone);
                     AppState.MyMessageFNRH = "Começou a Rodar" + " Data: " + brazilTime.ToString("yyyy-MM-dd HH:mm:ss") + "\n";
-                     
+                    AppState.ListLogSistemaFNRH.Clear();
+
                     List<Reserva> listReserva = new List<Reserva>();
                     Reserva reserva2 = new Reserva();
                     reserva2.IDReserva = "5356003227500";
@@ -183,9 +191,13 @@ namespace HoteldosNobresBlazor.Funcoes
                     listReserva = FunctionAPICLOUDBEDs.getReservationsAsync(null, DateTime.Now.ToString("yyyy-MM-dd")).Result;
                     listReserva.AddRange(FunctionAPICLOUDBEDs.getReservationsAsync(null).Result);
 
+
                     foreach (Reserva reserva1 in listReserva)
                     {
-                        AppState.MyMessageFNRH += "IDReserva:" + reserva1.IDReserva + " Status: " + reserva1.Status + " ";
+                        LogSistema logSistema = new LogSistema();
+                        logSistema.IDReserva = reserva1.IDReserva.ToString();
+                        logSistema.Status = reserva1.Status;
+                        logSistema.DataLog = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone);
 
                         Reserva reserva = FunctionAPICLOUDBEDs.getReservationAsync(reserva1).Result;
 
@@ -220,7 +232,7 @@ namespace HoteldosNobresBlazor.Funcoes
 
                         if (!string.IsNullOrEmpty(reserva.SnNum))
                         {
-                            AppState.MyMessageFNRH += " SnNum: " + reserva.SnNum + " ";
+                            retorno += " SnNum: " + reserva.SnNum + " ";
                             string reservationNoteID = reserva.Notas.Where(x => x.Texto.Contains("SNRHos-MS0001")).FirstOrDefault().Id.ToString();
 
                             if ((reserva.Status.ToUpper() == "HOSPEDADO" || reserva.Status.ToUpper() == "CHECKED_IN" || reserva.Status.ToUpper() == "CHECKED_OUT"
@@ -252,9 +264,9 @@ namespace HoteldosNobresBlazor.Funcoes
                         retorno = retorno.Replace("SNRHos-ME0024", " Checkin realizado\não permitido");
                         retorno = retorno.Replace("SNRHos-ME0025", " Checkout realizado\não permitido");
 
-                        AppState.MyMessageFNRH += retorno + "\n";
+                        logSistema.Log += retorno + " ";
+                        AppState.ListLogSistemaFNRH.Add(logSistema);
                     }
-
 
                     AppState.MyMessageFNRH += "Terminou!" + "\n";
 
@@ -264,10 +276,10 @@ namespace HoteldosNobresBlazor.Funcoes
                 {
                     AppState.MyMessage = e.Message;
                     Thread.Sleep(5000);
-                     
+
                 }
             }
-           
+
 
         }
 
@@ -284,36 +296,33 @@ namespace HoteldosNobresBlazor.Funcoes
 
                     List<Reserva> listReserva = new List<Reserva>();
 
-                    //Reserva reserva2 = new Reserva();
-                    ////reserva2.IDReserva = "6034189965225";
-                    ////reserva2 = FunctionAPICLOUDBEDs.getReservationAsync(reserva2).Result;
-                    ////listReserva.Add(reserva2);
-
                     listReserva = FunctionAPICLOUDBEDs.getReservationsAsync(DateTime.Now.ToString("yyyy-MM-dd")).Result;
                     listReserva = FunctionAPICLOUDBEDs.getReservationsAsync(null, DateTime.Now.ToString("yyyy-MM-dd")).Result;
                     listReserva.AddRange(FunctionAPICLOUDBEDs.getReservationsAsync(null).Result);
 
                     foreach (Reserva reserva1 in listReserva)
                     {
-                        if(!reserva1.Equals(null) && reserva1.Origem.Contains("Airbnb"))
+                        if (!reserva1.Equals(null) && reserva1.Origem.Contains("Airbnb"))
                         {
-                            AppState.MyMessagePagamento += "IDReserva: " + reserva1.IDReserva + " Status: " + reserva1.Status + " ";
+                            LogSistema logSistema = new LogSistema();
+                            logSistema.IDReserva = reserva1.IDReserva.ToString();
+                            logSistema.Status = reserva1.Status;
+                            logSistema.DataLog = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone);
+
                             Payment payment = FunctionAPICLOUDBEDs.getPaymentsAsync(reserva1).Result;
-                            if(payment.Success)
+                            if (payment.Success)
                             {
-                                if(payment.Data.Count() > 0)
-                                    AppState.MyMessagePagamento += "Ja tem Pagamento!" + "\n";
-                                else                                 
-                                    AppState.MyMessagePagamento += "Criado: " +  FunctionAPICLOUDBEDs.postReservationNote(reserva1).Result  + " \n";
-  
+                                if (payment.Data.Count() > 0)
+                                    logSistema.Log += "Ja tem Pagamento!" + "\n";
+                                else
+                                    logSistema.Log += "Criado: " + FunctionAPICLOUDBEDs.postReservationNote(reserva1).Result + " \n";
+
                             }
+                            AppState.ListLogSistemaPagamentoAirbnb.Add(logSistema);
+                        }
+                    }
 
-                        }     
-                        string retorno = "";
-                         
-                       }
-
-                    DateTime endbrazilTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone); 
+                    DateTime endbrazilTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone);
                     AppState.MyMessagePagamento += "Terminou!" + " Data: " + endbrazilTime.ToString("yyyy-MM-dd HH:mm:ss") + "\n";
 
                     Thread.Sleep(60000);

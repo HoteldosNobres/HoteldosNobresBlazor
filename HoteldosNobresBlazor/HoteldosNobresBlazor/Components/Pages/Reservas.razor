@@ -7,9 +7,8 @@
 
 <PageTitle>Reservas</PageTitle>
 
-<h1>Reservas</h1>
-
-<p>Reservas. @appState.MyMessage </p>
+<h1>Lista Reserva </h1>
+ 
 
 @if (listReserva == null) 
     {
@@ -20,6 +19,7 @@ else
     <table class="table">
         <thead>
             <tr>
+                <th>Id</th>
                 <th>Data Check In</th>
                 <th>Nome Hospede</th>
                 <th>Origem</th>
@@ -28,12 +28,12 @@ else
         </thead>
         <tbody>
             @foreach (Reserva reserva1 in listReserva)
-            {
-                var reservaaqui = new ReservaAqui(reserva1);
+            { 
                 <tr>
-                    <td>@reservaaqui.DataCheckIn.ToString("dd/MM/yyyy")</td>
-                    <td>@reservaaqui.NomeHospede</td>
-                    <td>@reservaaqui.Origem</td>
+                    <td><a href='@reserva1.LinkReserva' +> @reserva1.IDReserva</a></td>
+                    <td>@reserva1.DataCheckIn.ToString("dd/MM/yyyy")</td>
+                    <td>@reserva1.NomeHospede.Substring(0,10)</td>
+                    <td>@reserva1.Origem</td>
                     <td></td>
                 </tr>
             }
@@ -63,10 +63,7 @@ else
             listReserva = appState.ListReservas;
         }
 
-
-        // listReserva = FunctionAPICLOUDBEDs.getReservationsAsync(DateTime.Now.ToString("yyyy-MM-dd")).Result;
-        // listReserva.AddRange(FunctionAPICLOUDBEDs.getReservationsAsync(null, DateTime.Now.ToString("yyyy-MM-dd")).Result);
-        //listReserva.AddRange(FunctionAPICLOUDBEDs.getReservationsAsync(null).Result);
+         
     }
 
    

@@ -4,10 +4,42 @@
 <PageTitle>Pagamento Airbnb</PageTitle>
 
 <h1>Log Pagamento Airbnb!</h1>
-
+ 
 @foreach (var linha in arrayDeLinhas)
 {
-     @linha <br />
+    @linha
+    <br />
+}
+
+@if (listLog == null)
+{
+    <p><em>Carregando...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Data </th>
+                <th>IdReserva</th>
+                <th>Status</th>
+                <th>Log</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (LogSistema logs in listLog)
+            {
+                <tr>
+                    <td>@logs.DataLog.ToString("dd/MM/yyyy hh:MM:ss")</td>
+                    <td><a href='@logs.LinkReserva' +> @logs.IDReserva</a></td>
+                    <td>@logs.Status</td>
+                    <td>@logs.Log</td>
+                    <td></td>
+                </tr>
+            }
+        </tbody>
+    </table>
 }
 
 
@@ -15,8 +47,10 @@
 @code
 {
     string[] arrayDeLinhas ;
+    public List<LogSistema>? listLog;
     protected override async Task OnInitializedAsync()
     {
+        listLog = appState.ListLogSistemaPagamentoAirbnb;
         arrayDeLinhas = appState.MyMessagePagamento.Split('\n');
 
     }

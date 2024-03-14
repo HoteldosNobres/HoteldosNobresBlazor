@@ -91,6 +91,17 @@ namespace HoteldosNobresBlazor.Classes
             }
         }
 
+        public string LinkReserva
+        {
+            get
+            {
+                if(string.IsNullOrEmpty(IDReserva))
+                    return "";
+                return "https://hotels.cloudbeds.com/connect/235132#/r" + IDReserva;
+            }
+        }
+        
+
         public string ProxyPais
         {
             get

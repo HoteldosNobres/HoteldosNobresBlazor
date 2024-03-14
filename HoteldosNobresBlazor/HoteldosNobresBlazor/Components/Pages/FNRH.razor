@@ -10,13 +10,46 @@
      @linha <br />
 }
 
+@if (listLog == null)
+{
+    <p><em>Carregando...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Data </th>
+                <th>IdReserva</th>
+                <th>Status</th>
+                <th>Log</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (LogSistema logs in listLog)
+            {
+                <tr>
+                    <td>@logs.DataLog.ToString("dd/MM/yyyy hh:MM:ss")</td>
+                    <td><a href='@logs.LinkReserva' +> @logs.IDReserva</a></td>
+                    <td>@logs.Status</td>
+                    <td>@logs.Log</td>
+                    <td></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
 
 
 @code
 {
+    public List<LogSistema>? listLog;
     string[] arrayDeLinhas ;
     protected override async Task OnInitializedAsync()
     {
+        listLog = appState.ListLogSistemaFNRH;
         arrayDeLinhas = appState.MyMessageFNRH.Split('\n');
 
     }
