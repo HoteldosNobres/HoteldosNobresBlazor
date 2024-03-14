@@ -268,9 +268,9 @@ namespace HoteldosNobresBlazor.Funcoes
                         AppState.ListLogSistemaFNRH.Add(logSistema);
                     }
 
-                    AppState.MyMessageFNRH += "Terminou!" + "\n";
+                    AppState.MyMessageFNRH += "Terminou! " + " Data: " + brazilTime.ToString("yyyy-MM-dd HH:mm:ss") + "\n";
 
-                    Thread.Sleep(60000);
+                    Thread.Sleep(1800 * 1000);
                 }
                 catch (Exception e)
                 {
