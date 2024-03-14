@@ -97,7 +97,7 @@ namespace HoteldosNobresBlazor.Classes
             {
                 if(string.IsNullOrEmpty(IDReserva))
                     return "";
-                return "https://hotels.cloudbeds.com/connect/235132#/r" + IDReserva;
+                return "https://hotels.cloudbeds.com/connect/235132#/reservations/r" + IDReserva;
             }
         }
         
