@@ -69,18 +69,6 @@ else
         //listReserva.AddRange(FunctionAPICLOUDBEDs.getReservationsAsync(null).Result);
     }
 
-    private class ReservaAqui
-    {
-        public DateTime DataCheckIn { get; set; }
-        public string? NomeHospede { get; set; }
-        public string? Origem { get; set; }
-
-        public ReservaAqui(Reserva reserva)
-        {
-            DataCheckIn = reserva.DataCheckIn;
-            NomeHospede = reserva.NomeHospede.Substring(0, 5);
-            Origem = reserva.Origem;
-        }
-    }
+   
      
 }

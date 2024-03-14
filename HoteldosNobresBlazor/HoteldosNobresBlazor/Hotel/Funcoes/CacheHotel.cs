@@ -28,7 +28,7 @@ namespace HoteldosNobresBlazor.Funcoes
             {
                 CreateReservation create = FunctionAPICLOUDBEDs.LerRespostaComoObjetoAsync<CreateReservation>(json).Result;
 
-                AppState.MyMessageReservation += "IDReserva: " + create.reservationId + " /n";
+                AppState.MyMessageReservation += "IDReserva: " + create.reservationId + "|/n";
 
                 Reserva reserva2 = new Reserva();
                 reserva2.IDReserva = create.reservationId;
@@ -36,7 +36,7 @@ namespace HoteldosNobresBlazor.Funcoes
                   
                 if (!reserva2.Equals(null) && reserva2.Origem.Contains("Airbnb"))
                 {
-                    AppState.MyMessageReservation += " Status: " + reserva2.Status + " ";
+                    AppState.MyMessageReservation += " Status: " + reserva2.Status + "|";
                     Payment payment = FunctionAPICLOUDBEDs.getPaymentsAsync(reserva2).Result;
                     if (payment.Success)
                     {
@@ -54,7 +54,7 @@ namespace HoteldosNobresBlazor.Funcoes
                 else if (!string.IsNullOrEmpty(reserva2.SnNum))
                     AppState.MyMessageReservation += FuncoesFNRH.Atualizar(reserva2);
 
-
+                AppState.MyMessageReservation +=  "| /n";
                 return "OK " + create.reservationId;
             }catch(Exception e)
             {
