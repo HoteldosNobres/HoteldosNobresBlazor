@@ -96,6 +96,42 @@ app.MapPost("/status_changed", async (HttpContext httpContext) =>
 
     });
 
+app.MapPost("/accommodation_changed", async (HttpContext httpContext) =>
+{
+    try
+    {
+        using var reader = new StreamReader(httpContext.Request.Body, Encoding.UTF8);
+        string body = await reader.ReadToEndAsync();
+
+        CacheHotel cache2 = new CacheHotel(sCOPP);
+        await httpContext.Response.WriteAsync(cache2.CacheAccommodation_changed(body));
+
+    }
+    catch (Exception ex)
+    {
+        httpContext.Response.StatusCode = 500;
+    }
+
+});
+
+app.MapPost("/details_changed", async (HttpContext httpContext) =>
+{
+    try
+    {
+        using var reader = new StreamReader(httpContext.Request.Body, Encoding.UTF8);
+        string body = await reader.ReadToEndAsync();
+
+        CacheHotel cache2 = new CacheHotel(sCOPP);
+        await httpContext.Response.WriteAsync(cache2.CacheAccommodation_changed(body));
+
+    }
+    catch (Exception ex)
+    {
+        httpContext.Response.StatusCode = 500;
+    }
+
+});
+
 var cache = new CacheHotel(sCOPP);
 
 cache.CacheExecutanado();

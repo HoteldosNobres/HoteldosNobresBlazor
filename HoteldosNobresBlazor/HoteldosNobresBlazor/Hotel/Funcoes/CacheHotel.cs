@@ -52,8 +52,7 @@ namespace HoteldosNobresBlazor.Funcoes
                     }
 
                 }
-
-
+                 
                 if (string.IsNullOrEmpty(novareserva.SnNum) && novareserva.Status.ToUpper() != "CHECKED_OUT" && novareserva.Status.ToUpper() != "CANCELED")
                     logSistema.Log += FuncoesFNRH.Inserir(novareserva);
                 else if (!string.IsNullOrEmpty(novareserva.SnNum))
@@ -64,6 +63,7 @@ namespace HoteldosNobresBlazor.Funcoes
             }
             catch (Exception e)
             {
+                AppState.MyMessageReservation = e.Message + "\n";
                 return e.Message;
             }
 
@@ -125,6 +125,42 @@ namespace HoteldosNobresBlazor.Funcoes
             }
             catch (Exception e)
             {
+                AppState.MyMessageReservation = e.Message + "\n";
+                return e.Message;
+            }
+
+        }
+
+        public string CacheAccommodation_changed(string json)
+        {
+            try
+            {
+                TimeZoneInfo brazilTimeZone = TimeZoneInfo.FindSystemTimeZoneById("E. South America Standard Time");
+                Accommodation_changed changed = FunctionAPICLOUDBEDs.LerRespostaComoObjetoAsync<Accommodation_changed>(json).Result;
+
+                Reserva reserva = new Reserva();
+                reserva.IDReserva = changed.reservationId;
+                reserva = FunctionAPICLOUDBEDs.getReservationAsync(reserva).Result;
+
+                LogSistema logSistema = new LogSistema();
+                logSistema.IDReserva = reserva.IDReserva.ToString();
+                logSistema.Status = reserva.Status;
+                logSistema.DataLog = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone);
+                 
+                string retorno = "";
+
+                if (string.IsNullOrEmpty(reserva.SnNum) && reserva.Status.ToUpper() != "CHECKED_OUT" && reserva.Status.ToUpper() != "CANCELED")
+                    retorno = FuncoesFNRH.Inserir(reserva);
+                else if (!string.IsNullOrEmpty(reserva.SnNum))
+                    retorno = FuncoesFNRH.Atualizar(reserva);
+
+                logSistema.Log = retorno + " ";
+                AppState.ListLogSistemaAddReserva.Add(logSistema);
+                return "OK " + changed.reservationId;
+            }
+            catch (Exception e)
+            {
+                AppState.MyMessageReservation = e.Message + "\n";
                 return e.Message;
             }
 

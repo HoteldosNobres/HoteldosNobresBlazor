@@ -51,5 +51,30 @@ namespace HoteldosNobresBlazor.Classes
 
     }
 
+    public partial class Accommodation_changed
+    {
+        [JsonProperty("version")]
+        public string version { get; set; }
+
+        [JsonProperty("timestamp")]
+        public string timestamp { get; set; }
+
+        [JsonProperty("event")]
+        public string evento { get; set; }
+
+        [JsonProperty("propertyId")]
+        public string propertyId { get; set; }
+
+        [JsonProperty("guestID")]
+        public string guestID { get; set; }
+
+        [JsonProperty("reservationId")]
+        public string reservationId { get; set; }
+
+        [JsonProperty("roomID")]
+        public string roomID { get; set; }
+
+
+    }
 
 }
