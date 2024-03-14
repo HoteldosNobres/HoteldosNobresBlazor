@@ -30,7 +30,7 @@ else
             @foreach (Reserva reserva1 in listReserva)
             { 
                 <tr>
-                    <td><a href='@reserva1.LinkReserva' +> @reserva1.IDReserva</a></td>
+                    <td><a href='@reserva1.LinkReserva' target='_blank'> @reserva1.IDReserva</a></td>
                     <td>@reserva1.DataCheckIn.ToString("dd/MM/yyyy")</td>
                     <td>@reserva1.NomeHospede.Substring(0,10)</td>
                     <td>@reserva1.Origem</td>
