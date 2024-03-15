@@ -166,6 +166,63 @@ namespace HoteldosNobresBlazor.Funcoes
 
         }
 
+        public string CacheDetails_changed(string json)
+        {
+            try
+            {
+                TimeZoneInfo brazilTimeZone = TimeZoneInfo.FindSystemTimeZoneById("E. South America Standard Time");
+                Details_changed changed = FunctionAPICLOUDBEDs.LerRespostaComoObjetoAsync<Details_changed>(json).Result;
+
+                List<Reserva> listReserva = FunctionAPICLOUDBEDs.getReservationsAsync(null).Result;
+                Reserva reserva = listReserva.Where(x => x.GuestID == changed.guestID).FirstOrDefault(); 
+                reserva = FunctionAPICLOUDBEDs.getReservationAsync(reserva).Result;
+
+                LogSistema logSistema = new LogSistema();
+                logSistema.IDReserva = reserva.IDReserva.ToString();
+                logSistema.Status = reserva.Status;
+                logSistema.DataLog = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone);
+
+                string retorno = "";
+
+                if (string.IsNullOrEmpty(reserva.SnNum) && reserva.Status.ToUpper() != "CHECKED_OUT" && reserva.Status.ToUpper() != "CANCELED")
+                    retorno = FuncoesFNRH.Inserir(reserva);
+                else if (!string.IsNullOrEmpty(reserva.SnNum))
+                    retorno = FuncoesFNRH.Atualizar(reserva);
+
+                if (retorno.Contains("SNRHos-MS0001") || retorno.Contains("SNRHos-ME0026"))
+                {
+                    retorno = retorno.Contains("SNRHos-ME0026") ? "CPF inválido" : retorno;
+                    if (reserva.Notas == null)
+                        reserva.Notas = new List<Nota>();
+                    if (reserva.Notas.Where(x => x.Texto == retorno).Count() == 0)
+                    {
+                        reserva.Notas.Add(new Nota("", retorno));
+                        if (retorno.Contains("SNRHos-MS0001"))
+                        {
+                            reserva.SnNum = retorno.Replace("SNRHos-MS0001(", "").Replace(")", "");
+                            if (reserva.Notas.Where(x => x.Texto == "CPF inválido").Count() > 0)
+                            {
+                                retorno += FunctionAPICLOUDBEDs.deleteReservationNote(reserva, "CPF inválido").Result;
+                            }
+                        }
+                        reserva = FunctionAPICLOUDBEDs.postReservationNote(reserva, retorno).Result;
+                    }
+
+
+                }
+
+                logSistema.Log = retorno + " ";
+                AppState.ListLogSistemaAddReserva.Add(logSistema);
+                return "OK " + changed.reservationId;
+            }
+            catch (Exception e)
+            {
+                AppState.MyMessageReservation = e.Message + "\n";
+                return e.Message;
+            }
+
+        }
+
         public void CacheExecutanado()
         {
             Thread thread = new Thread(NovoMetodo);
