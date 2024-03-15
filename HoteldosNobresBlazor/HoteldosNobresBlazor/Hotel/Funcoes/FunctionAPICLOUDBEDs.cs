@@ -1,4 +1,5 @@
 ﻿using HoteldosNobresBlazor.Classes;
+using HoteldosNobresBlazor.Components.Pages;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using static HoteldosNobresBlazor.Components.Pages.CallApi;
@@ -8,6 +9,57 @@ namespace HoteldosNobresBlazor.Funcoes
     public class FunctionAPICLOUDBEDs
     { 
         static string urlapi = @"https://api.cloudbeds.com/api/v1.2";
+
+        #region RatePlan
+        public static async Task<Rate> getRatesAsync(string roomTypeID, DateTime DataCheckIn, DateTime DataCheckOut)
+        {
+            try
+            {
+                string url = urlapi + "/getRate?roomTypeID="+ roomTypeID + "&startDate="+ DataCheckIn.ToString("yyyy-MM-dd") + "&endDate=2024-03-16" +  DataCheckOut.ToString("yyyy-MM-dd");
+                HttpResponseMessage response = GetApi(url).Result;
+
+                Rate rate = await LerRespostaComoObjetoAsync<Rate>(response);
+
+                return rate;
+            }
+            catch (FileNotFoundException e)
+            {
+                Console.WriteLine(e.Message);
+                return null;
+            }
+
+        }
+
+        public static async Task<String> postRateAsync(string rateID, DateTime DataCheckIn, DateTime DataCheckOut, string valor)
+        {
+            try
+            {
+                string url = urlapi + @"/putRate"; 
+
+                var client = new HttpClient();
+                var request = new HttpRequestMessage(HttpMethod.Post, url);
+                request.Headers.Add("Authorization", "Bearer " + KEYs.TOKEN_CLOUDBEDS);
+                var content = new MultipartFormDataContent();
+                content.Add(new StringContent(rateID), "rates[0][rateID]");
+                content.Add(new StringContent(DataCheckIn.ToString("yyyy-MM-dd")), "rates[0][interval][0][startDate]");
+                content.Add(new StringContent(DataCheckIn.ToString("yyyy-MM-dd")), "rates[0][interval][0][endDate]");
+                content.Add(new StringContent(valor), "rates[0][interval][0][rate]");
+                request.Content = content;
+                var response = await client.SendAsync(request);
+
+                RespostPayment responsepayment = await LerRespostaComoObjetoAsync<RespostPayment>(response);
+
+                return responsepayment.Message.ToString();
+            }
+            catch (FileNotFoundException e)
+            {
+                Console.WriteLine(e.Message);
+                return null;
+            }
+
+        }
+
+        #endregion RatePlan
 
         #region Payment
         public static async Task<Payment> getPaymentsAsync(Reserva reserva)

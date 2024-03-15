@@ -26,7 +26,7 @@ namespace HoteldosNobresBlazor.Classes
 
         public List<Nota>? Notas { get; set; }
 
-
+        public List<Quarto>? ListaQuartos { get; set; }
 
         /// Hospede
         public string? GuestID { get; set; }
@@ -179,9 +179,7 @@ namespace HoteldosNobresBlazor.Classes
             GuestID = guest.GuestId.ToString();    
             if (!string.IsNullOrEmpty(guest.GuestBirthdate.ToString()))
                 DataNascimento = DateTime.Parse(guest.GuestBirthdate.ToString());
-
-
-
+             
             if (guest.CustomFields.Count() > 0)
             {
                 foreach (var item in guest.CustomFields)
@@ -217,28 +215,33 @@ namespace HoteldosNobresBlazor.Classes
             Cidade = guest.GuestCity;
             Estado = guest.GuestState;
 
-            //if (!string.IsNullOrEmpty(CEP) && CEP.Length == 8)
-            //{
-            //    try
-            //    {
-            //        Cep cep = CEP;
-            //        var viaCepService = ViaCepService.Default();
-            //        var endereco = viaCepService.ObterEndereco(cep);
-            //        Cidade = endereco.Localidade;
-            //        Estado = endereco.UF;
-            //        CodigoIBGE = endereco.IBGE;
-            //        Contry = "BRASIL";
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        Console.WriteLine(" Erro ao buscar CEP: " + CEP + ex.Message);
-            //    }
+            if (!string.IsNullOrEmpty(CEP) && CEP.Length == 8)
+            {
+                try
+                {
+                    Cep cep = CEP;
+                    var viaCepService = ViaCepService.Default();
+                    var endereco = viaCepService.ObterEndereco(cep);
+                    Cidade = endereco.Localidade;
+                    Estado = endereco.UF;
+                    CodigoIBGE = endereco.IBGE;
+                    Contry = "BRASIL";
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(" Erro ao buscar CEP: " + CEP + ex.Message);
+                }
+            }
 
-            //}
-
-            // NumeroCartao = reservation.Data.NumeroCartao;
-            // CVC = reservation.Data.CVC;
-            //DataValidade = reservation.Data.DataValidade;
+            ListaQuartos = new List<Quarto>();
+            foreach (var item in reservation.Data.Assigned)
+            { 
+                Quarto quarto = new Quarto();
+                quarto.ID = item.RoomTypeId.ToString();
+                quarto.Descricao = item.RoomTypeName;
+                ListaQuartos.Add(quarto);
+            }
+             
         }
 
         public void Converte(ReservationsData reservation)

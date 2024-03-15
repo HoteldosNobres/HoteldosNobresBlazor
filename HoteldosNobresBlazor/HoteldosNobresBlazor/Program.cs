@@ -68,7 +68,7 @@ app.MapPost("/addreserva", async (HttpContext httpContext) =>
         string body = await reader.ReadToEndAsync();
 
         CacheHotel cache2 = new CacheHotel(sCOPP);  
-        await httpContext.Response.WriteAsync(cache2.CacheNovaReserva(body)); 
+        await httpContext.Response.WriteAsync(cache2.CacheCreateReservation(body)); 
           
     }
     catch (Exception ex)

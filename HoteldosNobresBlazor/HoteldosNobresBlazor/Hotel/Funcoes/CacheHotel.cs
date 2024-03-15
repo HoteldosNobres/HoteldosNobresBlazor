@@ -23,7 +23,7 @@ namespace HoteldosNobresBlazor.Funcoes
             AppState = appState;
         }
 
-        public string CacheNovaReserva(string json)
+        public string CacheCreateReservation(string json)
         {
             try
             {
@@ -38,6 +38,7 @@ namespace HoteldosNobresBlazor.Funcoes
                 logSistema.IDReserva = novareserva.IDReserva.ToString();
                 logSistema.Status = novareserva.Status;
                 logSistema.DataLog = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone);
+                logSistema.Log = "CreateReservation-";
 
                 if (!novareserva.Equals(null) && novareserva.Origem.Contains("Airbnb"))
                 {
@@ -57,6 +58,22 @@ namespace HoteldosNobresBlazor.Funcoes
                     logSistema.Log += FuncoesFNRH.Inserir(novareserva);
                 else if (!string.IsNullOrEmpty(novareserva.SnNum))
                     logSistema.Log += FuncoesFNRH.Atualizar(novareserva);
+
+                novareserva = FunctionAPICLOUDBEDs.getReservationAsync(novareserva).Result;
+                if(novareserva.ListaQuartos.Count() > 0)
+                {
+                    foreach (Quarto quarto in novareserva.ListaQuartos)
+                    {
+                        Rate rate = FunctionAPICLOUDBEDs.getRatesAsync(quarto.ID.ToString(), novareserva.DataCheckIn, novareserva.DataCheckOut).Result;
+                        if (rate.Success)
+                        { 
+                            logSistema.Log += "UpdateRate: " + FunctionAPICLOUDBEDs.postRateAsync(rate.Data.RateId, novareserva.DataCheckIn, novareserva.DataCheckOut, (rate.Data.RoomRate +10).ToString() ).Result + " \n";
+
+                        }
+                    }
+                   
+
+                }
 
                 AppState.ListLogSistemaAddReserva.Add(logSistema);
                 return "OK " + create.reservationId;
@@ -84,6 +101,7 @@ namespace HoteldosNobresBlazor.Funcoes
                 logSistema.IDReserva = reserva.IDReserva.ToString();
                 logSistema.Status = reserva.Status;
                 logSistema.DataLog = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone);
+                logSistema.Log = "ChangedReservation-";
 
                 string retorno = "";
                 DateTime brazilTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone);
@@ -146,7 +164,8 @@ namespace HoteldosNobresBlazor.Funcoes
                 logSistema.IDReserva = reserva.IDReserva.ToString();
                 logSistema.Status = reserva.Status;
                 logSistema.DataLog = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone);
-                 
+                logSistema.Log = "Accommodation_changed-";
+
                 string retorno = "";
 
                 if (string.IsNullOrEmpty(reserva.SnNum) && reserva.Status.ToUpper() != "CHECKED_OUT" && reserva.Status.ToUpper() != "CANCELED")
@@ -181,6 +200,7 @@ namespace HoteldosNobresBlazor.Funcoes
                 logSistema.IDReserva = reserva.IDReserva.ToString();
                 logSistema.Status = reserva.Status;
                 logSistema.DataLog = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone);
+                logSistema.Log = "Details_changed-";
 
                 string retorno = "";
 
