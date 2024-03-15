@@ -166,6 +166,41 @@ namespace HoteldosNobresBlazor.Funcoes
 
         }
 
+        public string CacheDetails_changed(string json)
+        {
+            try
+            {
+                TimeZoneInfo brazilTimeZone = TimeZoneInfo.FindSystemTimeZoneById("E. South America Standard Time");
+                Details_changed changed = FunctionAPICLOUDBEDs.LerRespostaComoObjetoAsync<Details_changed>(json).Result;
+
+                List<Reserva> listReserva = FunctionAPICLOUDBEDs.getReservationsAsync(null).Result;
+                Reserva reserva = listReserva.Where(x => x.GuestID == changed.guestID).FirstOrDefault(); 
+                reserva = FunctionAPICLOUDBEDs.getReservationAsync(reserva).Result;
+
+                LogSistema logSistema = new LogSistema();
+                logSistema.IDReserva = reserva.IDReserva.ToString();
+                logSistema.Status = reserva.Status;
+                logSistema.DataLog = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone);
+
+                string retorno = "";
+
+                if (string.IsNullOrEmpty(reserva.SnNum) && reserva.Status.ToUpper() != "CHECKED_OUT" && reserva.Status.ToUpper() != "CANCELED")
+                    retorno = FuncoesFNRH.Inserir(reserva);
+                else if (!string.IsNullOrEmpty(reserva.SnNum))
+                    retorno = FuncoesFNRH.Atualizar(reserva);
+
+                logSistema.Log = retorno + " ";
+                AppState.ListLogSistemaAddReserva.Add(logSistema);
+                return "OK " + changed.reservationId;
+            }
+            catch (Exception e)
+            {
+                AppState.MyMessageReservation = e.Message + "\n";
+                return e.Message;
+            }
+
+        }
+
         public void CacheExecutanado()
         {
             Thread thread = new Thread(NovoMetodo);
