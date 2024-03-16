@@ -34,10 +34,10 @@ namespace HoteldosNobresBlazor.Funcoes
                 novareserva = await FunctionAPICLOUDBEDs.getReservationAsync(novareserva);
 
                 LogSistema logSistema = new LogSistema();
+                logSistema.Log = "CreateReservation-";
                 logSistema.IDReserva = novareserva.IDReserva.ToString();
                 logSistema.Status = novareserva.Status;
-                logSistema.DataLog = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone);
-                logSistema.Log = "CreateReservation-";
+                logSistema.DataLog = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone); 
                 novareserva = await FunctionAPICLOUDBEDs.getReservationAsync(novareserva);
 
                 if (!novareserva.Equals(null) && novareserva.Origem.Contains("Airbnb"))
@@ -124,10 +124,10 @@ namespace HoteldosNobresBlazor.Funcoes
                 reserva = FunctionAPICLOUDBEDs.getReservationAsync(reserva).Result;
 
                 LogSistema logSistema = new LogSistema();
+                logSistema.Log = "ChangedReservation-";
                 logSistema.IDReserva = reserva.IDReserva.ToString();
                 logSistema.Status = reserva.Status;
                 logSistema.DataLog = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone);
-                logSistema.Log = "ChangedReservation-";
 
                 string retorno = "";
                 DateTime brazilTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone);
@@ -199,7 +199,7 @@ namespace HoteldosNobresBlazor.Funcoes
                 else if (!string.IsNullOrEmpty(reserva.SnNum))
                     retorno = FuncoesFNRH.Atualizar(reserva);
 
-                logSistema.Log = retorno + " ";
+                logSistema.Log += retorno + " ";
                 AppState.ListLogSistemaAddReserva.Add(logSistema);
                 return "OK " + changed.reservationId;
             }
@@ -223,10 +223,10 @@ namespace HoteldosNobresBlazor.Funcoes
                 reserva = FunctionAPICLOUDBEDs.getReservationAsync(reserva).Result;
 
                 LogSistema logSistema = new LogSistema();
+                logSistema.Log = "Details_changed-";
                 logSistema.IDReserva = reserva.IDReserva.ToString();
                 logSistema.Status = reserva.Status;
                 logSistema.DataLog = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone);
-                logSistema.Log = "Details_changed-";
 
                 string retorno = "";
 
@@ -257,7 +257,7 @@ namespace HoteldosNobresBlazor.Funcoes
 
                 }
 
-                logSistema.Log = retorno + " ";
+                logSistema.Log += retorno + " ";
                 AppState.ListLogSistemaAddReserva.Add(logSistema);
                 return "OK " + changed.reservationId;
             }
