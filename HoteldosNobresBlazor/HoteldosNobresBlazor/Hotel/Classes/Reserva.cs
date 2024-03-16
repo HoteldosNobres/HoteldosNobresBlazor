@@ -195,7 +195,7 @@ namespace HoteldosNobresBlazor.Classes
                         }
                         catch (Exception ex)
                         {
-                            Console.WriteLine("Erro ao buscar Data de Nascimento: " + ex.Message);
+                            Console.WriteLine(IDReserva+ "-Erro ao buscar Data de Nascimento: " + ex.Message );
                         }
                     }
 

@@ -16,14 +16,13 @@ namespace HoteldosNobresBlazor.Funcoes
         public CacheHotel()
         {
         }
-
-
+         
         public CacheHotel(AppState appState)
         {
             AppState = appState;
         }
 
-        public string CacheCreateReservation(string json)
+        public async Task<string> CacheCreateReservationAsync(string json)
         {
             try
             {
@@ -32,13 +31,14 @@ namespace HoteldosNobresBlazor.Funcoes
 
                 Reserva novareserva = new Reserva();
                 novareserva.IDReserva = create.reservationId;
-                novareserva = FunctionAPICLOUDBEDs.getReservationAsync(novareserva).Result;
+                novareserva = await FunctionAPICLOUDBEDs.getReservationAsync(novareserva);
 
                 LogSistema logSistema = new LogSistema();
                 logSistema.IDReserva = novareserva.IDReserva.ToString();
                 logSistema.Status = novareserva.Status;
                 logSistema.DataLog = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone);
                 logSistema.Log = "CreateReservation-";
+                novareserva = await FunctionAPICLOUDBEDs.getReservationAsync(novareserva);
 
                 if (!novareserva.Equals(null) && novareserva.Origem.Contains("Airbnb"))
                 {
@@ -53,11 +53,37 @@ namespace HoteldosNobresBlazor.Funcoes
                     }
 
                 }
-                 
+
+                novareserva = await FunctionAPICLOUDBEDs.getReservationAsync(novareserva);
+
                 if (string.IsNullOrEmpty(novareserva.SnNum) && novareserva.Status.ToUpper() != "CHECKED_OUT" && novareserva.Status.ToUpper() != "CANCELED")
                     logSistema.Log += FuncoesFNRH.Inserir(novareserva);
                 else if (!string.IsNullOrEmpty(novareserva.SnNum))
                     logSistema.Log += FuncoesFNRH.Atualizar(novareserva);
+
+                string retorno = "";
+                if (logSistema.Log.Contains("SNRHos-MS0001") || logSistema.Log.Contains("SNRHos-ME0026"))
+                {
+                    logSistema.Log = logSistema.Log.ToString().Contains("SNRHos-ME0026") ? "CPF inválido" : retorno;
+                    if (novareserva.Notas == null)
+                        novareserva.Notas = new List<Nota>();
+                    if (novareserva.Notas.Where(x => x.Texto == retorno).Count() == 0)
+                    {
+                        novareserva.Notas.Add(new Nota("", retorno));
+                        if (retorno.Contains("SNRHos-MS0001"))
+                        {
+                            novareserva.SnNum = retorno.Replace("SNRHos-MS0001(", "").Replace(")", "");
+                            if (novareserva.Notas.Where(x => x.Texto == "CPF inválido").Count() > 0)
+                            {
+                                retorno += FunctionAPICLOUDBEDs.deleteReservationNote(novareserva, "CPF inválido").Result;
+                            }
+                        }
+                        novareserva = FunctionAPICLOUDBEDs.postReservationNote(novareserva, retorno).Result;
+                    }
+                     
+                }
+                logSistema.Log += retorno + " ";
+
 
                 novareserva = FunctionAPICLOUDBEDs.getReservationAsync(novareserva).Result;
                 if(novareserva.ListaQuartos.Count() > 0)
