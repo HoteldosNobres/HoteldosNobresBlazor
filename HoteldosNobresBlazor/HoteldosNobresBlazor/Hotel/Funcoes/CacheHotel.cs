@@ -131,7 +131,6 @@ namespace HoteldosNobresBlazor.Funcoes
 
                 string retorno = "";
                 DateTime brazilTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone);
-                logSistema.Log += "Começou a Rodar" + " Data: " + brazilTime.ToString("yyyy-MM-dd HH:mm:ss") + "\n";
 
                 if (!string.IsNullOrEmpty(reserva.SnNum))
                 {
@@ -143,7 +142,7 @@ namespace HoteldosNobresBlazor.Funcoes
                     && !string.IsNullOrEmpty(reservationNoteID))
                     {
                         // PEGAR HORARIO DO CHCKin reserva = FunctionAPICLOUDBEDs.getReservationAsync(reserva).Result;
-                        reserva.DataCheckInRealizado = DateTime.Parse(brazilTime.ToString("yyyy-MM-dd H:mm:ss"));
+                        reserva.DataCheckInRealizado = DateTime.Parse(TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone).ToString("yyyy-MM-dd HH:mm:ss"));
                         retorno = FuncoesFNRH.CheckIn(reserva);
 
                         if (!string.IsNullOrEmpty(reservationNoteID))
@@ -154,7 +153,7 @@ namespace HoteldosNobresBlazor.Funcoes
                     if ((reserva.Status.ToUpper() == "CHECK OUT FEITO" || reserva.Status.ToUpper() == "CHECKED_OUT")
                          && !string.IsNullOrEmpty(reserva.SnNum))
                     {
-                        reserva.DataCheckOutRealizado = DateTime.Parse(brazilTime.ToString("yyyy-MM-dd H:mm:ss"));
+                        reserva.DataCheckOutRealizado = DateTime.Parse(TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone).ToString("yyyy-MM-dd HH:mm:ss"));
                         retorno = FuncoesFNRH.CheckOut(reserva);
                     }
 
@@ -163,6 +162,9 @@ namespace HoteldosNobresBlazor.Funcoes
                         retorno = retorno + FunctionAPICLOUDBEDs.deleteReservationNote(reserva, "SNRHos-MS0001").Result;
                     }
                 }
+
+
+                logSistema.Log += retorno + "\n";
 
                 AppState.ListLogSistemaAddReserva.Add(logSistema);
                 return "OK " + changed.reservationId;
@@ -379,7 +381,7 @@ namespace HoteldosNobresBlazor.Funcoes
                             && !string.IsNullOrEmpty(reservationNoteID))
                             {
                                 // PEGAR HORARIO DO CHCKin reserva = FunctionAPICLOUDBEDs.getReservationAsync(reserva).Result;
-                                reserva.DataCheckInRealizado = DateTime.Parse(brazilTime.ToString("yyyy-MM-dd H:mm:ss"));
+                                reserva.DataCheckInRealizado = DateTime.Parse(TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone).ToString("yyyy-MM-dd HH:mm:ss"));
                                 retorno = FuncoesFNRH.CheckIn(reserva);
 
                                 if (!string.IsNullOrEmpty(reservationNoteID))
@@ -390,7 +392,7 @@ namespace HoteldosNobresBlazor.Funcoes
                             if ((reserva.Status.ToUpper() == "CHECK OUT FEITO" || reserva.Status.ToUpper() == "CHECKED_OUT")
                                  && !string.IsNullOrEmpty(reserva.SnNum))
                             {
-                                reserva.DataCheckOutRealizado = DateTime.Parse(brazilTime.ToString("yyyy-MM-dd H:mm:ss"));
+                                reserva.DataCheckOutRealizado = DateTime.Parse(TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone).ToString("yyyy-MM-dd HH:mm:ss"));
                                 retorno = FuncoesFNRH.CheckOut(reserva);
                             }
 

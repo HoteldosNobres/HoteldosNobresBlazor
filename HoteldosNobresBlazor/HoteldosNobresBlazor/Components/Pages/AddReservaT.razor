@@ -5,7 +5,7 @@
 @using Newtonsoft.Json
 @using System.Net
 @inject HttpClient Http
-@inject AppState appState 
+@inject AppState appState
 @using Microsoft.AspNetCore.Antiforgery;
 @attribute [AutoValidateAntiforgeryToken]
 
@@ -19,7 +19,7 @@
     <br />
 }
 
-@if (listLog == null)
+@if (listLog == null || listLog.Count == 0)
 {
     <p><em>Carregando...</em></p>
 }
@@ -39,7 +39,7 @@ else
             @foreach (LogSistema logs in listLog)
             {
                 <tr>
-                    <td>@logs.DataLog.ToString("dd/MM/yyyy hh:MM:ss")</td>
+                    <td>@logs.DataLog.ToString("dd/MM/yyyy HH:mm:ss")</td>
                     <td><a href='@logs.LinkReserva' target='_blank'> @logs.IDReserva</a></td>
                     <td>@logs.Status</td>
                     <td>@logs.Log</td>
@@ -49,7 +49,7 @@ else
         </tbody>
     </table>
 }
- 
+
 
 @code {
     public List<LogSistema>? listLog;
@@ -74,7 +74,8 @@ else
 
             // value1 is myJsonObj[key1]
 
-            /* teste = jsonString */;
+            /* teste = jsonString */
+            ;
             appState.MyMessageReservation += jsonString.ToString();
 
             return null;
@@ -86,5 +87,5 @@ else
 
     }
 
-     
+
 }   
