@@ -17,7 +17,7 @@
 
 .top-row {
     height: 3.5rem;
-    background-color: rgba(0,0,0,0.4);
+    background-color: linear-gradient(180deg, #D2154E 70%, #D2154E 0%);
 }
 
 .navbar-brand {
