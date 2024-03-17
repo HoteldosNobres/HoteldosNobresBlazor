@@ -14,14 +14,13 @@
 
 @code {
     [Parameter]
-    public string id { get; set; }
+    public string ReservationId { get; set; }
 
     string novaReservationId;
-
-
+     
     protected override async Task OnInitializedAsync()
     {
-        novaReservationId = id;
-        appState.MyMessageReservation += id;
+        novaReservationId = ReservationId;
+        appState.MyMessageReservation += ReservationId;
     }
 }

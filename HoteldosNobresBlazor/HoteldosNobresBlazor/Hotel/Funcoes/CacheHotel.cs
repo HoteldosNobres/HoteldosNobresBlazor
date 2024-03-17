@@ -64,7 +64,7 @@ namespace HoteldosNobresBlazor.Funcoes
                 string retorno = "";
                 if (logSistema.Log.Contains("SNRHos-MS0001") || logSistema.Log.Contains("SNRHos-ME0026"))
                 {
-                    logSistema.Log = logSistema.Log.ToString().Contains("SNRHos-ME0026") ? "CPF inválido" : retorno;
+                    logSistema.Log += logSistema.Log.ToString().Contains("SNRHos-ME0026") ? "CPF inválido" : retorno;
                     if (novareserva.Notas == null)
                         novareserva.Notas = new List<Nota>();
                     if (novareserva.Notas.Where(x => x.Texto == retorno).Count() == 0)

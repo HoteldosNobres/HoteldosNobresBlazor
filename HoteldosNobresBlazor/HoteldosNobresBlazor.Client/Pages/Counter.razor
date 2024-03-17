@@ -1,5 +1,7 @@
 ﻿@page "/counter"
 @rendermode InteractiveAuto
+@inject IJSRuntime JSRuntime
+
 
 <PageTitle>Counter</PageTitle>
 
@@ -7,13 +9,34 @@
 
 <p role="status">Current count: @currentCount</p>
 
+<p role="status">Current count: @texto2</p>
+
+
 <button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+
+
+<InputText id="reservationId" @bind-Value="texto" />
+
+<button class="btn btn-primary" @onclick="GoToReservation">Click me 2</button>
+
 
 @code {
     private int currentCount = 0;
+    public string texto = "Texto";
+    public string texto2 = "Texto";
 
     private void IncrementCount()
     {
         currentCount++;
+    }
+
+    private void HandleValidSubmit()
+    {
+        Console.WriteLine("OnValidSubmit");
+    }
+
+    private async Task GoToReservation()
+    { 
+        await JSRuntime.InvokeVoidAsync("window.open", "https://hoteldosnobres.azurewebsites.net/reserva/"+texto, "_blank");
     }
 }
