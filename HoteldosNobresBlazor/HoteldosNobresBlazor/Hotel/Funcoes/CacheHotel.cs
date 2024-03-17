@@ -213,7 +213,7 @@ namespace HoteldosNobresBlazor.Funcoes
 
         }
 
-        public string CacheDetails_changed(string json)
+        public async Task<string> CacheDetails_changed(string json)
         {
             try
             {
@@ -221,8 +221,8 @@ namespace HoteldosNobresBlazor.Funcoes
                 Details_changed changed = FunctionAPICLOUDBEDs.LerRespostaComoObjetoAsync<Details_changed>(json).Result;
 
                 List<Reserva> listReserva = FunctionAPICLOUDBEDs.getReservationsAsync(null).Result;
-                Reserva reserva = listReserva.Where(x => x.GuestID == changed.guestID).FirstOrDefault(); 
-                reserva = FunctionAPICLOUDBEDs.getReservationAsync(reserva).Result;
+                Reserva reserva = listReserva.Where(x => x.GuestID == changed.guestID).FirstOrDefault();
+                reserva = await FunctionAPICLOUDBEDs.getReservationAsync(reserva);
 
                 LogSistema logSistema = new LogSistema();
                 logSistema.Log = "Details_changed-";
@@ -231,6 +231,7 @@ namespace HoteldosNobresBlazor.Funcoes
                 logSistema.DataLog = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone);
 
                 string retorno = "";
+                reserva = await FunctionAPICLOUDBEDs.getReservationAsync(reserva);
 
                 if (string.IsNullOrEmpty(reserva.SnNum) && reserva.Status.ToUpper() != "CHECKED_OUT" && reserva.Status.ToUpper() != "CANCELED")
                     retorno = FuncoesFNRH.Inserir(reserva);

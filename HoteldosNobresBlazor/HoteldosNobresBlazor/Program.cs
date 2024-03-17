@@ -122,7 +122,7 @@ app.MapPost("/details_changed", async (HttpContext httpContext) =>
         string body = await reader.ReadToEndAsync();
 
         CacheHotel cache2 = new CacheHotel(sCOPP);
-        await httpContext.Response.WriteAsync(cache2.CacheDetails_changed(body));
+        await httpContext.Response.WriteAsync(cache2.CacheDetails_changed(body).Result);
 
     }
     catch (Exception ex)
