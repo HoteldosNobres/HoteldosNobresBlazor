@@ -228,6 +228,11 @@ namespace HoteldosNobresBlazor.Funcoes
                 logSistema.Log = "Details_changed-";
                 logSistema.IDReserva = reserva.IDReserva.ToString();
                 logSistema.Status = reserva.Status;
+
+                Random random = new Random();
+                int numeroSorteado = random.Next(10, 50); // Sorteia um número entre 10 e 50
+                Thread.Sleep(numeroSorteado * 100);
+
                 logSistema.DataLog = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone);
 
                 string retorno = "";
@@ -340,11 +345,10 @@ namespace HoteldosNobresBlazor.Funcoes
                         logSistema.IDReserva = reserva1.IDReserva.ToString();
                         logSistema.Status = reserva1.Status;
                         logSistema.DataLog = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone);
-
+                         
                         Reserva reserva = FunctionAPICLOUDBEDs.getReservationAsync(reserva1).Result;
 
                         string retorno = "";
-
                         if (string.IsNullOrEmpty(reserva.SnNum) && reserva.Status.ToUpper() != "CHECKED_OUT" && reserva.Status.ToUpper() != "CANCELED")
                             retorno = FuncoesFNRH.Inserir(reserva);
                         else if (!string.IsNullOrEmpty(reserva.SnNum))
