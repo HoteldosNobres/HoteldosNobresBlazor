@@ -15,6 +15,10 @@
     color: white;
 }
 
+.fa-brands {
+    color: white;
+}
+
 .navbar-toggler:checked {
     background-color: rgba(255, 255, 255, 0.5);
 }
@@ -126,19 +130,17 @@
 
 
 #footer { 
-    background-color: #333;  
-    bottom: auto;
-    left: auto; 
+    background-color: #000000;   
     text-align: center; 
     color: white;
 }
 
   #footer .icons {
-        margin: 0 0 1em 0;
+        margin: 0 0 0 0;
     }
 
   #footer .copyright {
-        margin: 0 0 1em 0;
+        margin: 0 0 0 0;
     }
 
   #footer .copyright li {
@@ -151,6 +153,6 @@
 
  @media screen and (max-width: 641px) {
     #footer {
-      visibility: no
+        visibility: collapse;
     }
 }
