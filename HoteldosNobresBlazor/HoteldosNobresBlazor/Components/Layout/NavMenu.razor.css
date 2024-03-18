@@ -123,3 +123,34 @@
         overflow-y: auto;
     }
 }
+
+
+#footer { 
+    background-color: #333;  
+    bottom: auto;
+    left: auto; 
+    text-align: center; 
+    color: white;
+}
+
+  #footer .icons {
+        margin: 0 0 1em 0;
+    }
+
+  #footer .copyright {
+        margin: 0 0 1em 0;
+    }
+
+  #footer .copyright li {
+            border-left-width: 1px;
+            display: inline-block;
+            line-height: 1em;
+            margin-left: 0.75em;
+            padding-left: 0.75em;
+        }
+
+ @media screen and (max-width: 641px) {
+    #footer {
+      visibility: no
+    }
+}
