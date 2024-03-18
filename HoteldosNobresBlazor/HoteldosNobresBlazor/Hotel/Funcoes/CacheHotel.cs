@@ -42,16 +42,7 @@ namespace HoteldosNobresBlazor.Funcoes
 
                 if (!novareserva.Equals(null) && novareserva.Origem.Contains("Airbnb"))
                 {
-                    Payment payment = FunctionAPICLOUDBEDs.getPaymentsAsync(novareserva).Result;
-                    if (payment.Success)
-                    {
-                        if (payment.Data.Count() > 0)
-                            logSistema.Log += "Ja tem Pagamento!" + "\n";
-                        else
-                            logSistema.Log += "Criado: " + FunctionAPICLOUDBEDs.postReservationNote(novareserva).Result + " \n";
-
-                    }
-
+                    logSistema.Log += PagamentoReserva(novareserva); 
                 }
 
                 novareserva = await FunctionAPICLOUDBEDs.getReservationAsync(novareserva);
@@ -441,10 +432,8 @@ namespace HoteldosNobresBlazor.Funcoes
                     AppState.MyMessagePagamento = "Começou a Rodar" + " Data: " + brazilTime.ToString("yyyy-MM-dd HH:mm:ss") + "\n";
 
                     List<Reserva> listReserva = new List<Reserva>();
-
-                    listReserva = FunctionAPICLOUDBEDs.getReservationsAsync(DateTime.Now.ToString("yyyy-MM-dd")).Result;
-                    listReserva = FunctionAPICLOUDBEDs.getReservationsAsync(null, DateTime.Now.ToString("yyyy-MM-dd")).Result;
-                    listReserva.AddRange(FunctionAPICLOUDBEDs.getReservationsAsync(null).Result);
+                     
+                    listReserva = FunctionAPICLOUDBEDs.getReservationsAsync(null).Result;
 
                     foreach (Reserva reserva1 in listReserva)
                     {
@@ -455,15 +444,8 @@ namespace HoteldosNobresBlazor.Funcoes
                             logSistema.Status = reserva1.Status;
                             logSistema.DataLog = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone);
 
-                            Payment payment = FunctionAPICLOUDBEDs.getPaymentsAsync(reserva1).Result;
-                            if (payment.Success)
-                            {
-                                if (payment.Data.Count() > 0)
-                                    logSistema.Log += "Ja tem Pagamento!" + "\n";
-                                else
-                                    logSistema.Log += "Criado: " + FunctionAPICLOUDBEDs.postReservationNote(reserva1).Result + " \n";
+                            logSistema.Log += PagamentoReserva(reserva1);
 
-                            }
                             AppState.ListLogSistemaPagamentoAirbnb.Add(logSistema);
                         }
                     }
@@ -482,6 +464,29 @@ namespace HoteldosNobresBlazor.Funcoes
             }
 
 
+        }
+
+        private static string PagamentoReserva(Reserva reservapagemtento)
+        {
+            try
+            {
+                string retorno = "";
+                Payment payment = FunctionAPICLOUDBEDs.getPaymentsAsync(reservapagemtento).Result;
+                if (payment.Success)
+                {
+                    Reserva reservaairbnb1 = FunctionAPICLOUDBEDs.getReservationAsync(reservapagemtento).Result;
+                    if (reservaairbnb1.Balance == "0")
+                        retorno += "Ja tem Pagamento!" + "\n";
+                    else
+                        retorno += "Criado: " + FunctionAPICLOUDBEDs.postReservationNote(reservaairbnb1).Result + " \n";
+
+                }
+                return retorno;
+            }
+            catch (Exception e)
+            {
+                return e.Message;
+            } 
         }
     }
 }

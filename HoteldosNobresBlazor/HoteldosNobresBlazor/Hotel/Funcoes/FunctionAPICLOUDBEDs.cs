@@ -91,18 +91,23 @@ namespace HoteldosNobresBlazor.Funcoes
                 var client = new HttpClient();
                 var request = new HttpRequestMessage(HttpMethod.Post, url);
                 request.Headers.Add("Authorization", "Bearer " + KEYs.TOKEN_CLOUDBEDS);
-                var content = new MultipartFormDataContent();
-                content.Add(new StringContent(reservationID), "reservationID");
-                content.Add(new StringContent("airbnb"), "type");
-                content.Add(new StringContent(reserva.Balance), "amount");
-                content.Add(new StringContent("airbnb"), "cardType");
-                content.Add(new StringContent("AirBnB Prepaid Card"), "description"); 
+                 
+                var collection = new List<KeyValuePair<string, string>>();
+                collection.Add(new("reservationID", reservationID));
+                collection.Add(new("type", "airbnb"));
+                collection.Add(new("amount", reserva.Balance.ToString().Replace(".", "").Replace(",",".")));
+                collection.Add(new("cardType", "airbnb"));
+                collection.Add(new("description", "AirBnB Prepaid Card"));
+                var content = new FormUrlEncodedContent(collection);
                 request.Content = content;
                 var response = await client.SendAsync(request);
-
+                 
                 RespostPayment responsepayment = await LerRespostaComoObjetoAsync<RespostPayment>(response);
 
-                return responsepayment.Message.ToString();
+                if(responsepayment.Message != null)
+                    return responsepayment.Message.ToString();
+                else 
+                    return responsepayment.TransactionId;
             }
             catch (FileNotFoundException e)
             {

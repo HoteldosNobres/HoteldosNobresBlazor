@@ -54,7 +54,7 @@ namespace HoteldosNobresBlazor.Classes
         public long Children { get; set; }
 
         [JsonProperty("balance")]
-        public long Balance { get; set; }
+        public decimal Balance { get; set; }
 
         [JsonProperty("sourceName")]
         public string SourceName { get; set; }
