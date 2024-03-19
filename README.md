@@ -2,4 +2,5 @@
 
 https://integrations.cloudbeds.com/hc/en-us
 
-@Cloudbeds
+@Cloudbeds - https://github.com/Cloudbeds      
+  
