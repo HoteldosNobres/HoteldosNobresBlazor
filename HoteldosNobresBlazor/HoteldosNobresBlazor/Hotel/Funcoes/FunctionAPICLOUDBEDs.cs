@@ -2,6 +2,7 @@
 using HoteldosNobresBlazor.Components.Pages;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Globalization;
 using static HoteldosNobresBlazor.Components.Pages.CallApi;
 
 namespace HoteldosNobresBlazor.Funcoes
@@ -95,7 +96,7 @@ namespace HoteldosNobresBlazor.Funcoes
                 var collection = new List<KeyValuePair<string, string>>();
                 collection.Add(new("reservationID", reservationID));
                 collection.Add(new("type", "airbnb"));
-                collection.Add(new("amount", reserva.Balance.ToString().Replace(".", "").Replace(",",".")));
+                collection.Add(new("amount", reserva.Balance.ToString("N", new CultureInfo("en-US"))));
                 collection.Add(new("cardType", "airbnb"));
                 collection.Add(new("description", "AirBnB Prepaid Card"));
                 var content = new FormUrlEncodedContent(collection);

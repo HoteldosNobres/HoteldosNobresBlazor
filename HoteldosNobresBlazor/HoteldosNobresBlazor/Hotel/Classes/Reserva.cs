@@ -19,7 +19,7 @@ namespace HoteldosNobresBlazor.Classes
         public string? IDReservaAgencia { get; set; }
         public string? FonteReserva { get; set; }
         public string? Valor { get; set; }
-        public string? Balance { get; set; }
+        public decimal Balance { get; set; }
         public string Status { get; set; }
         public string? SnNum { get; set; }
         public string? Snuhnum { get; set; }
@@ -39,6 +39,7 @@ namespace HoteldosNobresBlazor.Classes
         //Contato
         public string? Email { get; set; }
         public string? Numerotelefone { get; set; }
+        public string? NumeroCelular { get; set; }
         public string? Address { get; set; }
         public string? Postalcode { get; set; }
         public string? Contry { get; set; }
@@ -79,6 +80,18 @@ namespace HoteldosNobresBlazor.Classes
                 if (string.IsNullOrEmpty(Numerotelefone))
                     return "37150180";
                 return Numerotelefone.Replace("+", "").Count() > 11 ? Numerotelefone.Replace("+", "").Substring(4, Numerotelefone.Length - 5) : Numerotelefone.Replace("+", "").Substring(2, 9);
+            }
+        }
+
+
+        public string? ProxyCelular
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(Numerotelefone) && string.IsNullOrEmpty(NumeroCelular))
+                    return "+553537150180";
+                    string cellphone =  !string.IsNullOrEmpty(NumeroCelular) ? NumeroCelular.Replace("+", "").Replace(".", "").ToString() : Numerotelefone.Replace("+", "").Replace(".", "").ToString();
+                    return cellphone.Length > 12 ? cellphone : "55" + cellphone;
             }
         }
 
@@ -167,7 +180,7 @@ namespace HoteldosNobresBlazor.Classes
             IDReservaAgencia = reservation.Data.ThirdPartyIdentifier;
             FonteReserva = reservation.Data.Source;
             Valor = reservation.Data.Total.ToString();
-            Balance = reservation.Data.Balance.ToString(); ;
+            Balance = reservation.Data.Balance;
             Status = reservation.Data.Status;
             //SnNum = reservation.Data.Assigned.Length.ToString(); //numero da fnhr
             Snuhnum = reservation.Data.Assigned.Length.ToString();
@@ -205,6 +218,7 @@ namespace HoteldosNobresBlazor.Classes
 
             Genero = guest.GuestGender.Equals("N/A") ? "M" : guest.GuestGender;
             Email = reservation.Data.GuestEmail;
+            NumeroCelular = guest.GuestCellPhone;
             Numerotelefone = string.IsNullOrEmpty(guest.GuestPhone) ? guest.GuestCellPhone : guest.GuestPhone;
             Numerotelefone = !string.IsNullOrEmpty(guest.GuestCellPhone) && string.IsNullOrEmpty(Numerotelefone) ? guest.GuestCellPhone : Numerotelefone;
 
@@ -256,7 +270,7 @@ namespace HoteldosNobresBlazor.Classes
             Status = reservation.Status;
             NomeHospede = reservation.GuestName;
             GuestID = reservation.GuestId.ToString();
-            Balance = reservation.Balance.ToString();
+            Balance = reservation.Balance;
 
         }
 

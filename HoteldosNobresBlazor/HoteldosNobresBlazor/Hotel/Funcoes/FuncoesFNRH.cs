@@ -81,8 +81,7 @@ namespace HoteldosNobresBlazor.Funcoes
             }
 
         }
-
-
+         
         private static string SendSoapRequest(string xmlString)
         {
             try

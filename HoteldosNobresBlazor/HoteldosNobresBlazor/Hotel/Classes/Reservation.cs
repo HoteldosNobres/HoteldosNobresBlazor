@@ -50,10 +50,10 @@ namespace HoteldosNobresBlazor.Classes
         public string Status { get; set; }
 
         [JsonProperty("total")]
-        public long Total { get; set; }
+        public decimal Total { get; set; }
 
         [JsonProperty("balance")]
-        public long Balance { get; set; }
+        public decimal Balance { get; set; }
 
         [JsonProperty("balanceDetailed")]
         public BalanceDetailed BalanceDetailed { get; set; }

@@ -1,9 +1,12 @@
-﻿using HoteldosNobresBlazor.Classes;
+﻿using Google.Apis.Util;
+using HoteldosNobresBlazor.Classes;
 using HoteldosNobresBlazor.Components.Pages;
 using HoteldosNobresBlazor.Services;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Net.NetworkInformation;
 using System.Threading.Channels;
+using System.Xml.Serialization;
 
 namespace HoteldosNobresBlazor.Funcoes
 {
@@ -21,6 +24,62 @@ namespace HoteldosNobresBlazor.Funcoes
         {
             AppState = appState;
         }
+
+        #region Whatsapp 
+
+        public string RecebeMensagem(string json)
+        {
+            try
+            {
+                TimeZoneInfo brazilTimeZone = TimeZoneInfo.FindSystemTimeZoneById("E. South America Standard Time");
+                MensagemWhatsApp mensagem = FunctionAPICLOUDBEDs.LerRespostaComoObjetoAsync<MensagemWhatsApp>(json).Result;
+
+                string from = mensagem.Entry[0].Changes[0].Value.Messages[0].From;
+                string texto = "";
+                if (mensagem.Entry[0].Changes[0].Value.Messages[0].Text != null)
+                    texto = mensagem.Entry[0].Changes[0].Value.Messages[0].Text.Body;
+                else
+                {
+                    string jasonresposta = mensagem.Entry[0].Changes[0].Value.Messages[0].Interactive.NfmReply.ResponseJson; 
+                    Response_Json respostajson =  FunctionAPICLOUDBEDs.LerRespostaComoObjetoAsync<Response_Json>(jasonresposta).Result;
+                    string cpf = respostajson.Datadenascimento;
+                    string datanascimento  = respostajson.Datadenascimento;
+
+                    string hotelrating = respostajson.Hotelrating;
+                    string comment_text = respostajson.Comment_text;
+
+                    if (!string.IsNullOrEmpty(cpf) && !string.IsNullOrEmpty(datanascimento)) 
+                        texto = "CPF: " + cpf + " Data Nascimento: " + datanascimento + " From: " + from;
+                    else
+                        texto = " Nota: " + hotelrating + " de 10 Comentario: " + comment_text + " From: " + from;
+
+                }
+
+                
+
+                if(texto != "Oi")
+                { 
+                    string resultado = FunctionWhatsApp.postMensagem(from, texto).Result;
+                }
+                else
+                {
+                    string resultado = FunctionWhatsApp.postMensageFlowCPF(from).Result;
+                }
+                 
+                return "OK ";
+            }
+            catch (Exception e)
+            {
+                AppState.MyMessageReservation = e.Message + "\n";
+                return e.Message;
+            }
+
+        }
+
+
+        #endregion Whatsapp
+
+        #region CloudBeds 
 
         public async Task<string> CacheCreateReservationAsync(string json)
         {
@@ -92,6 +151,26 @@ namespace HoteldosNobresBlazor.Funcoes
 
                 }
 
+
+                if (logSistema.Log.Contains("SNRHos-MS0001"))
+                {
+                    string mensagem = "Olá, " + novareserva.NomeHospede + "! Seja Bem vindo em nosso Hotel.";
+                    logSistema.Log += FunctionWhatsApp.postMensagem(novareserva.ProxyCelular, mensagem).Result;
+                    logSistema.Log += FunctionWhatsApp.postMensagem(novareserva.ProxyCelular).Result;
+                }else
+                   if (!logSistema.Log.Contains("SNRHos-MS0002"))
+                {
+                    string mensagem = "Encontramos divergência em sua reserva. Entre em contato no link abaixo.";
+                    logSistema.Log += FunctionWhatsApp.postMensagem(novareserva.ProxyCelular, mensagem).Result;
+                    logSistema.Log += FunctionWhatsApp.postMensagem(novareserva.ProxyCelular).Result;
+                }
+
+
+                if(!string.IsNullOrEmpty(novareserva.Celular))
+                {
+                    logSistema.Log += FunctionGoogle.AddPeople(novareserva.NomeHospede, novareserva.Origem, novareserva.Celular, novareserva.Email.ToString());
+                }
+                 
                 AppState.ListLogSistemaAddReserva.Add(logSistema);
                 return "OK " + create.reservationId;
             }
@@ -99,8 +178,7 @@ namespace HoteldosNobresBlazor.Funcoes
             {
                 AppState.MyMessageReservation = e.Message + "\n";
                 return e.Message;
-            }
-
+            } 
         }
 
         public string CacheChangedStatus(string json)
@@ -187,10 +265,10 @@ namespace HoteldosNobresBlazor.Funcoes
 
                 string retorno = "";
 
-                if (string.IsNullOrEmpty(reserva.SnNum) && reserva.Status.ToUpper() != "CHECKED_OUT" && reserva.Status.ToUpper() != "CANCELED")
-                    retorno = FuncoesFNRH.Inserir(reserva);
-                else if (!string.IsNullOrEmpty(reserva.SnNum))
-                    retorno = FuncoesFNRH.Atualizar(reserva);
+                //if (string.IsNullOrEmpty(reserva.SnNum) && reserva.Status.ToUpper() != "CHECKED_OUT" && reserva.Status.ToUpper() != "CANCELED")
+                //    retorno = FuncoesFNRH.Inserir(reserva);
+                //else if (!string.IsNullOrEmpty(reserva.SnNum))
+                //    retorno = FuncoesFNRH.Atualizar(reserva);
 
                 logSistema.Log += retorno + " ";
                 AppState.ListLogSistemaAddReserva.Add(logSistema);
@@ -222,7 +300,7 @@ namespace HoteldosNobresBlazor.Funcoes
 
                 Random random = new Random();
                 int numeroSorteado = random.Next(10, 50); // Sorteia um número entre 10 e 50
-                Thread.Sleep(numeroSorteado * 100);
+                Thread.Sleep(numeroSorteado * 1000);
 
                 logSistema.DataLog = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone);
 
@@ -278,7 +356,12 @@ namespace HoteldosNobresBlazor.Funcoes
 
             Thread thread3 = new Thread(PagamentoMetodo);
             thread3.Start();
+
+            //string teste = FunctionWhatsApp.postMensagem("35984151764").Result;
+             
         }
+         
+        #endregion CloudBeds
 
         static void NovoMetodo()
         {
@@ -475,7 +558,7 @@ namespace HoteldosNobresBlazor.Funcoes
                 if (payment.Success)
                 {
                     Reserva reservaairbnb1 = FunctionAPICLOUDBEDs.getReservationAsync(reservapagemtento).Result;
-                    if (reservaairbnb1.Balance == "0")
+                    if (reservaairbnb1.Balance == 0)
                         retorno += "Ja tem Pagamento!" + "\n";
                     else
                         retorno += "Criado: " + FunctionAPICLOUDBEDs.postReservationNote(reservaairbnb1).Result + " \n";
