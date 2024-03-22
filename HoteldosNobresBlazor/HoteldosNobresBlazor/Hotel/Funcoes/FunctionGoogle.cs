@@ -84,7 +84,7 @@ namespace HoteldosNobresBlazor.Funcoes
 
                 Person createdContact = request.Execute();
 
-                return "";
+                return " Criou google";
                  
             }
             catch (FileNotFoundException e)

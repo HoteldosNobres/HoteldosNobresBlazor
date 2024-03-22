@@ -3,7 +3,7 @@ using Google.Apis.PeopleService.v1.Data;
 using Google.Apis.Services;
 using Google.Apis.PeopleService.v1;
 using Google.Apis.Auth.OAuth2.Flows;
-using Google.Apis.Auth.OAuth2.Responses; 
+using Google.Apis.Auth.OAuth2.Responses;
 
 namespace HoteldosNobresBlazor.Funcoes
 {
@@ -43,7 +43,7 @@ namespace HoteldosNobresBlazor.Funcoes
 
         }
           
-        public static void AddPeople(string nome, string local, string telefone, string email)
+        public static async Task<string> AddPeopleAsync(string nome, string local, string telefone, string email)
         {
             try
             {
@@ -81,12 +81,15 @@ namespace HoteldosNobresBlazor.Funcoes
 
                 var request = service.People.CreateContact(contactToCreate);
 
-                Person createdContact = request.Execute();
+                Person createdContact = await request.ExecuteAsync();
+
+                return "OK";    
                  
             }
             catch (FileNotFoundException e)
             {
                 Console.WriteLine(e.Message);
+                return "ERRO: " + e.Message;    
             }
         }
     }

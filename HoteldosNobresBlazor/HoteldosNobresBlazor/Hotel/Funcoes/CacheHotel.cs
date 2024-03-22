@@ -168,7 +168,7 @@ namespace HoteldosNobresBlazor.Funcoes
 
                 if(!string.IsNullOrEmpty(novareserva.Celular))
                 {
-                    logSistema.Log += FunctionGoogle.AddPeople(novareserva.NomeHospede, novareserva.Origem, novareserva.Celular, novareserva.Email.ToString());
+                    logSistema.Log += FunctionGoogle.AddPeople(novareserva.NomeHospede, novareserva.Origem, novareserva.ProxyCelular, novareserva.Email.ToString());
                 }
                  
                 AppState.ListLogSistemaAddReserva.Add(logSistema);
@@ -520,7 +520,7 @@ namespace HoteldosNobresBlazor.Funcoes
 
                     foreach (Reserva reserva1 in listReserva)
                     {
-                        if (!reserva1.Equals(null) && reserva1.Origem.Contains("Airbnb"))
+                        if (!reserva1.Equals(null) && reserva1.Origem.Contains("Airbnb") && reserva1.Balance > 0)
                         {
                             LogSistema logSistema = new LogSistema();
                             logSistema.IDReserva = reserva1.IDReserva.ToString();
