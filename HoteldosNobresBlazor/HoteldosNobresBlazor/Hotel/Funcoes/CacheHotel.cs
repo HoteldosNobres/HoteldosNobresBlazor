@@ -194,7 +194,7 @@ namespace HoteldosNobresBlazor.Funcoes
 
                 if (!string.IsNullOrEmpty(novareserva.Celular))
                 {
-                    logSistema.Log += FunctionGoogle.AddPeople(novareserva.NomeHospede, novareserva.Origem, novareserva.ProxyCelular, novareserva.Email.ToString());
+                    logSistema.Log += FunctionGoogle.AddPeople(novareserva.NomeHospede, novareserva.Origem, novareserva.CelularDDD + novareserva.Celular, novareserva.Email.ToString());
                 }
 
                 AppState.ListLogSistemaAddReserva.Add(logSistema);  

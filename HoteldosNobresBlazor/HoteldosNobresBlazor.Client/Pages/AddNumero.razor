@@ -1,5 +1,6 @@
 ﻿@page "/Addnumero" 
 @using HoteldosNobresBlazor.Funcoes
+@using System.Threading
 @rendermode InteractiveAuto
 @inject NavigationManager NavigationManager 
 
@@ -9,8 +10,12 @@
  
 <InputText id="NomePhone" @bind-Value="nome" />
 
+<InputText id="OrigemPhone" @bind-Value="origem" /> 
+
 <InputText id="NumeroPhone" @bind-Value="numero" />
 
+<InputText id="emailPhone" @bind-Value="email" />
+ 
 <button class="btn btn-primary" @onclick="GotoAddNumber">Adicionar</button>
 
 <br />
@@ -20,13 +25,31 @@
 @code {
     private int currentCount = 0;
     public string nome = "nome";
+    public string origem = "origem";
     public string numero = "numero";
+    public string email = "email";
     public string resultado = "-x-";
 
-    public void GotoAddNumber()
+
+    public async Task GotoAddNumber()
     {
-        resultado = FunctionGoogle.AddPeopleAsync(nome, " ", numero, "").Result;
-        if(resultado == "OK")
-             NavigationManager.NavigateTo("/counter");
+        // var tarefadeespera = Task.Delay(1000);
+        var tarefadecriar = FunctionGoogle.AddPeopleAsync(nome, origem, numero, email);
+
+        // var tarefa = await Task.WhenAny(tarefadecriar, tarefadeespera);
+        // if (tarefa == tarefadeespera)
+        //     if (resultado == "OK")
+         NavigationManager.NavigateTo("/counter");
     }
+
+    // public void ThreadMethod()
+    // {
+    //     string nomet = nome;
+    //     string origemt = origem;
+    //     string numerot = numero;
+    //     string emailt = email;
+
+       
+    // }
+
 }
