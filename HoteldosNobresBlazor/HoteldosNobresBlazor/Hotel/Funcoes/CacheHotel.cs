@@ -5,6 +5,7 @@ using HoteldosNobresBlazor.Services;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Diagnostics.Eventing.Reader;
 using System.Net.NetworkInformation;
 using System.Threading.Channels;
 using System.Web.Helpers;
@@ -62,18 +63,22 @@ namespace HoteldosNobresBlazor.Funcoes
 
                 }
 
-                if(!string.IsNullOrEmpty(cpf) || !string.IsNullOrEmpty(hotelrating))
+                if(!string.IsNullOrEmpty(cpf))
                 {
-                    resultado += FunctionWhatsApp.postMensagem("553537150180", texto).Result;
+                    resultado += FunctionWhatsApp.postMensagem("5535984151764", texto).Result;
                     resultado += FunctionWhatsApp.postMensagemTemplete(from, "inf_inicial").Result;
                 } 
-                else 
+                else if(!string.IsNullOrEmpty(hotelrating))
+                {
+                    resultado += FunctionWhatsApp.postMensagem("5535984151764", texto).Result; 
+                }
+                else
                     resultado += FunctionWhatsApp.postMensagem(from).Result;
 
                 if(from == "553584151764" && texto == "postMensageFlowCPF")                
                     resultado += FunctionWhatsApp.postMensageFlowCPF(from).Result;
                 else if (from == "553584151764" && texto == "postMensageFlowAvaliacao")
-                    resultado += FunctionWhatsApp.postMensageFlowCPF(from).Result;
+                    resultado += FunctionWhatsApp.postMensageFlowAvaliacao(from).Result;
 
 
                 LogSistema log = new LogSistema() { 
@@ -82,8 +87,7 @@ namespace HoteldosNobresBlazor.Funcoes
                 };
 
                 AppState.ListLogWhatsapp.Add(log);
-
-
+                 
                 return "OK ";
             }
             catch (Exception e)
@@ -344,6 +348,11 @@ namespace HoteldosNobresBlazor.Funcoes
                     if (retorno.Contains("SNRHos-MS0004"))
                     {
                         retorno = retorno + FunctionAPICLOUDBEDs.deleteReservationNote(reserva, "SNRHos-MS0001").Result;
+                         
+                        string mensagem = "Obrigado por reservar conosco!!! Voltem sempre ";
+                        logSistema.Log += FunctionWhatsApp.postMensagem(reserva.ProxyCelular, mensagem).Result;
+                        logSistema.Log += FunctionWhatsApp.postMensageFlowAvaliacao(reserva.ProxyCelular).Result;
+                      
                     }
                 }
 

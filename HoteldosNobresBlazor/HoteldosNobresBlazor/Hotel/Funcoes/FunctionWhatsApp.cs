@@ -21,16 +21,7 @@ namespace HoteldosNobresBlazor.Funcoes
                 var client = new HttpClient();
                 var request = new HttpRequestMessage(HttpMethod.Post, urlapi);
                 request.Headers.Add("Authorization", "Bearer " + KEYs.TOKEN_WHATSAPP); 
-                var content = new StringContent("{\n" +
-                    "    \"messaging_product\": \"whatsapp\",\n  " +
-                    $"  \"to\": \"{numero}\",\n  " +
-                    "  \"type\": \"template\",\n " +
-                    "   \"template\": {\n   " +
-                    "     \"name\": " +
-                    "\"hello_world\",\n    " +
-                    "    \"language\": {\n    " +
-                    "        \"code\": \"pt_BR\"\n   " +
-                    "     }\n    }\n}", null, "application/json");
+                var content = new StringContent("{ \"messaging_product\": \"whatsapp\", \"to\": \""+ numero + "\", \"type\": \"template\", \"template\": { \"name\": \""+ nametemplete + "\", \"language\": { \"code\": \"pt_BR\" } } }", null, "application/json");
                 request.Content = content;
                 var response = await client.SendAsync(request);
                 response.EnsureSuccessStatusCode(); 
