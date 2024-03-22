@@ -129,6 +129,52 @@ namespace HoteldosNobresBlazor.Funcoes
 
         }
 
+        public static async Task<string> postMensagemTempleteNovaReserva(string numero, string reservaID, string origemID, string origem, string mtur)
+        {
+            try
+            {
+
+                var client = new HttpClient();
+                var request = new HttpRequestMessage(HttpMethod.Post, urlapi);
+                request.Headers.Add("Authorization", "Bearer " + KEYs.TOKEN_WHATSAPP);
+                var content = new StringContent("{ \r\n    \"messaging_product\": \"whatsapp\", \r\n" +
+                    "    \"to\": \"" + numero + "\", \r\n" +
+                    "    \"type\": \"template\", \r\n" +
+                    "    \"template\": \r\n    { \r\n" +
+                    "        \"name\": \"novareserva\",\r\n" +
+                    "         \"language\": \r\n " +
+                    "        { \"code\": \"pt_BR\" \r\n" +
+                    "         },\r\n         \"components\":  [{\r\n" +
+                    "            \"type\": \"body\",\r\n" +
+                    "            \"parameters\": [{\r\n " +
+                    "                           \"type\": \"text\",\r\n" +
+                    "                            \"text\": \"" + reservaID + "\"\r\n" +
+                    "                            },\r\n" +
+                    "                            {\r\n " +
+                    "                           \"type\": \"text\",\r\n " +
+                    "                           \"text\": \"" + origemID + "\"\r\n " +
+                    "                           },\r\n " +
+                    "                           {\r\n\" +
+                    "                           \"type\": \"text\",\r\n" +
+                    "                            \"text\": \"" + origem + "\"\r\n" +
+                    "                            }],\r\n " +
+                    "                           {\r\n" +
+                    "                            \"type\": \"text\",\r\n" +
+                    "                            \"text\": \"" + mtur + "\"\r\n" +
+                    "                            }]\r\n                }] \r\n        \r\n    } \r\n}", null, "application/json"); request.Content = content;
+                var response = await client.SendAsync(request);
+                response.EnsureSuccessStatusCode();
+
+                return "";
+            }
+            catch (FileNotFoundException e)
+            {
+                Console.WriteLine(e.Message);
+                return null;
+            }
+
+        }
+
 
         #endregion Messages
 
