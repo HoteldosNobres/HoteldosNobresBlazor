@@ -8,12 +8,12 @@ namespace HoteldosNobresBlazor.Funcoes
 {
     public class FunctionWhatsApp
     { 
-        static string urlapi = @"https://graph.facebook.com/v19.0/266344053226148/messages";
+        static string urlapi = @"https://graph.facebook.com/v19.0/255873487612662/messages";
        
 
         #region  Messages
 
-        public static async Task<Reserva> postMensagemTemplete(Reserva reserva, string note)
+        public static async Task<string> postMensagemTemplete(string numero, string nametemplete)
         {
             try
             {
@@ -23,19 +23,19 @@ namespace HoteldosNobresBlazor.Funcoes
                 request.Headers.Add("Authorization", "Bearer " + KEYs.TOKEN_WHATSAPP); 
                 var content = new StringContent("{\n" +
                     "    \"messaging_product\": \"whatsapp\",\n  " +
-                    "  \"to\": \"553537150180\",\n  " +
+                    $"  \"to\": \"{numero}\",\n  " +
                     "  \"type\": \"template\",\n " +
                     "   \"template\": {\n   " +
                     "     \"name\": " +
                     "\"hello_world\",\n    " +
                     "    \"language\": {\n    " +
-                    "        \"code\": \"en_US\"\n   " +
+                    "        \"code\": \"pt_BR\"\n   " +
                     "     }\n    }\n}", null, "application/json");
                 request.Content = content;
                 var response = await client.SendAsync(request);
                 response.EnsureSuccessStatusCode(); 
                  
-                return reserva;
+                return "";
             }
             catch (FileNotFoundException e)
             {
@@ -79,7 +79,52 @@ namespace HoteldosNobresBlazor.Funcoes
                 var client = new HttpClient();
                 var request = new HttpRequestMessage(HttpMethod.Post, urlapi);
                 request.Headers.Add("Authorization", "Bearer " + KEYs.TOKEN_WHATSAPP);
-                var content = new StringContent("{ \n  \"messaging_product\": \"whatsapp\",\n  \"to\": \"5535984151764\", \n  \"type\": \"INTERACTIVE\", \n  \"interactive\": { \n    \"type\": \"flow\", \n    \"header\": { \n      \"type\": \"text\", \n      \"text\": \"Preeche os dados Faltando\" \n    }, \n    \"body\": { \n      \"text\": \"Falta o CPF e Data de nascimento\" \n    }, \n    \"footer\": { \n      \"text\": \"Enviado pelo sistema.\" \n    }, \n    \"action\": { \n      \"name\": \"flow\", \n      \"parameters\": { \n        \"flow_message_version\": \"3\", \n        \"flow_token\": \"any_string_for_this_example\", \n        \"flow_id\": \"295956126850970\", \n        \"flow_cta\": \"Abrir prrenchimento\", \n        \"flow_action\": \"navigate\", \n        \"flow_action_payload\": { \n          \"screen\": \"SIGN_UP\", \n          \"data\": { \n                    \"type\": \"dynamic_object\" \n                  } \n        } \n      } \n    } \n  } \n}", null, "application/json");
+                var content = new StringContent("{ \n  \"messaging_product\": \"whatsapp\"," +
+                    "\n  \"to\": \"" + numero + "\", \n  \"type\": \"INTERACTIVE\", \n" +
+                    "  \"interactive\": { \n    \"type\": \"flow\", \n    \"header\": { \n" +
+                    "      \"type\": \"text\", \n      \"text\": \"Preeche os dados Faltando\" \n" +
+                    "    }, \n    \"body\": { \n      \"text\": \"Falta o CPF e Data de nascimento\" \n" +
+                    "    }, \n    \"footer\": { \n      \"text\": \"Enviado pelo sistema.\" \n    }, \n  " +
+                    "  \"action\": { \n      \"name\": \"flow\", \n      \"parameters\": { \n   " +
+                    "     \"flow_message_version\": \"3\", \n        \"flow_token\": \"any_string_for_this_example\", \n    " +
+                    "    \"flow_id\": \"7196830407096265\", \n        \"flow_cta\": \"Abrir prenchimento\", \n   " +
+                    "     \"flow_action\": \"navigate\", \n        \"flow_action_payload\": { \n   " +
+                    "       \"screen\": \"SIGN_UP\", \n          \"data\": { \n      " +
+                    "              \"type\": \"dynamic_object\" \n          " +
+                    "        } \n        } \n      } \n    } \n  } \n}", null, "application/json");
+                request.Content = content;
+                var response = await client.SendAsync(request);
+                response.EnsureSuccessStatusCode();
+                Console.WriteLine(await response.Content.ReadAsStringAsync());
+                return "";
+            }
+            catch (FileNotFoundException e)
+            {
+                return e.Message + "\n";
+            }
+
+        }
+
+        public static async Task<string> postMensageFlowAvaliacao(string numero)
+        {
+            try
+            {
+                var client = new HttpClient();
+                var request = new HttpRequestMessage(HttpMethod.Post, urlapi);
+                request.Headers.Add("Authorization", "Bearer " + KEYs.TOKEN_WHATSAPP);
+                var content = new StringContent("{ \n  \"messaging_product\": \"whatsapp\"," +
+                    "\n  \"to\": \"" + numero + "\", \n  \"type\": \"INTERACTIVE\", \n" +
+                    "  \"interactive\": { \n    \"type\": \"flow\", \n    \"header\": { \n" +
+                    "      \"type\": \"text\", \n      \"text\": \"Preencha a avaliacao do Hotel\" \n" +
+                    "    }, \n    \"body\": { \n      \"text\": \"Queremos seu comentario\" \n" +
+                    "    }, \n    \"footer\": { \n      \"text\": \"Enviado pelo sistema.\" \n    }, \n  " +
+                    "  \"action\": { \n      \"name\": \"flow\", \n      \"parameters\": { \n   " +
+                    "     \"flow_message_version\": \"3\", \n        \"flow_token\": \"any_string_for_this_example\", \n    " +
+                    "    \"flow_id\": \"403568018957349\", \n        \"flow_cta\": \"Abrir prenchimento\", \n   " +
+                    "     \"flow_action\": \"navigate\", \n        \"flow_action_payload\": { \n   " +
+                    "       \"screen\": \"FEEDBACK\", \n          \"data\": { \n      " +
+                    "              \"type\": \"dynamic_object\" \n          " +
+                    "        } \n        } \n      } \n    } \n  } \n}", null, "application/json");
                 request.Content = content;
                 var response = await client.SendAsync(request);
                 response.EnsureSuccessStatusCode();
