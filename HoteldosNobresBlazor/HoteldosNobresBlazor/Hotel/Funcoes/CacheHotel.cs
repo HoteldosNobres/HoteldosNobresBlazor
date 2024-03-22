@@ -208,7 +208,8 @@ namespace HoteldosNobresBlazor.Funcoes
                     {
                         string mensagem = "Encontramos divergência em sua reserva. Entre em contato no link abaixo.";
                         logSistema.Log += FunctionWhatsApp.postMensagem(novareserva.ProxyCelular, mensagem).Result;
-                        logSistema.Log += FunctionWhatsApp.postMensageFlowCPF(novareserva.ProxyCelular).Result;
+                    logSistema.Log += FunctionWhatsApp.postMensagemTemplete(novareserva.ProxyCelular, "inf_mtur").Result;
+                    logSistema.Log += FunctionWhatsApp.postMensageFlowCPF(novareserva.ProxyCelular).Result;
                     }
 
 
