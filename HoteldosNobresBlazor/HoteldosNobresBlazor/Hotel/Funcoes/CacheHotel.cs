@@ -437,7 +437,7 @@ namespace HoteldosNobresBlazor.Funcoes
         {
             Thread thread = new Thread(NovoMetodo);
             thread.Start();
-
+             
             Thread thread2 = new Thread(FNRHMetodo);
             thread2.Start();
 

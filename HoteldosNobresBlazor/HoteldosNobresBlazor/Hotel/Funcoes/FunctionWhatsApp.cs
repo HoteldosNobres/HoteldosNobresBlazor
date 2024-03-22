@@ -67,6 +67,42 @@ namespace HoteldosNobresBlazor.Funcoes
         {
             try
             { 
+                //{
+                //                  "messaging_product": "whatsapp",
+                //"to": "5516981000673", 
+                //"type": "INTERACTIVE", 
+                //"interactive": {
+                //                      "type": "flow", 
+                //  "header": {
+                //                          "type": "text", 
+                //    "text": "Preeche os dados Faltando"
+                //  }, 
+                //  "body": {
+                //                          "text": "Falta o CPF e Data de nascimento"
+                //  }, 
+                //  "footer": {
+                //                          "text": "Enviado pelo sistema."
+                //  }, 
+                //  "action": {
+                //                          "name": "flow", 
+                //    "parameters": {
+                //                              "flow_message_version": "3", 
+                //      "flow_token": "any_string_for_this_example", 
+                //      "flow_id": "7196830407096265", 
+                //      "flow_cta": "Abrir prenchimento", 
+                //      "flow_action": "navigate", 
+                //      "flow_action_payload": {
+                //                                  "screen": "SIGN_UP", 
+                //        "data": {
+                //                                      "type": "dynamic_object"
+                //                }
+                //                              }
+                //                          }
+                //                      }
+                //                  }
+                //              }
+
+
                 var client = new HttpClient();
                 var request = new HttpRequestMessage(HttpMethod.Post, urlapi);
                 request.Headers.Add("Authorization", "Bearer " + KEYs.TOKEN_WHATSAPP);
@@ -154,7 +190,7 @@ namespace HoteldosNobresBlazor.Funcoes
                     "                           \"type\": \"text\",\r\n " +
                     "                           \"text\": \"" + origemID + "\"\r\n " +
                     "                           },\r\n " +
-                    "                           {\r\n\" +
+                    "                           { \r\n " + 
                     "                           \"type\": \"text\",\r\n" +
                     "                            \"text\": \"" + origem + "\"\r\n" +
                     "                            }],\r\n " +
