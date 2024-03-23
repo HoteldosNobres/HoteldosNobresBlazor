@@ -1,15 +1,6 @@
-﻿using Google.Apis.Util;
-using HoteldosNobresBlazor.Classes;
-using HoteldosNobresBlazor.Components.Pages;
+﻿using HoteldosNobresBlazor.Classes;
 using HoteldosNobresBlazor.Services;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Newtonsoft.Json;
-using System.Collections.Generic;
-using System.Diagnostics.Eventing.Reader;
-using System.Net.NetworkInformation;
-using System.Threading.Channels;
-using System.Web.Helpers;
-using System.Xml.Serialization;
+using System.Globalization;
 
 namespace HoteldosNobresBlazor.Funcoes
 {
@@ -187,7 +178,9 @@ namespace HoteldosNobresBlazor.Funcoes
                         Rate rate = FunctionAPICLOUDBEDs.getRatesAsync(quarto.ID.ToString(), novareserva.DataCheckIn, novareserva.DataCheckOut).Result;
                         if (rate.Success)
                         {
-                            logSistema.Log += "UpdateRate: " + FunctionAPICLOUDBEDs.postRateAsync(rate.Data.RateId, novareserva.DataCheckIn, novareserva.DataCheckOut, (rate.Data.RoomRate + 10).ToString()).Result + " \n";
+                            decimal valornovo =  (rate.Data.RoomRate * (10/100)) + rate.Data.RoomRate;
+                            string stringvalor = valornovo.ToString("N", new CultureInfo("en-US"));
+                            logSistema.Log += "UpdateRate: " + FunctionAPICLOUDBEDs.postRateAsync(rate.Data.RateId, novareserva.DataCheckIn, novareserva.DataCheckOut, stringvalor).Result + " \n";
 
                         }
                     }

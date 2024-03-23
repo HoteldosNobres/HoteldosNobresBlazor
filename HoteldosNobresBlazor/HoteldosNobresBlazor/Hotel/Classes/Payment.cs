@@ -20,10 +20,10 @@ namespace HoteldosNobresBlazor.Classes
         public bool IsDerived { get; set; }
 
         [JsonProperty("roomRate")]
-        public long RoomRate { get; set; }
+        public decimal RoomRate { get; set; }
 
         [JsonProperty("totalRate")]
-        public long TotalRate { get; set; }
+        public decimal TotalRate { get; set; }
 
         [JsonProperty("roomsAvailable")]
         public long RoomsAvailable { get; set; }
