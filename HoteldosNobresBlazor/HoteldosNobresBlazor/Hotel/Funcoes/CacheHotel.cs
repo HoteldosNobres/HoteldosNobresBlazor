@@ -32,6 +32,7 @@ namespace HoteldosNobresBlazor.Funcoes
                 string from = mensagem.Entry[0].Changes[0].Value.Messages[0].From;
                 string texto = "";
                 string cpf = "";
+                string datadenascimento = "";
                 string hotelrating = "";
                 string resultado = "";
 
@@ -42,13 +43,13 @@ namespace HoteldosNobresBlazor.Funcoes
                     string jasonresposta = mensagem.Entry[0].Changes[0].Value.Messages[0].Interactive.NfmReply.ResponseJson;
                     Response_Json respostajson = FunctionAPICLOUDBEDs.LerRespostaComoObjetoAsync<Response_Json>(jasonresposta).Result;
                     cpf = respostajson.Datadenascimento;
-                    string datanascimento = respostajson.Datadenascimento;
+                    datadenascimento = respostajson.Datadenascimento;
 
                     hotelrating = respostajson.Hotelrating;
                     string comment_text = respostajson.Comment_text;
 
-                    if (!string.IsNullOrEmpty(cpf) && !string.IsNullOrEmpty(datanascimento))
-                        texto = "CPF: " + cpf + " Data Nascimento: " + datanascimento + " From: " + from;
+                    if (!string.IsNullOrEmpty(cpf) && !string.IsNullOrEmpty(datadenascimento))
+                        texto = "CPF: " + cpf + " Data Nascimento: " + datadenascimento + " From: " + from;
                     else
                         texto = " Nota: " + hotelrating + " de 10 Comentario: " + comment_text + " From: " + from;
 
@@ -56,12 +57,23 @@ namespace HoteldosNobresBlazor.Funcoes
 
                 if(!string.IsNullOrEmpty(cpf))
                 {
-                    resultado += FunctionWhatsApp.postMensagem("5535984151764", texto).Result;
+                    resultado += FunctionWhatsApp.postMensagem("5535984151764", texto).Result; 
                     resultado += FunctionWhatsApp.postMensagemTemplete(from, "inf_inicial").Result;
+                    Reserva reserva = AppState.ListReservas.Where(x => x.ProxyCelular == from).FirstOrDefault();
+                    if (reserva != null)
+                    {
+                       reserva = FunctionAPICLOUDBEDs.postReservationNote(reserva, texto).Result;
+                    }
                 } 
                 else if(!string.IsNullOrEmpty(hotelrating))
                 {
                     resultado += FunctionWhatsApp.postMensagem("5535984151764", texto).Result; 
+
+                    Reserva reserva = AppState.ListReservas.Where(x => x.ProxyCelular == from).FirstOrDefault();
+                    if (reserva != null)
+                    {
+                        reserva = FunctionAPICLOUDBEDs.postReservationNote(reserva, texto).Result;
+                    }
                 }
                 else
                     resultado += FunctionWhatsApp.postMensagem(from).Result;
@@ -70,6 +82,9 @@ namespace HoteldosNobresBlazor.Funcoes
                     resultado += FunctionWhatsApp.postMensageFlowCPF(from).Result;
                 else if (from == "553584151764" && texto == "postMensageFlowAvaliacao")
                     resultado += FunctionWhatsApp.postMensageFlowAvaliacao(from).Result;
+
+
+
 
 
                 LogSistema log = new LogSistema() { 

@@ -8,7 +8,7 @@ namespace HoteldosNobresBlazor.Funcoes
 {
     public class FunctionWhatsApp
     { 
-        static string urlapi = @"https://graph.facebook.com/v19.0/255873487612662/messages";
+        static string urlapi = @"https://graph.facebook.com/v19.0/281297981726737/messages";
        
 
         #region  Messages
