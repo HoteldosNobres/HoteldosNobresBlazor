@@ -84,9 +84,8 @@ namespace HoteldosNobresBlazor.Funcoes
                     resultado += FunctionWhatsApp.postMensageFlowAvaliacao(from).Result;
 
 
-
-
-
+                resultado += FunctionWhatsApp.postMensagem("553537150180", "Numero " + from + " Texto:" + texto).Result;
+                 
                 LogSistema log = new LogSistema() { 
                     DataLog = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone),
                     Log = "Numero " + from + " Texto:" + texto
