@@ -1,6 +1,7 @@
 ﻿using HoteldosNobresBlazor.Classes;
 using HoteldosNobresBlazor.Services;
 using System.Globalization;
+using System.Net.NetworkInformation;
 
 namespace HoteldosNobresBlazor.Funcoes
 {
@@ -439,6 +440,9 @@ namespace HoteldosNobresBlazor.Funcoes
 
         public void CacheExecutanado()
         {
+            Thread threadreserva = new Thread(ListaReservaMetodo);
+            threadreserva.Start();
+
             Thread thread = new Thread(NovoMetodo);
             thread.Start();
              
@@ -452,6 +456,23 @@ namespace HoteldosNobresBlazor.Funcoes
         }
 
         #endregion CloudBeds
+        static void ListaReservaMetodo()
+        { 
+            try
+            {
+                List<Reserva> listReserva  = FunctionAPICLOUDBEDs.getReservationsAsync(null).Result;
+                listReserva = FunctionAPICLOUDBEDs.getReservationsAsync(DateTime.Now.ToString("yyyy-MM-dd")).Result;
+                listReserva.AddRange(FunctionAPICLOUDBEDs.getReservationsAsync(null, DateTime.Now.ToString("yyyy-MM-dd")).Result);
+                AppState.ListReservas = listReserva;
+
+                AppState.MyMessage = cache + " Data: " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + " "; 
+            }
+            catch (Exception e)
+            {
+                AppState.MyMessage = e.Message; 
+            } 
+        }
+
 
         static void NovoMetodo()
         {
