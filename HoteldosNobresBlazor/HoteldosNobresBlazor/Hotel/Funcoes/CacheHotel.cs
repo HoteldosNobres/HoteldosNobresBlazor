@@ -192,17 +192,14 @@ namespace HoteldosNobresBlazor.Funcoes
                     {
                         Rate rate = FunctionAPICLOUDBEDs.getRatesAsync(quarto.ID.ToString(), novareserva.DataCheckIn, novareserva.DataCheckOut).Result;
                         if (rate.Success)
-                        {
-                            decimal valornovo =  (rate.Data.RoomRate * (10/100)) + rate.Data.RoomRate;
+                        { 
+                            decimal valornovo =  (rate.Data.RoomRate * 10/100) + rate.Data.RoomRate;
                             string stringvalor = valornovo.ToString("N", new CultureInfo("en-US"));
                             logSistema.Log += "UpdateRate: " + FunctionAPICLOUDBEDs.postRateAsync(rate.Data.RateId, novareserva.DataCheckIn, novareserva.DataCheckOut, stringvalor).Result + " \n";
 
                         }
-                    }
-
-
-                }
-
+                    } 
+                } 
 
                 if (logSistema.Log.Contains("SNRHos-MS0001"))
                 {
@@ -216,8 +213,8 @@ namespace HoteldosNobresBlazor.Funcoes
                     {
                         string mensagem = "Encontramos divergência em sua reserva. Entre em contato no link abaixo.";
                         logSistema.Log += FunctionWhatsApp.postMensagem(novareserva.ProxyCelular, mensagem).Result;
-                    logSistema.Log += FunctionWhatsApp.postMensagemTemplete(novareserva.ProxyCelular, "inf_mtur").Result;
-                    logSistema.Log += FunctionWhatsApp.postMensageFlowCPF(novareserva.ProxyCelular).Result;
+                        logSistema.Log += FunctionWhatsApp.postMensagemTemplete(novareserva.ProxyCelular, "inf_mtur").Result;
+                        logSistema.Log += FunctionWhatsApp.postMensageFlowCPF(novareserva.ProxyCelular).Result;
                     }
 
 
@@ -452,8 +449,7 @@ namespace HoteldosNobresBlazor.Funcoes
             Thread thread3 = new Thread(PagamentoMetodo);
             thread3.Start();
 
-            //string teste = FunctionWhatsApp.postMensagem("35984151764").Result;
-
+            //string teste = FunctionWhatsApp.postMensagem("35984151764").Result; 
         }
 
         #endregion CloudBeds
