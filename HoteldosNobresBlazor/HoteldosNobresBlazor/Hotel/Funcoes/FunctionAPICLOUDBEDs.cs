@@ -16,7 +16,7 @@ namespace HoteldosNobresBlazor.Funcoes
         {
             try
             {
-                string url = urlapi + "/getRate?roomTypeID="+ roomTypeID + "&startDate="+ DataCheckIn.ToString("yyyy-MM-dd") + "&endDate=" +  DataCheckOut.ToString("yyyy-MM-dd");
+                string url = urlapi + "/getRate?roomTypeID="+ roomTypeID + "&detailedRates=true&startDate=" + DataCheckIn.ToString("yyyy-MM-dd") + "&endDate=" +  DataCheckOut.ToString("yyyy-MM-dd");
                 HttpResponseMessage response = GetApi(url).Result;
 
                 Rate rate = await LerRespostaComoObjetoAsync<Rate>(response);
@@ -31,7 +31,7 @@ namespace HoteldosNobresBlazor.Funcoes
 
         }
 
-        public static async Task<String> postRateAsync(string rateID, DateTime DataCheckIn, DateTime DataCheckOut, string valor)
+        public static async Task<String> postRateAsync(string rateID, DateTime DataStart, DateTime DataEnd, string valor)
         {
             try
             {
@@ -42,8 +42,8 @@ namespace HoteldosNobresBlazor.Funcoes
                 request.Headers.Add("Authorization", "Bearer " + KEYs.TOKEN_CLOUDBEDS);
                 var content = new MultipartFormDataContent();
                 content.Add(new StringContent(rateID), "rates[0][rateID]");
-                content.Add(new StringContent(DataCheckIn.ToString("yyyy-MM-dd")), "rates[0][interval][0][startDate]");
-                content.Add(new StringContent(DataCheckOut.ToString("yyyy-MM-dd")), "rates[0][interval][0][endDate]");
+                content.Add(new StringContent(DataStart.ToString("yyyy-MM-dd")), "rates[0][interval][0][startDate]");
+                content.Add(new StringContent(DataEnd.ToString("yyyy-MM-dd")), "rates[0][interval][0][endDate]");
                 content.Add(new StringContent(valor), "rates[0][interval][0][rate]");
                 request.Content = content;
                 var response = await client.SendAsync(request);

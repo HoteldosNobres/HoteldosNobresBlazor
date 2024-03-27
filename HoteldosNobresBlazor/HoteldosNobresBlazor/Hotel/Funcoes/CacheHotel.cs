@@ -38,7 +38,7 @@ namespace HoteldosNobresBlazor.Funcoes
                 string resultado = "";
 
                 if (mensagem.Entry[0].Changes[0].Value.Messages[0].Text != null)
-                    texto = mensagem.Entry[0].Changes[0].Value.Messages[0].Text.Body;
+                    texto = mensagem.Entry[0].Changes[0].Value.Messages[0].Text.Body + " From: " + from;
                 else
                 {
                     string jasonresposta = mensagem.Entry[0].Changes[0].Value.Messages[0].Interactive.NfmReply.ResponseJson;
@@ -83,13 +83,14 @@ namespace HoteldosNobresBlazor.Funcoes
                     resultado += FunctionWhatsApp.postMensageFlowCPF(from).Result;
                 else if (from == "553584151764" && texto == "postMensageFlowAvaliacao")
                     resultado += FunctionWhatsApp.postMensageFlowAvaliacao(from).Result;
+                else if (from == "553584151764" && texto == "postMensagemTemplete")
+                    resultado += FunctionWhatsApp.postMensagemTemplete(from, "inf_mtur").Result;
 
+                resultado += FunctionWhatsApp.postMensagem("553537150180", texto).Result;
 
-                resultado += FunctionWhatsApp.postMensagem("553537150180", "Numero " + from + " Texto:" + texto).Result;
-                 
                 LogSistema log = new LogSistema() { 
                     DataLog = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone),
-                    Log = "Numero " + from + " Texto:" + texto
+                    Log = "Numero " + from + " Texto:" + texto + " "
                 };
 
                 AppState.ListLogWhatsapp.Add(log);
@@ -164,7 +165,7 @@ namespace HoteldosNobresBlazor.Funcoes
                 string retorno = "";
                 if (logSistema.Log.Contains("SNRHos-MS0001") || logSistema.Log.Contains("SNRHos-ME0026"))
                 {
-                    logSistema.Log += logSistema.Log.ToString().Contains("SNRHos-ME0026") ? "CPF inválido" : retorno;
+                    logSistema.Log += logSistema.Log.ToString().Contains("SNRHos-ME0026") ? " CPF inválido " : retorno;
                     if (novareserva.Notas == null)
                         novareserva.Notas = new List<Nota>();
                     if (novareserva.Notas.Where(x => x.Texto == retorno).Count() == 0)
@@ -193,9 +194,13 @@ namespace HoteldosNobresBlazor.Funcoes
                         Rate rate = FunctionAPICLOUDBEDs.getRatesAsync(quarto.ID.ToString(), novareserva.DataCheckIn, novareserva.DataCheckOut).Result;
                         if (rate.Success)
                         { 
-                            decimal valornovo =  (rate.Data.RoomRate * 10/100) + rate.Data.RoomRate;
-                            string stringvalor = valornovo.ToString("N", new CultureInfo("en-US"));
-                            logSistema.Log += "UpdateRate: " + FunctionAPICLOUDBEDs.postRateAsync(rate.Data.RateId, novareserva.DataCheckIn, novareserva.DataCheckOut, stringvalor).Result + " \n";
+                            foreach( RoomRateDetailed roomRateDetailed in rate.Data.RoomRateDetailed)
+                            {
+                                decimal valornovo = (roomRateDetailed.Rate * 10 / 100) + roomRateDetailed.Rate;
+                                string stringvalor = valornovo.ToString("N", new CultureInfo("en-US")); 
+                                logSistema.Log += "UpdateRate: " + FunctionAPICLOUDBEDs.postRateAsync(rate.Data.RateId, novareserva.DataCheckIn, novareserva.DataCheckOut.AddDays(-1), stringvalor).Result + " \n";
+
+                            }
 
                         }
                     } 
@@ -210,9 +215,7 @@ namespace HoteldosNobresBlazor.Funcoes
                 }
                 else
                   if (logSistema.Log.Contains("CPF inválido") )
-                    {
-                        string mensagem = "Encontramos divergência em sua reserva. Entre em contato no link abaixo.";
-                        logSistema.Log += FunctionWhatsApp.postMensagem(novareserva.ProxyCelular, mensagem).Result;
+                    { 
                         logSistema.Log += FunctionWhatsApp.postMensagemTemplete(novareserva.ProxyCelular, "inf_mtur").Result;
                         logSistema.Log += FunctionWhatsApp.postMensageFlowCPF(novareserva.ProxyCelular).Result;
                     }

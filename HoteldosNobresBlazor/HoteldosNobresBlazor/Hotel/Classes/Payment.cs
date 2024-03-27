@@ -41,10 +41,10 @@ namespace HoteldosNobresBlazor.Classes
         public DateTimeOffset Date { get; set; }
 
         [JsonProperty("rate")]
-        public long Rate { get; set; }
+        public decimal Rate { get; set; }
 
         [JsonProperty("totalRate")]
-        public long TotalRate { get; set; }
+        public decimal TotalRate { get; set; }
 
         [JsonProperty("roomsAvailable")]
         public long RoomsAvailable { get; set; }
