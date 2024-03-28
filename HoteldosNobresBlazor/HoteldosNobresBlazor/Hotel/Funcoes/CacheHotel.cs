@@ -313,6 +313,8 @@ namespace HoteldosNobresBlazor.Funcoes
 
         }
 
+
+
         private void ChangedStatusMetodo(object objeto)
         {
             try
@@ -376,13 +378,33 @@ namespace HoteldosNobresBlazor.Funcoes
             }
         }
 
-
-        public async Task<string> CacheDetails_changed(string json)
+        public string CacheDetails_changed(string json)
         {
             try
             {
-                TimeZoneInfo brazilTimeZone = TimeZoneInfo.FindSystemTimeZoneById("E. South America Standard Time");
                 Details_changed changed = FunctionAPICLOUDBEDs.LerRespostaComoObjetoAsync<Details_changed>(json).Result;
+
+                if (string.IsNullOrEmpty(changed.reservationId))
+                    throw new Exception("ID da reserva não informado");
+                 
+                Thread thread = new Thread(new ParameterizedThreadStart(ChangedStatusMetodo));
+                thread.Start(changed);
+
+                return "OK " + changed.reservationId;
+            }
+            catch (Exception e)
+            {
+                AppState.MyMessageReservation = e.Message + "\n";
+                return e.Message;
+            }
+
+        }
+        public async void CacheDetails_changedMetodo(object objeto)
+        {
+            try
+            {
+                Details_changed changed = (Details_changed)objeto;
+                TimeZoneInfo brazilTimeZone = TimeZoneInfo.FindSystemTimeZoneById("E. South America Standard Time"); 
 
                 List<Reserva> listReserva = FunctionAPICLOUDBEDs.getReservationsAsync(null).Result;
                 Reserva reserva = listReserva.Where(x => x.GuestID == changed.guestID).FirstOrDefault();
@@ -429,17 +451,28 @@ namespace HoteldosNobresBlazor.Funcoes
 
                 }
 
+                if (logSistema.Log.Contains("SNRHos-MS0001"))
+                {
+                    logSistema.Log += FunctionGoogle.AddPeople(reserva.NomeHospede, reserva.Origem, reserva.CelularDDD + reserva.Celular, reserva.Email.ToString());
+
+                    string mensagem = "Olá, " + reserva.NomeHospede + "! Seja Bem vindo em nosso Hotel.";
+                    logSistema.Log += FunctionWhatsApp.postMensagem(reserva.ProxyCelular, mensagem).Result;
+                    logSistema.Log += FunctionWhatsApp.postMensagemTemplete(reserva.ProxyCelular, "inf_inicial").Result;
+                    logSistema.Log += FunctionWhatsApp.postMensagem(reserva.ProxyCelular).Result;
+                }
+
                 logSistema.Log += retorno + " ";
-                AppState.ListLogSistemaAddReserva.Add(logSistema);
-                return "OK " + changed.reservationId;
+                AppState.ListLogSistemaAddReserva.Add(logSistema); 
             }
             catch (Exception e)
             {
-                AppState.MyMessageReservation = e.Message + "\n";
-                return e.Message;
+                AppState.MyMessageReservation = e.Message + "\n"; 
             }
 
         }
+
+
+
 
         public void CacheExecutanado()
         {
@@ -467,12 +500,13 @@ namespace HoteldosNobresBlazor.Funcoes
                 listReserva = FunctionAPICLOUDBEDs.getReservationsAsync(DateTime.Now.ToString("yyyy-MM-dd")).Result;
                 listReserva.AddRange(FunctionAPICLOUDBEDs.getReservationsAsync(null, DateTime.Now.ToString("yyyy-MM-dd")).Result);
                 AppState.ListReservas = listReserva;
+                 
 
-                AppState.MyMessage = cache + " Data: " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + " "; 
+                AppState.MyMessage = cache + " Data: " + TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone).ToString("yyyy-MM-dd HH:mm:ss") +"\n";
             }
             catch (Exception e)
             {
-                AppState.MyMessage = e.Message; 
+                AppState.MyMessage = e.Message + "\n";
             } 
         }
 
@@ -490,14 +524,14 @@ namespace HoteldosNobresBlazor.Funcoes
                     count = count + 1;
                     cache = count.ToString();
                     //Console.WriteLine("Cache executando");
-
-                    AppState.MyMessage = cache + " Data: " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + " ";
+                     
+                    AppState.MyMessage = cache + " Data: " + TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone).ToString("yyyy-MM-dd HH:mm:ss") + "\n";
 
                     Thread.Sleep(60000);
                 }
                 catch (Exception e)
                 {
-                    AppState.MyMessage = e.Message;
+                    AppState.MyMessage = e.Message + "\n";
                     Thread.Sleep(5000);
                     continue;
                 }
@@ -606,7 +640,7 @@ namespace HoteldosNobresBlazor.Funcoes
                 }
                 catch (Exception e)
                 {
-                    AppState.MyMessage = e.Message;
+                    AppState.MyMessage = e.Message + "\n";
                     Thread.Sleep(5000);
 
                 }
@@ -652,7 +686,7 @@ namespace HoteldosNobresBlazor.Funcoes
                 }
                 catch (Exception e)
                 {
-                    AppState.MyMessage = e.Message;
+                    AppState.MyMessage = e.Message + "\n";
                     Thread.Sleep(5000);
 
                 }
@@ -680,7 +714,7 @@ namespace HoteldosNobresBlazor.Funcoes
             }
             catch (Exception e)
             {
-                return e.Message;
+                return e.Message + "\n";
             }
         }
     }
