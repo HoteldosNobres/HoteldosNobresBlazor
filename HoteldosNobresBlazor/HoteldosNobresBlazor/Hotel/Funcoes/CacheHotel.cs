@@ -2,6 +2,7 @@
 using HoteldosNobresBlazor.Services;
 using System.Globalization;
 using System.Net.NetworkInformation;
+using System.Threading.Channels;
 
 namespace HoteldosNobresBlazor.Funcoes
 {
@@ -383,11 +384,8 @@ namespace HoteldosNobresBlazor.Funcoes
             try
             {
                 Details_changed changed = FunctionAPICLOUDBEDs.LerRespostaComoObjetoAsync<Details_changed>(json).Result;
-
-                if (string.IsNullOrEmpty(changed.reservationId))
-                    throw new Exception("ID da reserva não informado");
                  
-                Thread thread = new Thread(new ParameterizedThreadStart(ChangedStatusMetodo));
+                Thread thread = new Thread(new ParameterizedThreadStart(CacheDetails_changedMetodo));
                 thread.Start(changed);
 
                 return "OK " + changed.reservationId;
@@ -406,19 +404,15 @@ namespace HoteldosNobresBlazor.Funcoes
                 Details_changed changed = (Details_changed)objeto;
                 TimeZoneInfo brazilTimeZone = TimeZoneInfo.FindSystemTimeZoneById("E. South America Standard Time"); 
 
-                List<Reserva> listReserva = FunctionAPICLOUDBEDs.getReservationsAsync(null).Result;
-                Reserva reserva = listReserva.Where(x => x.GuestID == changed.guestID).FirstOrDefault();
+                List<Reserva> listaReserva = await FunctionAPICLOUDBEDs.getReservationsAsync();
+                Reserva reserva = listaReserva.FirstOrDefault(x => changed.guestID == x.GuestID);
                 reserva = await FunctionAPICLOUDBEDs.getReservationAsync(reserva);
 
                 LogSistema logSistema = new LogSistema();
                 logSistema.Log = "Details_changed-";
                 logSistema.IDReserva = reserva.IDReserva.ToString();
                 logSistema.Status = reserva.Status;
-
-                Random random = new Random();
-                int numeroSorteado = random.Next(10, 50); // Sorteia um número entre 10 e 50
-                Thread.Sleep(numeroSorteado * 1000);
-
+                 
                 logSistema.DataLog = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone);
 
                 string retorno = "";
@@ -462,11 +456,12 @@ namespace HoteldosNobresBlazor.Funcoes
                 }
 
                 logSistema.Log += retorno + " ";
+
                 AppState.ListLogSistemaAddReserva.Add(logSistema); 
             }
             catch (Exception e)
             {
-                AppState.MyMessageReservation = e.Message + "\n"; 
+                AppState.MyMessageReservation = "Id: " + ((Details_changed)objeto).reservationId + " e.Message:" + e.Message + "\n"; 
             }
 
         }

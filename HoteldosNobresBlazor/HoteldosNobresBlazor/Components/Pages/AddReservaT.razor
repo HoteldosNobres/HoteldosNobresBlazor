@@ -60,32 +60,30 @@ else
         arrayDeLinhas = appState.MyMessageReservation.Split('\n');
     }
 
-    [IgnoreAntiforgeryToken]
-    [HttpPost]
-    public async Task<ActionResult> Post([FromBody] String jsonString)
-    {
-        try
-        {
-            // add reference to Newtonsoft.Json
-            //  using Newtonsoft.Json;
+    // [IgnoreAntiforgeryToken]
+    // [HttpPost]
+    // public async Task<ActionResult> Post([FromBody] String jsonString)
+    // {
+    //     try
+    //     {
+    //         // add reference to Newtonsoft.Json
+    //         //  using Newtonsoft.Json;
 
-            // jsonString to myJsonObj
-            //var myJsonObj = JsonConvert.DeserializeObject<Dictionary<string, dynamic>>(jsonString);
+    //         // jsonString to myJsonObj
+    //         //var myJsonObj = JsonConvert.DeserializeObject<Dictionary<string, dynamic>>(jsonString);
 
-            // value1 is myJsonObj[key1]
+    //         // value1 is myJsonObj[key1]
 
-            /* teste = jsonString */
-            ;
-            appState.MyMessageReservation += jsonString.ToString();
+    //         /* teste = jsonString */
+    //         ;
+    //         appState.MyMessageReservation += jsonString.ToString();
 
-            return null;
-        }
-        catch (Exception ex)
-        {
-            return null;
-        }
+    //         return null;
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         return null;
+    //     }
 
     }
-
-
-}   
+ 

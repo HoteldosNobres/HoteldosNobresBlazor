@@ -15,7 +15,7 @@ namespace HoteldosNobresBlazor.Classes
         public int? Noites { get; set; }
         public int? Hospedes { get; set; }
         public string? Origem { get; set; }
-        public string? IDReserva { get; set; }
+        public string IDReserva { get; set; }
         public string? IDReservaAgencia { get; set; }
         public string? FonteReserva { get; set; }
         public string? Valor { get; set; }
