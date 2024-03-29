@@ -313,9 +313,7 @@ namespace HoteldosNobresBlazor.Funcoes
             }
 
         }
-
-
-
+          
         private void ChangedStatusMetodo(object objeto)
         {
             try

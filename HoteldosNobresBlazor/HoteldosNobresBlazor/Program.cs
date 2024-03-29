@@ -71,6 +71,7 @@ app.MapPost("/addreserva", async (HttpContext httpContext) =>
     }
     catch (Exception ex)
     {
+        await httpContext.Response.WriteAsync(ex.Message);
         httpContext.Response.StatusCode = 500;
     }
 
@@ -89,6 +90,7 @@ app.MapPost("/status_changed", async (HttpContext httpContext) =>
         }
         catch (Exception ex)
         {
+            await httpContext.Response.WriteAsync(ex.Message);
             httpContext.Response.StatusCode = 500;
         }
 
@@ -107,6 +109,7 @@ app.MapPost("/accommodation_changed", async (HttpContext httpContext) =>
     }
     catch (Exception ex)
     {
+        await httpContext.Response.WriteAsync(ex.Message);
         httpContext.Response.StatusCode = 500;
     }
 
@@ -125,6 +128,7 @@ app.MapPost("/details_changed", async (HttpContext httpContext) =>
     }
     catch (Exception ex)
     {
+        await httpContext.Response.WriteAsync(ex.Message);
         httpContext.Response.StatusCode = 500;
     }
 
@@ -171,6 +175,7 @@ app.MapPost("/whatsapp", async (HttpContext httpContext) =>
     }
     catch (Exception ex)
     {
+        await httpContext.Response.WriteAsync(ex.Message);
         httpContext.Response.StatusCode = 500;
     }
 
@@ -232,6 +237,7 @@ app.MapGet("/whatsapp", async (HttpContext httpContext) =>
     }
     catch (Exception ex)
     {
+        await httpContext.Response.WriteAsync(ex.Message);
         httpContext.Response.StatusCode = 500;
     }
 
