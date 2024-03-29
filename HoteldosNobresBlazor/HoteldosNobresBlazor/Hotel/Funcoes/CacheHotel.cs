@@ -1,4 +1,5 @@
 ﻿using HoteldosNobresBlazor.Classes;
+using HoteldosNobresBlazor.Components.Pages;
 using HoteldosNobresBlazor.Services;
 using System.Globalization;
 using System.Net.NetworkInformation;
@@ -127,12 +128,12 @@ namespace HoteldosNobresBlazor.Funcoes
                 Thread thread = new Thread(new ParameterizedThreadStart(CreateReservation_changedMetodo));
                 thread.Start(reserva);
 
-                return "OK " + create.reservationId;
+                return "OK ";
 
             }
             catch (Exception e)
             {
-                AppState.MyMessageReservation = e.Message + "\n";
+                AppState.MyMessageReservation = "CacheCreateReservationAsyncÇ " + e.Message + "\n";
                 return e.Message;
             }
         }
@@ -185,28 +186,7 @@ namespace HoteldosNobresBlazor.Funcoes
 
                 }
                 logSistema.Log += retorno + " ";
-
-
-                novareserva = FunctionAPICLOUDBEDs.getReservationAsync(novareserva).Result;
-                if (novareserva.ListaQuartos.Count() > 0)
-                {
-                    foreach (Quarto quarto in novareserva.ListaQuartos)
-                    {
-                        Rate rate = FunctionAPICLOUDBEDs.getRatesAsync(quarto.ID.ToString(), novareserva.DataCheckIn, novareserva.DataCheckOut).Result;
-                        if (rate.Success)
-                        { 
-                            foreach( RoomRateDetailed roomRateDetailed in rate.Data.RoomRateDetailed)
-                            {
-                                decimal valornovo = (roomRateDetailed.Rate * 10 / 100) + roomRateDetailed.Rate;
-                                string stringvalor = valornovo.ToString("N", new CultureInfo("en-US")); 
-                                logSistema.Log += "UpdateRate: " + FunctionAPICLOUDBEDs.postRateAsync(rate.Data.RateId, novareserva.DataCheckIn, novareserva.DataCheckOut.AddDays(-1), stringvalor).Result + " \n";
-
-                            }
-
-                        }
-                    } 
-                } 
-
+                 
                 if (logSistema.Log.Contains("SNRHos-MS0001"))
                 {
                     string mensagem = "Olá, " + novareserva.NomeHospede + "! Seja Bem vindo em nosso Hotel.";
@@ -227,13 +207,72 @@ namespace HoteldosNobresBlazor.Funcoes
                     logSistema.Log += FunctionGoogle.AddPeople(novareserva.NomeHospede, novareserva.Origem, novareserva.CelularDDD + novareserva.Celular, novareserva.Email.ToString());
                 }
 
+                logSistema.Log += AjusteRate(novareserva.IDReserva);
+
                 AppState.ListLogSistemaAddReserva.Add(logSistema);  
             }
             catch (Exception e)
             {
-                AppState.MyMessageReservation = e.Message + "\n";
+                AppState.MyMessageReservation = "CreateReservation_changedMetodo " + e.Message + "\n"; 
             }
 
+        }
+
+        private string AjusteRate(string reservaId)
+        {
+            try
+            { 
+                string retorno = "";
+                Reserva reservalocal = new Reserva();
+                reservalocal.IDReserva = reservaId;
+                reservalocal = FunctionAPICLOUDBEDs.getReservationAsync(reservalocal).Result;
+                if(reservalocal.ListaQuartos != null && (reservalocal.ListaQuartos.Count() > 0))
+                {
+                    foreach (Quarto quarto in reservalocal.ListaQuartos)
+                    {
+                        Rate rate = FunctionAPICLOUDBEDs.getRatesAsync(quarto.ID.ToString(), reservalocal.DataCheckIn, reservalocal.DataCheckOut).Result;
+                        if (rate.Success)
+                        {
+                            foreach (RoomRateDetailed roomRateDetailed in rate.Data.RoomRateDetailed)
+                            {
+                                decimal valornovo = roomRateDetailed.Rate;
+                                 valornovo += (roomRateDetailed.Rate * 10 / 100);
+                                string stringvalor = valornovo.ToString("N", new CultureInfo("en-US"));
+                                retorno = FunctionAPICLOUDBEDs.postRateAsync(rate.Data.RateId, roomRateDetailed.Date.DateTime, roomRateDetailed.Date.DateTime, stringvalor).Result + " \n";
+ 
+                            }
+
+                        }
+                    }
+                }
+
+                if (reservalocal.ListaQuartosCancelados != null && (reservalocal.ListaQuartosCancelados.Count() > 0))
+                {
+                    foreach (Quarto quarto in reservalocal.ListaQuartosCancelados)
+                    {
+                        Rate rate = FunctionAPICLOUDBEDs.getRatesAsync(quarto.ID.ToString(), reservalocal.DataCheckIn, reservalocal.DataCheckOut).Result;
+                        if (rate.Success)
+                        {
+                            foreach (RoomRateDetailed roomRateDetailed in rate.Data.RoomRateDetailed)
+                            {
+                                decimal valornovo = roomRateDetailed.Rate; 
+                                    valornovo -= (roomRateDetailed.Rate * 10 / 100); 
+                                string stringvalor = valornovo.ToString("N", new CultureInfo("en-US"));
+                                if (reservalocal.Status != null && reservalocal.Status.ToUpper() == "CANCELED")
+                                    retorno = FunctionAPICLOUDBEDs.postRateAsync(rate.Data.RateId, roomRateDetailed.Date.DateTime, roomRateDetailed.Date.DateTime, stringvalor).Result + " \n";
+
+                            }
+
+                        }
+                    }
+                }
+
+                return retorno;
+            }
+            catch (Exception e)
+            {
+                return e.Message;
+            }
         }
 
         public string CacheAccommodation_changed(string json)
@@ -366,8 +405,10 @@ namespace HoteldosNobresBlazor.Funcoes
                     }
                 }
 
+                 if (reserva.Status != null && reserva.Status.ToUpper() == "CANCELED")
+                    logSistema.Log += AjusteRate(reserva.IDReserva);
 
-                logSistema.Log += retorno + "\n";
+                    logSistema.Log += retorno + "\n";
 
                 AppState.ListLogSistemaAddReserva.Add(logSistema);
             }
@@ -410,7 +451,11 @@ namespace HoteldosNobresBlazor.Funcoes
                 logSistema.Log = "Details_changed-";
                 logSistema.IDReserva = reserva.IDReserva.ToString();
                 logSistema.Status = reserva.Status;
-                 
+
+                Random random = new Random();
+                int numeroSorteado = random.Next(10, 50); // Sorteia um número entre 10 e 50
+                Thread.Sleep(numeroSorteado * 1000);
+
                 logSistema.DataLog = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone);
 
                 string retorno = "";
@@ -479,9 +524,7 @@ namespace HoteldosNobresBlazor.Funcoes
             thread2.Start();
 
             Thread thread3 = new Thread(PagamentoMetodo);
-            thread3.Start();
-
-            //string teste = FunctionWhatsApp.postMensagem("35984151764").Result; 
+            thread3.Start(); 
         }
 
         #endregion CloudBeds

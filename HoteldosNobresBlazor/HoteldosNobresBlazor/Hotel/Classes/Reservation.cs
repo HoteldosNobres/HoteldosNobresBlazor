@@ -62,7 +62,7 @@ namespace HoteldosNobresBlazor.Classes
         public Assigned[] Assigned { get; set; }
 
         [JsonProperty("unassigned")]
-        public object[] Unassigned { get; set; }
+        public Unassigned[] Unassigned { get; set; }
 
         [JsonProperty("cardsOnFile")]
         public object[] CardsOnFile { get; set; }
@@ -126,6 +126,43 @@ namespace HoteldosNobresBlazor.Classes
 
         [JsonProperty("roomID")]
         public string RoomId { get; set; }
+    }
+
+    public partial class Unassigned
+    {
+        [JsonProperty("roomTypeName")]
+        public string RoomTypeName { get; set; }
+
+        [JsonProperty("roomTypeNameShort")]
+        public string RoomTypeNameShort { get; set; }
+
+        [JsonProperty("roomTypeID")]
+        [JsonConverter(typeof(ParseStringConverter))]
+        public long RoomTypeId { get; set; }
+
+        [JsonProperty("subReservationID")]
+        public string SubReservationId { get; set; }
+
+        [JsonProperty("startDate")]
+        public DateTimeOffset StartDate { get; set; }
+
+        [JsonProperty("endDate")]
+        public DateTimeOffset EndDate { get; set; }
+
+        [JsonProperty("adults")]
+        [JsonConverter(typeof(ParseStringConverter))]
+        public long Adults { get; set; }
+
+        [JsonProperty("children")]
+        [JsonConverter(typeof(ParseStringConverter))]
+        public long Children { get; set; }
+
+        [JsonProperty("dailyRates")]
+        public DailyRate[] DailyRates { get; set; }
+
+        [JsonProperty("roomTotal")]
+        public string RoomTotal { get; set; }
+
     }
 
     public partial class DailyRate

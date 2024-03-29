@@ -28,6 +28,8 @@ namespace HoteldosNobresBlazor.Classes
 
         public List<Quarto>? ListaQuartos { get; set; }
 
+        public List<Quarto>? ListaQuartosCancelados { get; set; }
+
         /// Hospede
         public string? GuestID { get; set; }
 
@@ -260,7 +262,16 @@ namespace HoteldosNobresBlazor.Classes
                 quarto.Descricao = item.RoomTypeName;
                 ListaQuartos.Add(quarto);
             }
-             
+
+            ListaQuartosCancelados = new List<Quarto>();
+            foreach (var item in reservation.Data.Unassigned)
+            {
+                Quarto quarto = new Quarto();
+                quarto.ID = item.RoomTypeId.ToString();
+                quarto.Descricao = item.RoomTypeName;
+                ListaQuartosCancelados.Add(quarto);
+            }
+
         }
 
         public void Converte(ReservationsData reservation)

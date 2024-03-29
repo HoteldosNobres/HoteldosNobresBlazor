@@ -50,12 +50,12 @@ namespace HoteldosNobresBlazor.Funcoes
 
                 RespostPayment responsepayment = await LerRespostaComoObjetoAsync<RespostPayment>(response);
 
-                return responsepayment.Message.ToString();
+                return string.Empty;
             }
             catch (FileNotFoundException e)
             {
                 Console.WriteLine(e.Message);
-                return null;
+                return e.Message;
             }
 
         }
