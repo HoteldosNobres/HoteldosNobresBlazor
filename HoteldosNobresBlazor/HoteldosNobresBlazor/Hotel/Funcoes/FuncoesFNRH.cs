@@ -121,7 +121,7 @@ namespace HoteldosNobresBlazor.Funcoes
 
         }
 
-        public static T DeserializeObject<T>(string xml)
+        public static T? DeserializeObject<T>(string xml)
         {
             XmlSerializer serializer = new XmlSerializer(typeof(T));
             using (StringReader reader = new StringReader(xml))
@@ -242,7 +242,7 @@ namespace HoteldosNobresBlazor.Funcoes
                          <sntiptran>07</sntiptran>
                          <snprevent>{reserva.DataCheckIn.ToString("yyyy-MM-ddT14:00:00")}</snprevent>
                          <snprevsai>{reserva.DataCheckOut.ToString("yyyy-MM-ddT11:59:00")}</snprevsai>
-                         <snobs>{reserva.Obs.Trim()}</snobs>
+                         <snobs>{reserva.Obs.ToString().Trim()}</snobs>
                          <snnumhosp>{reserva.Hospedes.GetValueOrDefault(1)}</snnumhosp>
                          <snuhnum>{reserva.Snuhnum}</snuhnum> 
                          <snexcluirficha>{reserva.ProxySnexcluirficha }</snexcluirficha>

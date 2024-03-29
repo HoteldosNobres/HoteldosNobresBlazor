@@ -48,7 +48,7 @@ namespace HoteldosNobresBlazor.Funcoes
         {
             try
             {
-                UserCredential credential = UserCredential();
+                UserCredential? credential = UserCredential();
                 string givenome = nome;
                 if (!string.IsNullOrEmpty(local))
                     givenome = nome + " - " + local;

@@ -15,12 +15,12 @@ namespace HoteldosNobresBlazor.Classes
         public int? Noites { get; set; }
         public int? Hospedes { get; set; }
         public string? Origem { get; set; }
-        public string IDReserva { get; set; }
+        public string? IDReserva { get; set; }
         public string? IDReservaAgencia { get; set; }
         public string? FonteReserva { get; set; }
         public string? Valor { get; set; }
         public decimal Balance { get; set; }
-        public string Status { get; set; }
+        public string? Status { get; set; }
         public string? SnNum { get; set; }
         public string? Snuhnum { get; set; }
 
@@ -34,7 +34,7 @@ namespace HoteldosNobresBlazor.Classes
         public string? NomeHospede { get; set; }
         public string? Cpf { get; set; }
         public DateTime DataNascimento { get; set; }
-        public string Genero { get; set; }
+        public string? Genero { get; set; }
 
         //Contato
         public string? Email { get; set; }
@@ -90,12 +90,14 @@ namespace HoteldosNobresBlazor.Classes
             {
                 if (string.IsNullOrEmpty(Numerotelefone) && string.IsNullOrEmpty(NumeroCelular))
                     return "553537150180";
-                    string cellphone =  !string.IsNullOrEmpty(NumeroCelular) ? NumeroCelular.Replace("+", "").Replace(".", "").ToString() : Numerotelefone.Replace("+", "").Replace(".", "").ToString();
-                    return cellphone.Length >= 11 ? cellphone : "55" + cellphone;
+                string cellphone = string.Empty;
+                if ( Numerotelefone != null)
+                    cellphone =  !string.IsNullOrEmpty(NumeroCelular) ? NumeroCelular.Replace("+", "").Replace(".", "").ToString() : Numerotelefone.Replace("+", "").Replace(".", "").ToString();
+                return cellphone.Length >= 11 ? cellphone : "55" + cellphone;
             }
         }
 
-        public string? Obs
+        public string Obs
         {
             get
             {
@@ -161,7 +163,10 @@ namespace HoteldosNobresBlazor.Classes
         {
             get
             {
-                return Status.ToUpper().Equals("CANCELADO") ? "1" : "0";
+                if(Status != null)
+                    return Status.ToUpper().Equals("CANCELADO") ? "1" : "0";
+                else 
+                    return "0";
             }
         }
 
