@@ -224,6 +224,29 @@ namespace HoteldosNobresBlazor.Funcoes
             }
 
         }
+        public static async Task<string> postReservationNote(string reservationID, string note)
+        {
+            try
+            { 
+                var client = new HttpClient();
+                var request = new HttpRequestMessage(HttpMethod.Post, urlapi + @"/postReservationNote");
+                request.Headers.Add("Authorization", "Bearer " + KEYs.TOKEN_CLOUDBEDS);
+                var content = new MultipartFormDataContent();
+                content.Add(new StringContent(reservationID), "reservationID");
+                content.Add(new StringContent(note), "reservationNote");
+                request.Content = content;
+                var response = await client.SendAsync(request);
+                response.EnsureSuccessStatusCode();
+
+                return string.Empty;
+            }
+            catch (FileNotFoundException e)
+            {
+                Console.WriteLine(e.Message);
+                return e.Message;
+            }
+
+        }
 
         public static async Task<Reserva> postReservationNote(Reserva reserva, string note)
         {
@@ -283,6 +306,54 @@ namespace HoteldosNobresBlazor.Funcoes
                 response = await client.SendAsync(request);
                 response.EnsureSuccessStatusCode();
                   
+                return "";
+            }
+            catch (FileNotFoundException e)
+            {
+                Console.WriteLine(e.Message);
+                return e.Message;
+            }
+
+        }
+
+        public static async Task<string> deleteReservationNote(string reservationID, string reservationNoteID)
+        {
+            try
+            {
+                var url = urlapi + "/deleteReservationNote?reservationID=" + reservationID + "&reservationNoteID=" + reservationNoteID;
+                HttpResponseMessage response = GetApi(url).Result; 
+                var client = new HttpClient();
+                var request = new HttpRequestMessage(HttpMethod.Delete, url);
+                request.Headers.Add("Authorization", "Bearer " + KEYs.TOKEN_CLOUDBEDS);
+                response = await client.SendAsync(request);
+                response.EnsureSuccessStatusCode();
+
+                return "";
+            }
+            catch (FileNotFoundException e)
+            {
+                Console.WriteLine(e.Message);
+                return e.Message;
+            }
+
+        }
+
+        public static async Task<string> putReservation(string reservationID, string status)
+        {
+            try
+            { 
+                var client = new HttpClient();
+                var request = new HttpRequestMessage(HttpMethod.Put, urlapi + @"/putReservation");
+                request.Headers.Add("Accept", "application/json");
+                request.Headers.Add("Authorization", "Bearer " + KEYs.TOKEN_CLOUDBEDS); 
+                var collection = new List<KeyValuePair<string, string>>();
+                collection.Add(new("reservationID", reservationID));
+                collection.Add(new("status", status));
+                var content = new FormUrlEncodedContent(collection);
+                request.Content = content;
+                var response = await client.SendAsync(request);
+                response.EnsureSuccessStatusCode();
+
                 return "";
             }
             catch (FileNotFoundException e)

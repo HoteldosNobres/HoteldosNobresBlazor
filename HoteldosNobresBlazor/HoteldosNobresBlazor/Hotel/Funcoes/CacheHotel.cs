@@ -1,8 +1,10 @@
 ﻿using HoteldosNobresBlazor.Classes;
 using HoteldosNobresBlazor.Components.Pages;
 using HoteldosNobresBlazor.Services;
+using Microsoft.AspNetCore.Http.HttpResults;
 using System.Globalization;
 using System.Net.NetworkInformation;
+using System.Runtime.CompilerServices;
 using System.Threading.Channels;
 
 namespace HoteldosNobresBlazor.Funcoes
@@ -29,7 +31,24 @@ namespace HoteldosNobresBlazor.Funcoes
         {
             try
             {
-                TimeZoneInfo brazilTimeZone = TimeZoneInfo.FindSystemTimeZoneById("E. South America Standard Time");
+                Thread thread = new Thread(new ParameterizedThreadStart(RecebeMensagemMetodo));
+                thread.Start(json);
+
+                return "OK ";
+            }
+            catch (Exception e)
+            {
+                AppState.MyMessageLogWhatsapp = e.Message + "\n";
+                return e.Message;
+            }
+
+        }
+         
+        public void RecebeMensagemMetodo(object objeto)
+        {
+            try
+            {
+                string json = (string)objeto;
                 MensagemWhatsApp mensagem = FunctionAPICLOUDBEDs.LerRespostaComoObjetoAsync<MensagemWhatsApp>(json).Result;
 
                 string from = mensagem.Entry[0].Changes[0].Value.Messages[0].From;
@@ -40,7 +59,7 @@ namespace HoteldosNobresBlazor.Funcoes
                 string resultado = "";
 
                 if (mensagem.Entry[0].Changes[0].Value.Messages[0].Text != null)
-                    texto = mensagem.Entry[0].Changes[0].Value.Messages[0].Text.Body + " From: " + from;
+                    texto = mensagem.Entry[0].Changes[0].Value.Messages[0].Text.Body;
                 else
                 {
                     string jasonresposta = mensagem.Entry[0].Changes[0].Value.Messages[0].Interactive.NfmReply.ResponseJson;
@@ -58,19 +77,19 @@ namespace HoteldosNobresBlazor.Funcoes
 
                 }
 
-                if(!string.IsNullOrEmpty(cpf))
+                if (!string.IsNullOrEmpty(cpf))
                 {
-                    resultado += FunctionWhatsApp.postMensagem("5535984151764", texto).Result; 
+                    resultado += FunctionWhatsApp.postMensagem("5535984151764", texto).Result;
                     resultado += FunctionWhatsApp.postMensagemTemplete(from, "inf_inicial").Result;
                     Reserva reserva = AppState.ListReservas.Where(x => x.ProxyCelular == from).FirstOrDefault();
                     if (reserva != null)
                     {
-                       reserva = FunctionAPICLOUDBEDs.postReservationNote(reserva, texto).Result;
+                        reserva = FunctionAPICLOUDBEDs.postReservationNote(reserva, texto).Result;
                     }
-                } 
-                else if(!string.IsNullOrEmpty(hotelrating))
+                }
+                else if (!string.IsNullOrEmpty(hotelrating))
                 {
-                    resultado += FunctionWhatsApp.postMensagem("5535984151764", texto).Result; 
+                    resultado += FunctionWhatsApp.postMensagem("5535984151764", texto).Result;
 
                     Reserva reserva = AppState.ListReservas.Where(x => x.ProxyCelular == from).FirstOrDefault();
                     if (reserva != null)
@@ -81,30 +100,57 @@ namespace HoteldosNobresBlazor.Funcoes
                 else
                     resultado += FunctionWhatsApp.postMensagem(from).Result;
 
-                if(from == "553584151764" && texto == "postMensageFlowCPF")                
+                if (from == "553584151764" && texto == "postMensageFlowCPF")
                     resultado += FunctionWhatsApp.postMensageFlowCPF(from).Result;
                 else if (from == "553584151764" && texto == "postMensageFlowAvaliacao")
                     resultado += FunctionWhatsApp.postMensageFlowAvaliacao(from).Result;
                 else if (from == "553584151764" && texto == "postMensagemTemplete")
                     resultado += FunctionWhatsApp.postMensagemTemplete(from, "inf_mtur").Result;
 
-                resultado += FunctionWhatsApp.postMensagem("553537150180", texto).Result;
+                resultado += FunctionWhatsApp.postMensagem("553537150180", "Numero " + from + " Texto:" + texto).Result;
 
-                LogSistema log = new LogSistema() { 
+                LogSistema log = new LogSistema()
+                {
                     DataLog = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone),
                     Log = "Numero " + from + " Texto:" + texto + " "
                 };
 
-                AppState.ListLogWhatsapp.Add(log);
+                if (from != "553584151764" || from != "553537150180")
+                {
+                    List<Reserva> listaReserva = FunctionAPICLOUDBEDs.getReservationsAsync().Result;
+                    Reserva reserva = listaReserva.FirstOrDefault(x => x.ProxyCelular == from);
+
+                    if (reserva != null && !string.IsNullOrEmpty(reserva.IDReserva) ) {
+                        reserva = FunctionAPICLOUDBEDs.getReservationAsync(reserva).Result;
+
+                        if (reserva.Notas.Where(x => x.Texto.Contains("WHATSAPP CHAT")).Count() > 0)
+                        {
+                            Nota nota = reserva.Notas.Where(x => x.Texto.Contains("WHATSAPP CHAT")).FirstOrDefault();
+                            nota.Texto +=  "  " + TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone).ToString("dd/MM/yyyy HH:mm") + " - " + texto;
+                            log.Log += FunctionAPICLOUDBEDs.putReservationNote(reserva.IDReserva, nota.Id, nota.Texto).Result;
+                            log.Log += FunctionAPICLOUDBEDs.deleteReservationNote(reserva.IDReserva, nota.Id).Result;
+                            log.Log += FunctionAPICLOUDBEDs.postReservationNote(reserva.IDReserva, nota.Texto).Result;
+                        }else
+                            {
+                            reserva.Notas.Add(new Nota("", "WHATSAPP CHAT - Falou " + texto )); 
+                            reserva = FunctionAPICLOUDBEDs.postReservationNote(reserva, "WHATSAPP CHAT - Falou " 
+                                + TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone).ToString("dd/MM/yyyy HH:mm") + " - " + texto).Result;
+                        }
+
+
+                    }
+
+                }
+                   
                  
-                return "OK ";
+
+                AppState.ListLogWhatsapp.Add(log);
+
             }
             catch (Exception e)
             {
                 AppState.MyMessageLogWhatsapp = e.Message + "\n";
-                return e.Message;
             }
-
         }
 
 
@@ -115,7 +161,7 @@ namespace HoteldosNobresBlazor.Funcoes
         public async Task<string> CacheCreateReservationAsync(string json)
         {
             try
-            { 
+            {
                 CreateReservation create = FunctionAPICLOUDBEDs.LerRespostaComoObjetoAsync<CreateReservation>(json).Result;
 
                 if (string.IsNullOrEmpty(create.reservationId))
@@ -125,7 +171,7 @@ namespace HoteldosNobresBlazor.Funcoes
                 reserva.IDReserva = create.reservationId;
 
 
-                Thread thread = new Thread(new ParameterizedThreadStart(CreateReservation_changedMetodo));
+                Thread thread = new Thread(new ParameterizedThreadStart(CreateReservationMetodo));
                 thread.Start(reserva);
 
                 return "OK ";
@@ -138,10 +184,10 @@ namespace HoteldosNobresBlazor.Funcoes
             }
         }
 
-        private void CreateReservation_changedMetodo(object objeto)
+        private void CreateReservationMetodo(object objeto)
         {
             try
-            { 
+            {
                 Reserva novareserva = (Reserva)objeto;
                 novareserva = FunctionAPICLOUDBEDs.getReservationAsync(novareserva).Result;
 
@@ -186,7 +232,7 @@ namespace HoteldosNobresBlazor.Funcoes
 
                 }
                 logSistema.Log += retorno + " ";
-                 
+
                 if (logSistema.Log.Contains("SNRHos-MS0001"))
                 {
                     string mensagem = "Olá, " + novareserva.NomeHospede + "! Seja Bem vindo em nosso Hotel.";
@@ -195,25 +241,25 @@ namespace HoteldosNobresBlazor.Funcoes
                     logSistema.Log += FunctionWhatsApp.postMensagem(novareserva.ProxyCelular).Result;
                 }
                 else
-                  if (logSistema.Log.Contains("CPF inválido") )
-                    { 
-                        logSistema.Log += FunctionWhatsApp.postMensagemTemplete(novareserva.ProxyCelular, "inf_mtur").Result;
-                        logSistema.Log += FunctionWhatsApp.postMensageFlowCPF(novareserva.ProxyCelular).Result;
-                    }
+                  if (logSistema.Log.Contains("CPF inválido"))
+                {
+                    logSistema.Log += FunctionWhatsApp.postMensagemTemplete(novareserva.ProxyCelular, "inf_mtur").Result;
+                    logSistema.Log += FunctionWhatsApp.postMensageFlowCPF(novareserva.ProxyCelular).Result;
+                }
 
 
                 if (!string.IsNullOrEmpty(novareserva.Celular))
                 {
-                    logSistema.Log += FunctionGoogle.AddPeople(novareserva.NomeHospede, novareserva.Origem, novareserva.CelularDDD + novareserva.Celular, novareserva.Email.ToString());
+                    logSistema.Log += FunctionGoogle.AddPeople(novareserva.NomeHospede, novareserva.Origem, novareserva.ProxyCelular, novareserva.Email.ToString());
                 }
 
                 logSistema.Log += AjusteRate(novareserva.IDReserva);
 
-                AppState.ListLogSistemaAddReserva.Add(logSistema);  
+                AppState.ListLogSistemaAddReserva.Add(logSistema);
             }
             catch (Exception e)
             {
-                AppState.MyMessageReservation = "CreateReservation_changedMetodo " + e.Message + "\n"; 
+                AppState.MyMessageReservation = "CreateReservation_changedMetodo " + e.Message + "\n";
             }
 
         }
@@ -221,12 +267,12 @@ namespace HoteldosNobresBlazor.Funcoes
         private string AjusteRate(string reservaId)
         {
             try
-            { 
+            {
                 string retorno = "";
                 Reserva reservalocal = new Reserva();
                 reservalocal.IDReserva = reservaId;
                 reservalocal = FunctionAPICLOUDBEDs.getReservationAsync(reservalocal).Result;
-                if(reservalocal.ListaQuartos != null && (reservalocal.ListaQuartos.Count() > 0))
+                if (reservalocal.ListaQuartos != null && (reservalocal.ListaQuartos.Count() > 0))
                 {
                     foreach (Quarto quarto in reservalocal.ListaQuartos)
                     {
@@ -236,10 +282,10 @@ namespace HoteldosNobresBlazor.Funcoes
                             foreach (RoomRateDetailed roomRateDetailed in rate.Data.RoomRateDetailed)
                             {
                                 decimal valornovo = roomRateDetailed.Rate;
-                                 valornovo += (roomRateDetailed.Rate * 10 / 100);
+                                valornovo += (roomRateDetailed.Rate * 5 / 100);
                                 string stringvalor = valornovo.ToString("N", new CultureInfo("en-US"));
                                 retorno = FunctionAPICLOUDBEDs.postRateAsync(rate.Data.RateId, roomRateDetailed.Date.DateTime, roomRateDetailed.Date.DateTime, stringvalor).Result + " \n";
- 
+
                             }
 
                         }
@@ -255,8 +301,8 @@ namespace HoteldosNobresBlazor.Funcoes
                         {
                             foreach (RoomRateDetailed roomRateDetailed in rate.Data.RoomRateDetailed)
                             {
-                                decimal valornovo = roomRateDetailed.Rate; 
-                                    valornovo -= (roomRateDetailed.Rate * 10 / 100); 
+                                decimal valornovo = roomRateDetailed.Rate;
+                                valornovo -= (roomRateDetailed.Rate * 5 / 100);
                                 string stringvalor = valornovo.ToString("N", new CultureInfo("en-US"));
                                 if (reservalocal.Status != null && reservalocal.Status.ToUpper() == "CANCELED")
                                     retorno = FunctionAPICLOUDBEDs.postRateAsync(rate.Data.RateId, roomRateDetailed.Date.DateTime, roomRateDetailed.Date.DateTime, stringvalor).Result + " \n";
@@ -304,7 +350,7 @@ namespace HoteldosNobresBlazor.Funcoes
         private void Accommodation_changedMetodo(object objeto)
         {
             try
-            { 
+            {
                 Reserva reserva = (Reserva)objeto;
                 reserva = FunctionAPICLOUDBEDs.getReservationAsync(reserva).Result;
 
@@ -330,7 +376,7 @@ namespace HoteldosNobresBlazor.Funcoes
         public string CacheChangedStatus(string json)
         {
             try
-            { 
+            {
                 ChangedReservation changed = FunctionAPICLOUDBEDs.LerRespostaComoObjetoAsync<ChangedReservation>(json).Result;
 
                 if (string.IsNullOrEmpty(changed.reservationId))
@@ -352,7 +398,7 @@ namespace HoteldosNobresBlazor.Funcoes
             }
 
         }
-          
+
         private void ChangedStatusMetodo(object objeto)
         {
             try
@@ -397,18 +443,37 @@ namespace HoteldosNobresBlazor.Funcoes
                     if (retorno.Contains("SNRHos-MS0004"))
                     {
                         retorno = retorno + FunctionAPICLOUDBEDs.deleteReservationNote(reserva, "SNRHos-MS0001").Result;
-                         
+
                         string mensagem = "Obrigado por reservar conosco!!! Voltem sempre ";
                         logSistema.Log += FunctionWhatsApp.postMensagem(reserva.ProxyCelular, mensagem).Result;
                         logSistema.Log += FunctionWhatsApp.postMensageFlowAvaliacao(reserva.ProxyCelular).Result;
-                      
+
                     }
                 }
 
-                 if (reserva.Status != null && reserva.Status.ToUpper() == "CANCELED")
+                if (reserva != null && reserva.Status != null && reserva.Status.ToUpper() == "CHECKED_IN")
+                {
+                    if (reserva != null && reserva.Origem != null 
+                        && ( reserva.Origem.ToUpper().Contains("AIRBNB") || reserva.Origem.ToUpper().Contains("BOOKING.COM")))
+                    {
+                        bool voltar = false;
+                        if (string.IsNullOrEmpty(reserva.Cpf))
+                        {
+                            voltar = true;
+                            logSistema.Log += FunctionWhatsApp.postMensagem("553537150180", "Por favor informe seu CPF na reserva do " + reserva.NomeHospede).Result;
+
+                            logSistema.Log += FunctionWhatsApp.postMensagem(reserva.ProxyCelular, "Por favor informe seu CPF na reserva. Na recepçao e solicite para preencher no sistema.").Result;
+                            logSistema.Log += FunctionWhatsApp.postMensageFlowCPF(reserva.ProxyCelular).Result;
+                        }
+                        if (voltar)
+                            logSistema.Log += FunctionAPICLOUDBEDs.putReservation(reserva.IDReserva, "confirmed").Result;
+                    }
+                }
+
+                if (reserva.Status != null && reserva.Status.ToUpper() == "CANCELED")
                     logSistema.Log += AjusteRate(reserva.IDReserva);
 
-                    logSistema.Log += retorno + "\n";
+                logSistema.Log += retorno + "\n";
 
                 AppState.ListLogSistemaAddReserva.Add(logSistema);
             }
@@ -423,7 +488,7 @@ namespace HoteldosNobresBlazor.Funcoes
             try
             {
                 Details_changed changed = FunctionAPICLOUDBEDs.LerRespostaComoObjetoAsync<Details_changed>(json).Result;
-                 
+
                 Thread thread = new Thread(new ParameterizedThreadStart(CacheDetails_changedMetodo));
                 thread.Start(changed);
 
@@ -441,7 +506,7 @@ namespace HoteldosNobresBlazor.Funcoes
             try
             {
                 Details_changed changed = (Details_changed)objeto;
-                TimeZoneInfo brazilTimeZone = TimeZoneInfo.FindSystemTimeZoneById("E. South America Standard Time"); 
+                TimeZoneInfo brazilTimeZone = TimeZoneInfo.FindSystemTimeZoneById("E. South America Standard Time");
 
                 List<Reserva> listaReserva = await FunctionAPICLOUDBEDs.getReservationsAsync();
                 Reserva reserva = listaReserva.FirstOrDefault(x => changed.guestID == x.GuestID);
@@ -490,7 +555,7 @@ namespace HoteldosNobresBlazor.Funcoes
 
                 if (logSistema.Log.Contains("SNRHos-MS0001"))
                 {
-                    logSistema.Log += FunctionGoogle.AddPeople(reserva.NomeHospede, reserva.Origem, reserva.CelularDDD + reserva.Celular, reserva.Email.ToString());
+                    logSistema.Log += FunctionGoogle.AddPeople(reserva.NomeHospede, reserva.Origem, reserva.ProxyCelular, reserva.Email.ToString());
 
                     string mensagem = "Olá, " + reserva.NomeHospede + "! Seja Bem vindo em nosso Hotel.";
                     logSistema.Log += FunctionWhatsApp.postMensagem(reserva.ProxyCelular, mensagem).Result;
@@ -500,11 +565,11 @@ namespace HoteldosNobresBlazor.Funcoes
 
                 logSistema.Log += retorno + " ";
 
-                AppState.ListLogSistemaAddReserva.Add(logSistema); 
+                AppState.ListLogSistemaAddReserva.Add(logSistema);
             }
             catch (Exception e)
             {
-                AppState.MyMessageReservation = "Id: " + ((Details_changed)objeto).reservationId + " e.Message:" + e.Message + "\n"; 
+                AppState.MyMessageReservation = "Id: " + ((Details_changed)objeto).reservationId + " e.Message:" + e.Message + "\n";
             }
 
         }
@@ -519,31 +584,38 @@ namespace HoteldosNobresBlazor.Funcoes
 
             Thread thread = new Thread(NovoMetodo);
             thread.Start();
-             
+
             Thread thread2 = new Thread(FNRHMetodo);
             thread2.Start();
 
             Thread thread3 = new Thread(PagamentoMetodo);
-            thread3.Start(); 
+            thread3.Start();
+
+            //Reserva reserva = new Reserva();
+            //reserva.IDReserva = "9786569864063";
+            //Thread thread = new Thread(new ParameterizedThreadStart(ChangedStatusMetodo));
+            //thread.Start(reserva);
+
+
         }
 
         #endregion CloudBeds
         static void ListaReservaMetodo()
-        { 
+        {
             try
             {
-                List<Reserva> listReserva  = FunctionAPICLOUDBEDs.getReservationsAsync(null).Result;
+                List<Reserva> listReserva = FunctionAPICLOUDBEDs.getReservationsAsync(null).Result;
                 listReserva = FunctionAPICLOUDBEDs.getReservationsAsync(DateTime.Now.ToString("yyyy-MM-dd")).Result;
                 listReserva.AddRange(FunctionAPICLOUDBEDs.getReservationsAsync(null, DateTime.Now.ToString("yyyy-MM-dd")).Result);
                 AppState.ListReservas = listReserva;
-                 
 
-                AppState.MyMessage = cache + " Data: " + TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone).ToString("yyyy-MM-dd HH:mm:ss") +"\n";
+
+                AppState.MyMessage = cache + " Data: " + TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone).ToString("yyyy-MM-dd HH:mm:ss") + "\n";
             }
             catch (Exception e)
             {
                 AppState.MyMessage = e.Message + "\n";
-            } 
+            }
         }
 
 
@@ -560,7 +632,7 @@ namespace HoteldosNobresBlazor.Funcoes
                     count = count + 1;
                     cache = count.ToString();
                     //Console.WriteLine("Cache executando");
-                     
+
                     AppState.MyMessage = cache + " Data: " + TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone).ToString("yyyy-MM-dd HH:mm:ss") + "\n";
 
                     Thread.Sleep(60000);
@@ -593,8 +665,8 @@ namespace HoteldosNobresBlazor.Funcoes
                     //listReserva.Add(reserva2);
 
                     listReserva = FunctionAPICLOUDBEDs.getReservationsAsync(DateTime.Now.ToString("yyyy-MM-dd")).Result;
-                    listReserva.AddRange(FunctionAPICLOUDBEDs.getReservationsAsync(null, DateTime.Now.ToString("yyyy-MM-dd")).Result); 
-                     
+                    listReserva.AddRange(FunctionAPICLOUDBEDs.getReservationsAsync(null, DateTime.Now.ToString("yyyy-MM-dd")).Result);
+
                     foreach (Reserva reserva1 in listReserva)
                     {
                         LogSistema logSistema = new LogSistema();

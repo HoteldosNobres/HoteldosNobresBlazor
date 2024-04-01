@@ -16,20 +16,20 @@ namespace HoteldosNobresBlazor.Funcoes
             try
             {
                 string retorno = SendSoapRequest(CriarXML(reserva));
-                if (!retorno.Equals("Erro"))
+                if (!retorno.Contains("Erro"))
                 {
                     var retornoObj = GetContentFromTag(retorno, "return");
                     return retornoObj;
                 }else
                 {
-                    return "Erro";
+                    return "Erro " + retorno;
                 }
                     
             }
             catch (FileNotFoundException e)
             {
                 Console.WriteLine(e.Message);
-                return "Erro";
+                return " Erro " + e.Message;
             }
 
         }
@@ -115,7 +115,7 @@ namespace HoteldosNobresBlazor.Funcoes
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
-                return "Erro";
+                return "Erro : " + e.Message;
             }
 
 

@@ -106,7 +106,7 @@
 }
 
 .nav-scrollable {
-    display: none;
+    display: none; 
 }
 
 .navbar-toggler:checked ~ .nav-scrollable {
@@ -120,10 +120,10 @@
 
     .nav-scrollable {
         /* Never collapse the sidebar for wide screens */
-        display: block;
+        display: block; 
 
         /* Allow sidebar to scroll for tall menus */
-        height: calc(100vh - 3.5rem);
+        height: calc(100vh - 7.5rem);
         overflow-y: auto;
     }
 }

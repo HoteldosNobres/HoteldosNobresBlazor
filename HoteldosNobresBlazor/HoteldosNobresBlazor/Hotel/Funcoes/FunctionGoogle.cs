@@ -69,7 +69,7 @@ namespace HoteldosNobresBlazor.Funcoes
                 List<PhoneNumber> phones = new List<PhoneNumber>();
                 phones.Add(new PhoneNumber()
                 { 
-                    Value = "55"+telefone.Replace("+55",""),
+                    Value = telefone.Replace("+55",""),
                 });
                 contactToCreate.PhoneNumbers = phones;
 
