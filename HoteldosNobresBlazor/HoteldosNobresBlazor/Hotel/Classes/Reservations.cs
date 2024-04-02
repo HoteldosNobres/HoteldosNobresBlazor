@@ -66,7 +66,7 @@ namespace HoteldosNobresBlazor.Classes
         public string SubReservationId { get; set; }
 
         [JsonProperty("guestList")]
-        public GuestList[] GuestList { get; set; }
+        public System.Collections.Generic.Dictionary<string, GuestList>? GuestList { get; set; }
     }
 
     public partial class GuestList
@@ -114,7 +114,7 @@ namespace HoteldosNobresBlazor.Classes
         public string GuestZip { get; set; }
 
         [JsonProperty("guestBirthdate")]
-        public DateTimeOffset GuestBirthdate { get; set; }
+        public DateTimeOffset? GuestBirthdate { get; set; }
 
         [JsonProperty("guestDocumentType")]
         public string GuestDocumentType { get; set; }
@@ -123,13 +123,13 @@ namespace HoteldosNobresBlazor.Classes
         public string GuestDocumentNumber { get; set; }
 
         [JsonProperty("guestDocumentIssueDate")]
-        public DateTimeOffset GuestDocumentIssueDate { get; set; }
+        public DateTimeOffset? GuestDocumentIssueDate { get; set; }
 
         [JsonProperty("guestDocumentIssuingCountry")]
         public string GuestDocumentIssuingCountry { get; set; }
 
         [JsonProperty("guestDocumentExpirationDate")]
-        public DateTimeOffset GuestDocumentExpirationDate { get; set; }
+        public DateTimeOffset? GuestDocumentExpirationDate { get; set; }
 
         [JsonProperty("taxID")]
         public string TaxId { get; set; }
@@ -144,10 +144,10 @@ namespace HoteldosNobresBlazor.Classes
         public string SubReservationId { get; set; }
 
         [JsonProperty("startDate")]
-        public DateTimeOffset StartDate { get; set; }
+        public DateTimeOffset? StartDate { get; set; }
 
         [JsonProperty("endDate")]
-        public DateTimeOffset EndDate { get; set; }
+        public DateTimeOffset? EndDate { get; set; }
 
         [JsonProperty("assignedRoom")]
         public string AssignedRoom { get; set; }

@@ -288,6 +288,15 @@ namespace HoteldosNobresBlazor.Classes
             GuestID = reservation.GuestId.ToString();
             Balance = reservation.Balance;
 
+            if(reservation.GuestList != null)
+            {
+                GuestList guest = reservation.GuestList.Values.FirstOrDefault();
+                NumeroCelular = guest != null && !string.IsNullOrEmpty(guest.GuestCellPhone) ? guest.GuestCellPhone : string.Empty;
+                Numerotelefone = guest != null && !string.IsNullOrEmpty(guest.GuestPhone) ? guest.GuestPhone : string.Empty;
+
+            }
+
+
         }
 
 

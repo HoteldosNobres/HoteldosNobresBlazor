@@ -1,4 +1,5 @@
-﻿using MosaicoSolutions.ViaCep;
+﻿using Google.Apis.PeopleService.v1.Data;
+using MosaicoSolutions.ViaCep;
 using MosaicoSolutions.ViaCep.Modelos;
 using Newtonsoft.Json;
 using System.Globalization;
@@ -42,10 +43,13 @@ namespace HoteldosNobresBlazor.Classes
         public Metadata Metadata { get; set; }
 
         [JsonProperty("contacts")]
-        public Contact[] Contacts { get; set; }
+        public Contact[]? Contacts { get; set; }
 
         [JsonProperty("messages")]
-        public Message[] Messages { get; set; }
+        public Message[]? Messages { get; set; }
+
+        [JsonProperty("statuses")]
+        public Status[]? Statuses { get; set; }
     }
 
     public partial class Contact
@@ -99,6 +103,22 @@ namespace HoteldosNobresBlazor.Classes
         [JsonProperty("phone_number_id")]
         [JsonConverter(typeof(ParseStringConverter))]
         public long PhoneNumberId { get; set; }
+    }
+
+    public partial class Status
+    {
+        [JsonProperty("id")]
+        public string Id { get; set; }
+
+        [JsonProperty("status")]
+        public string StatusStatus { get; set; }
+
+        [JsonProperty("timestamp")]
+        [JsonConverter(typeof(ParseStringConverter))]
+        public long Timestamp { get; set; }
+
+        [JsonProperty("recipient_id")]
+        public string RecipientId { get; set; }
     }
 
 

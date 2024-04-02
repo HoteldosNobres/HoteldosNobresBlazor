@@ -51,16 +51,17 @@ namespace HoteldosNobresBlazor.Funcoes
                 string json = (string)objeto;
                 MensagemWhatsApp mensagem = FunctionAPICLOUDBEDs.LerRespostaComoObjetoAsync<MensagemWhatsApp>(json).Result;
 
-                string from = mensagem.Entry[0].Changes[0].Value.Messages[0].From;
+                string from = mensagem.Entry[0].Changes[0].Value.Messages != null ? mensagem.Entry[0].Changes[0].Value.Messages[0].From :
+                    mensagem.Entry[0].Changes[0].Value.Statuses != null ? mensagem.Entry[0].Changes[0].Value.Statuses[0].RecipientId : string.Empty;
                 string texto = "";
                 string cpf = "";
                 string datadenascimento = "";
                 string hotelrating = "";
                 string resultado = "";
 
-                if (mensagem.Entry[0].Changes[0].Value.Messages[0].Text != null)
+                if (mensagem.Entry[0].Changes[0].Value.Messages != null && mensagem.Entry[0].Changes[0].Value.Messages[0].Text != null)
                     texto = mensagem.Entry[0].Changes[0].Value.Messages[0].Text.Body;
-                else
+                else if (mensagem.Entry[0].Changes[0].Value.Messages != null && mensagem.Entry[0].Changes[0].Value.Messages[0].Interactive != null)
                 {
                     string jasonresposta = mensagem.Entry[0].Changes[0].Value.Messages[0].Interactive.NfmReply.ResponseJson;
                     Response_Json respostajson = FunctionAPICLOUDBEDs.LerRespostaComoObjetoAsync<Response_Json>(jasonresposta).Result;
@@ -76,8 +77,10 @@ namespace HoteldosNobresBlazor.Funcoes
                         texto = " Nota: " + hotelrating + " de 10 Comentario: " + comment_text + " From: " + from;
 
                 }
+                else if (mensagem.Entry[0].Changes[0].Value.Statuses != null && mensagem.Entry[0].Changes[0].Value.Statuses[0].StatusStatus != null)
+                    texto = " STATUS DA MENSAGEM " + mensagem.Entry[0].Changes[0].Value.Statuses[0].StatusStatus;
 
-                if (!string.IsNullOrEmpty(cpf))
+                    if (!string.IsNullOrEmpty(cpf))
                 {
                     resultado += FunctionWhatsApp.postMensagem("5535984151764", texto).Result;
                     resultado += FunctionWhatsApp.postMensagemTemplete(from, "inf_inicial").Result;
@@ -97,8 +100,8 @@ namespace HoteldosNobresBlazor.Funcoes
                         reserva = FunctionAPICLOUDBEDs.postReservationNote(reserva, texto).Result;
                     }
                 }
-                else
-                    resultado += FunctionWhatsApp.postMensagem(from).Result;
+                else if(!string.IsNullOrEmpty(from) && !texto.ToUpper().Contains("STATUS DA MENSAGEM"))
+                     resultado += FunctionWhatsApp.postMensagem(from).Result;
 
                 if (from == "553584151764" && texto == "postMensageFlowCPF")
                     resultado += FunctionWhatsApp.postMensageFlowCPF(from).Result;
@@ -107,7 +110,8 @@ namespace HoteldosNobresBlazor.Funcoes
                 else if (from == "553584151764" && texto == "postMensagemTemplete")
                     resultado += FunctionWhatsApp.postMensagemTemplete(from, "inf_mtur").Result;
 
-                resultado += FunctionWhatsApp.postMensagem("553537150180", "Numero " + from + " Texto:" + texto).Result;
+                if (from != "553584151764" && from != "553537150180")
+                    resultado += FunctionWhatsApp.postMensagem("553537150180", "Numero " + from + " Texto:" + texto).Result;
 
                 LogSistema log = new LogSistema()
                 {
@@ -115,14 +119,14 @@ namespace HoteldosNobresBlazor.Funcoes
                     Log = "Numero " + from + " Texto:" + texto + " "
                 };
 
-                if (from != "553584151764" || from != "553537150180")
+                if (from != "553584151764" && from != "553537150180")
                 {
-                    List<Reserva> listaReserva = FunctionAPICLOUDBEDs.getReservationsAsync().Result;
-                    Reserva reserva = listaReserva.FirstOrDefault(x => x.ProxyCelular == from);
+                    List<Reserva> listaReserva = FunctionAPICLOUDBEDs.getReservationsAsyncGuestDetails().Result;
+                    Reserva reserva = listaReserva.Where(x => x.ProxyCelular.Contains(from)).FirstOrDefault();
 
-                    if (reserva != null && !string.IsNullOrEmpty(reserva.IDReserva) ) {
-                        reserva = FunctionAPICLOUDBEDs.getReservationAsync(reserva).Result;
-
+                    if (reserva != null && !string.IsNullOrEmpty(reserva.IDReserva)) {
+                        reserva = FunctionAPICLOUDBEDs.getReservationAsync(reserva).Result; 
+                        log.IDReserva = reserva.IDReserva; 
                         if (reserva.Notas.Where(x => x.Texto.Contains("WHATSAPP CHAT")).Count() > 0)
                         {
                             Nota nota = reserva.Notas.Where(x => x.Texto.Contains("WHATSAPP CHAT")).FirstOrDefault();
@@ -141,15 +145,13 @@ namespace HoteldosNobresBlazor.Funcoes
                     }
 
                 }
-                   
-                 
-
+                  
                 AppState.ListLogWhatsapp.Add(log);
 
             }
             catch (Exception e)
             {
-                AppState.MyMessageLogWhatsapp = e.Message + "\n";
+                AppState.MyMessageLogWhatsapp = "Erro-" + e.Message + "\n";
             }
         }
 
@@ -680,6 +682,7 @@ namespace HoteldosNobresBlazor.Funcoes
 
                     listReserva = FunctionAPICLOUDBEDs.getReservationsAsync(DateTime.Now.ToString("yyyy-MM-dd")).Result;
                     listReserva.AddRange(FunctionAPICLOUDBEDs.getReservationsAsync(null, DateTime.Now.ToString("yyyy-MM-dd")).Result);
+                    listReserva.AddRange(FunctionAPICLOUDBEDs.getReservationsAsync().Result);
 
                     foreach (Reserva reserva1 in listReserva)
                     {

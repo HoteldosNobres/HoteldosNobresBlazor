@@ -71,10 +71,10 @@ namespace HoteldosNobresBlazor.Classes
         public object[] CustomFields { get; set; }
 
         [JsonProperty("startDate")]
-        public DateTimeOffset StartDate { get; set; }
+        public DateTimeOffset? StartDate { get; set; }
 
         [JsonProperty("endDate")]
-        public DateTimeOffset EndDate { get; set; }
+        public DateTimeOffset? EndDate { get; set; }
 
         [JsonProperty("allotmentBlockCode")]
         public object AllotmentBlockCode { get; set; }

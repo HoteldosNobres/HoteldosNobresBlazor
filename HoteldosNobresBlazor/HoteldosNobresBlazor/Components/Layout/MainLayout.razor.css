@@ -103,8 +103,7 @@ main {
 #footer {
     /* background-color: white;  */
     visibility: collapse;
-    text-align: center;
-    color: white;
+    text-align: center; 
 }
 
     #footer .icons {
@@ -135,4 +134,9 @@ main {
         z-index: 1000;
         visibility: visible;
     }
+}
+
+.content {
+    padding-top: 1.1rem;
+    overflow-x: auto;
 }

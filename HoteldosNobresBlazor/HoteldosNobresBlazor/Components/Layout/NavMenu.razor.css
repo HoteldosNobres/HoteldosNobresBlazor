@@ -2,8 +2,7 @@
     appearance: none;
     cursor: pointer;
     width: 3.5rem;
-    height: 2.5rem;
-    color: white;
+    height: 2.5rem; 
     position: absolute;
     top: 0.5rem;
     right: 1rem;
@@ -12,11 +11,11 @@
 }
 
 .fa-solid {
-    color: white;
+    
 }
 
 .fa-brands {
-    color: white;
+    
 }
 
 .navbar-toggler:checked {
@@ -83,8 +82,7 @@
         padding-bottom: 1rem;
     }
 
-    .nav-item ::deep .nav-link {
-        color: #d7d7d7;
+    .nav-item ::deep .nav-link { 
         background: none;
         border: none;
         border-radius: 4px;
@@ -131,8 +129,7 @@
 
 #footer {
     /* background-color: white;  */
-    text-align: center;
-    color: white;
+    text-align: center; 
 }
 
     #footer .icons {
@@ -156,3 +153,6 @@
         visibility: collapse;
     }
 }
+
+
+
