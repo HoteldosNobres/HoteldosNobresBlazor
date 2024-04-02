@@ -129,21 +129,21 @@
 }
 
 
-#footer { 
-    background-color: #000000;   
-    text-align: center; 
+#footer {
+    /* background-color: white;  */
+    text-align: center;
     color: white;
 }
 
-  #footer .icons {
+    #footer .icons {
         margin: 0 0 0 0;
     }
 
-  #footer .copyright {
+    #footer .copyright {
         margin: 0 0 0 0;
     }
 
-  #footer .copyright li {
+        #footer .copyright li {
             border-left-width: 1px;
             display: inline-block;
             line-height: 1em;
@@ -151,7 +151,7 @@
             padding-left: 0.75em;
         }
 
- @media screen and (max-width: 641px) {
+@media screen and (max-width: 641px) {
     #footer {
         visibility: collapse;
     }

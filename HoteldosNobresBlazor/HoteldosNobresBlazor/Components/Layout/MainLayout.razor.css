@@ -9,16 +9,20 @@ main {
 }
 
 .sidebar {
-    background-image: linear-gradient(180deg, #D2154E, #000000 90%);
+    position: sticky;
+    top: 0;
+    background-image: linear-gradient(180deg, #D2154E, transparent 90%);
 }
 
 .top-row {
-    background-color: #f7f7f7;
+    backdrop-filter: blur(10px);
     border-bottom: 1px solid #d6d5d5;
     justify-content: flex-end;
     height: 3.5rem;
     display: flex;
     align-items: center;
+
+     
 }
 
     .top-row ::deep a, .top-row ::deep .btn-link {
@@ -66,7 +70,7 @@ main {
 
     .top-row.auth ::deep a:first-child {
         flex: 1;
-        text-align: right;
+        text-align: left;
         width: 0;
     }
 
@@ -94,3 +98,41 @@ main {
         right: 0.75rem;
         top: 0.5rem;
     }
+
+
+#footer {
+    /* background-color: white;  */
+    visibility: collapse;
+    text-align: center;
+    color: white;
+}
+
+    #footer .icons {
+        margin: 0 0 0 0;
+    }
+
+    #footer .copyright {
+        margin: 0 0 0 0;
+    }
+
+    #footer .copyright li {
+        border-left-width: 1px;
+        display: inline-block;
+        line-height: 1em;
+        margin-left: 0.75em;
+        padding-left: 0.75em;
+    }
+
+@media screen and (max-width: 641px) {
+    #footer {
+        backdrop-filter: blur(10px);
+        bottom: 0;
+        box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
+        left: 0;
+        padding: 0.6rem 1.25rem 0.7rem 1.25rem;
+        position: fixed;
+        width: 100%;
+        z-index: 1000;
+        visibility: visible;
+    }
+}
