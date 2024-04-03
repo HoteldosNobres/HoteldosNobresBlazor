@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<html lang="pt-br" >
+<html lang="pt-br" data-bs-theme="dark">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -16,7 +16,7 @@
      
     <HeadOutlet />
 </head>
-<body data-bs-theme="dark">
+<body >
     <Routes />
     <script src="_framework/blazor.web.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
@@ -27,8 +27,20 @@
     <script src="_content/Blazor.Bootstrap/blazor.bootstrap.js"></script> 
 <script> 
     function toggleTheme(){
-        document.body.dataset.bsTheme = 
-            document.body.dataset.bsTheme == 'dark' ? 'light' : 'dark';
+            if (document.documentElement.getAttribute('data-bs-theme') == 'dark') {
+                document.documentElement.setAttribute('data-bs-theme', 'light')
+            }
+            else {
+                document.documentElement.setAttribute('data-bs-theme', 'dark')
+            }
+            var element = document.querySelector('.fas.fa-solid.fa-moon');
+            if (element.classList.contains('fa-moon')) {
+                element.classList.remove('fa-moon');
+                element.classList.add('fa-sun');
+            } else {
+                element.classList.remove('fa-sun');
+                element.classList.add('fa-moon');
+            }
     }
 </script>
 </body>
