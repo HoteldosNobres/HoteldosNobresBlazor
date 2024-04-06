@@ -211,6 +211,40 @@ namespace HoteldosNobresBlazor.Funcoes
 
         }
 
+        public static async Task<string> postMensagemTempleteConfirmaReserva(string numero, string reservaID)
+        {
+            try
+            {
+
+                var client = new HttpClient();
+                var request = new HttpRequestMessage(HttpMethod.Post, urlapi);
+                request.Headers.Add("Authorization", "Bearer " + KEYs.TOKEN_WHATSAPP);
+                var content = new StringContent("{     \"messaging_product\": \"whatsapp\"," +
+                    "     \"to\": \"" + numero + "\",   " +
+                    "   \"type\":  \"template\",  " +
+                    "   \"template\":      {      " +
+                    "    \"name\": \"reserva_confirmacao\",   " +
+                    "      \"language\":               {           " +
+                    "        \"code\": \"pt_BR\"              },   " +
+                    "      \"components\":  [             {     " +
+                    "            \"type\": \"HEADER\",        " +
+                    "         \"parameters\": [{             " +
+                    "                  \"type\": \"text\",    " +
+                    "                          \"text\": \"" + reservaID + "\" }] }] } }", null, "application/json");
+                request.Content = content;
+                var response = await client.SendAsync(request);
+                response.EnsureSuccessStatusCode();
+
+                return "";
+            }
+            catch (FileNotFoundException e)
+            {
+                Console.WriteLine(e.Message);
+                return null;
+            }
+
+        }
+
 
         #endregion Messages
 

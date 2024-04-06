@@ -1,4 +1,6 @@
 ﻿@page "/reserva/{ReservationId}"
+@using HoteldosNobresBlazor.Classes
+@using HoteldosNobresBlazor.Funcoes
 @rendermode InteractiveAuto
 @inject AppState appState
 
@@ -10,15 +12,29 @@
     Reserva: @novaReservationId; 
 </p>
 
+@foreach (var linha in arrayDeLinhas)
+{
+    @linha
+    <br />
+}
+
 
 @code {
     [Parameter]
     public string ReservationId { get; set; }
+    string[] arrayDeLinhas;
 
     string novaReservationId;
-     
+
     protected override async Task OnInitializedAsync()
     {
         novaReservationId = ReservationId; 
+        Reserva novareserva = new Reserva();
+        novareserva.IDReserva = ReservationId;
+
+        novareserva = FunctionAPICLOUDBEDs.getReservationAsync(novareserva).Result;
+        String log = FuncoesFNRH.Atualizar(novareserva);
+
+        arrayDeLinhas = log.Split('\n');
     }
 }

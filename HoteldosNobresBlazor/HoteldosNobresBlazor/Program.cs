@@ -145,7 +145,7 @@ app.MapPost("/whatsapp", async (HttpContext httpContext) =>
         //string challenge = httpContext.Request.Query["hub.challenge"];
         //string mode = httpContext.Request.Query["hub.mode"];
 
-        sCOPP.MyMessage += body + " <Body";
+        sCOPP.MyMessageLogWhatsapp = " -Bodi-  " + body + " -Bodi-  ";
         CacheHotel cache2 = new CacheHotel(sCOPP);
         cache2.RecebeMensagem(body);
 

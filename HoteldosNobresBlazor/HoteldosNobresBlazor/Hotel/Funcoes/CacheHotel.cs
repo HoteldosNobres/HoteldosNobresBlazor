@@ -110,13 +110,13 @@ namespace HoteldosNobresBlazor.Funcoes
                 else if (from == "553584151764" && texto == "postMensagemTemplete")
                     resultado += FunctionWhatsApp.postMensagemTemplete(from, "inf_mtur").Result;
 
-                if (from != "553584151764" && from != "553537150180")
-                    resultado += FunctionWhatsApp.postMensagem("553537150180", "Numero " + from + " Texto:" + texto).Result;
+                if (from != "553584151764" && from != "553537150180" && !texto.ToUpper().Contains("STATUS DA MENSAGEM"))
+                    resultado += FunctionWhatsApp.postMensagem("553537150180", "Numero " + from.Substring(from.Length - 4) + " Texto:" + texto).Result;
 
                 LogSistema log = new LogSistema()
                 {
                     DataLog = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone),
-                    Log = "Numero " + from + " Texto:" + texto + " "
+                    Log = "Numero " + from.Substring(from.Length - 4 ) + " Texto:" + texto + " "
                 };
 
                 if (from != "553584151764" && from != "553537150180")
@@ -126,7 +126,8 @@ namespace HoteldosNobresBlazor.Funcoes
 
                     if (reserva != null && !string.IsNullOrEmpty(reserva.IDReserva)) {
                         reserva = FunctionAPICLOUDBEDs.getReservationAsync(reserva).Result; 
-                        log.IDReserva = reserva.IDReserva; 
+                        log.IDReserva = reserva.IDReserva;
+                        log.Status = reserva.Status;
                         if (reserva.Notas.Where(x => x.Texto.Contains("WHATSAPP CHAT")).Count() > 0)
                         {
                             Nota nota = reserva.Notas.Where(x => x.Texto.Contains("WHATSAPP CHAT")).FirstOrDefault();
@@ -250,7 +251,7 @@ namespace HoteldosNobresBlazor.Funcoes
                 }
 
 
-                if (!string.IsNullOrEmpty(novareserva.Celular))
+                if (!string.IsNullOrEmpty(novareserva.ProxyCelular))
                 {
                     logSistema.Log += FunctionGoogle.AddPeople(novareserva.NomeHospede, novareserva.Origem, novareserva.ProxyCelular, novareserva.Email.ToString());
                 }
@@ -261,7 +262,7 @@ namespace HoteldosNobresBlazor.Funcoes
             }
             catch (Exception e)
             {
-                AppState.MyMessageReservation = "CreateReservation_changedMetodo " + e.Message + "\n";
+                AppState.MyMessageReservation = "CreateReservation_Metodo " + e.Message + "\n";
             }
 
         }
@@ -608,9 +609,11 @@ namespace HoteldosNobresBlazor.Funcoes
             thread3.Start();
 
             //Reserva reserva = new Reserva();
-            //reserva.IDReserva = "9786569864063";
-            //Thread thread = new Thread(new ParameterizedThreadStart(ChangedStatusMetodo));
-            //thread.Start(reserva);
+            //reserva.IDReserva = "1912274757061";
+            //reserva = FunctionAPICLOUDBEDs.getReservationAsync(reserva).Result;
+            //string log;
+            //log = FunctionWhatsApp.postMensagemTemplete(reserva.ProxyCelular, "inf_mtur").Result;
+            //log += FunctionWhatsApp.postMensageFlowCPF(reserva.ProxyCelular).Result;
 
 
         }
@@ -845,6 +848,8 @@ namespace HoteldosNobresBlazor.Funcoes
 
         public static bool ValidarCPF(string cpf)
         {
+
+
             int[] multiplicador1 = new int[9] { 10, 9, 8, 7, 6, 5, 4, 3, 2 };
             int[] multiplicador2 = new int[10] { 11, 10, 9, 8, 7, 6, 5, 4, 3, 2 };
             string tempCpf;
@@ -853,6 +858,7 @@ namespace HoteldosNobresBlazor.Funcoes
             int resto;
             cpf = cpf.Trim();
             cpf = cpf.Replace(".", "").Replace("-", "");
+
             if (cpf.Length != 11)
                 return false;
             tempCpf = cpf.Substring(0, 9);

@@ -11,9 +11,9 @@
  
 
 @if (listReserva == null) 
-    {
-        <p><em>Carregando...</em></p>
-    }
+{
+    <p><em>Carregando...</em></p>
+}
 else
 {
     <table class="table">
@@ -27,12 +27,13 @@ else
             </tr>
         </thead>
         <tbody>
+            @if (listReserva.Count() > 0)
             @foreach (Reserva reserva1 in listReserva)
             { 
                 <tr>
-                    <td><a href='@reserva1.LinkReserva' target='_blank'> @reserva1.IDReserva</a></td>
+                    <td><a href='@reserva1.LinkReserva' target='_blank'> @reserva1.IDReserva </a></td>
                     <td>@reserva1.DataCheckIn.ToString("dd/MM/yyyy")</td>
-                    <td>@reserva1.NomeHospede.Substring(0,10)</td>
+                        <td>@reserva1.NomeHospede.Split(' ')[0].ToString()</td>
                     <td>@reserva1.Origem</td>
                     <td></td>
                 </tr>
@@ -47,21 +48,38 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        // Simulate asynchronous loading to demonstrate streaming rendering
-        await Task.Delay(500);
+        try
+        {
+            // Simulate asynchronous loading to demonstrate streaming rendering
+                 await Task.Delay(500); 
 
-        appState.MyMessage += "Passou pela reserva";
-   
-        if (appState.ListReservas.Count() == 0)
-        {
-            listReserva = FunctionAPICLOUDBEDs.getReservationsAsync(DateTime.Now.ToString("yyyy-MM-dd")).Result;
-            listReserva.AddRange(FunctionAPICLOUDBEDs.getReservationsAsync(null, DateTime.Now.ToString("yyyy-MM-dd")).Result);
-            appState.ListReservas = listReserva;
+            appState.MyMessage += "Passou pela reserva \n";
+
+            if (appState.ListReservas.Count() > 0)
+                listReserva = appState.ListReservas;
+            else 
+            {
+                listReserva = FunctionAPICLOUDBEDs.getReservationsAsync(DateTime.Now.ToString("yyyy-MM-dd")).Result;
+                listReserva.AddRange(FunctionAPICLOUDBEDs.getReservationsAsync(null, DateTime.Now.ToString("yyyy-MM-dd")).Result);
+                appState.ListReservas = listReserva;
+            } 
         }
-        else
+        catch (Exception ex)
         {
-            listReserva = appState.ListReservas;
+            Console.WriteLine(ex.Message);
         }
+        
+
+        // }
+        // {
+        //     listReserva = FunctionAPICLOUDBEDs.getReservationsAsync(DateTime.Now.ToString("yyyy-MM-dd")).Result;
+        //     listReserva.AddRange(FunctionAPICLOUDBEDs.getReservationsAsync(null, DateTime.Now.ToString("yyyy-MM-dd")).Result);
+        //     appState.ListReservas = listReserva;
+        // }
+        // else
+        // {
+        //     listReserva = appState.ListReservas;
+        // }
 
          
     }
