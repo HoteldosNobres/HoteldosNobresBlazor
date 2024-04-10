@@ -231,18 +231,20 @@ namespace HoteldosNobresBlazor.Funcoes
         public static async Task<string> putReservationNote(string reservationID, string reservationNoteID, string note)
         {
             try
-            {
-                string url = "https://api.cloudbeds.com/api/v1.2/putReservationNote";
+            { 
                 var client = new HttpClient();
-                var request = new HttpRequestMessage(HttpMethod.Put, url);
-                request.Headers.Add("Authorization", "Bearer " + KEYs.TOKEN_CLOUDBEDS);
-                var content = new MultipartFormDataContent();
-                content.Add(new StringContent(reservationID), "reservationID");
-                content.Add(new StringContent(reservationNoteID), "reservationNoteID");
-                content.Add(new StringContent(note), "reservationNote");
+                var request = new HttpRequestMessage(HttpMethod.Put, urlapi + "/putReservationNote");
+                request.Headers.Add("Accept", "application/json");
+                request.Headers.Add("Authorization", "Bearer " + KEYs.TOKEN_CLOUDBEDS); 
+                var collection = new List<KeyValuePair<string, string>>();
+                collection.Add(new("reservationID", reservationID));
+                collection.Add(new("reservationNoteID", reservationNoteID));
+                collection.Add(new("reservationNote", note));
+                var content = new FormUrlEncodedContent(collection);
                 request.Content = content;
                 var response = await client.SendAsync(request);
                 response.EnsureSuccessStatusCode();
+                //Console.WriteLine(await response.Content.ReadAsStringAsync());
 
                 return "";
             }

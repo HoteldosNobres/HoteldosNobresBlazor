@@ -46,9 +46,9 @@ namespace HoteldosNobresBlazor.Funcoes
          
         public void RecebeMensagemMetodo(object objeto)
         {
+            string json = (string)objeto;
             try
-            {
-                string json = (string)objeto;
+            { 
                 MensagemWhatsApp mensagem = FunctionAPICLOUDBEDs.LerRespostaComoObjetoAsync<MensagemWhatsApp>(json).Result;
 
                 string from = mensagem.Entry[0].Changes[0].Value.Messages != null ? mensagem.Entry[0].Changes[0].Value.Messages[0].From :
@@ -101,7 +101,7 @@ namespace HoteldosNobresBlazor.Funcoes
                     }
                 }
                 else if(!string.IsNullOrEmpty(from) && !texto.ToUpper().Contains("STATUS DA MENSAGEM"))
-                     resultado += FunctionWhatsApp.postMensagem(from).Result;
+                    resultado += FunctionWhatsApp.postMensagemTemplete(from, "inf_converse").Result;
 
                 if (from == "553584151764" && texto == "postMensageFlowCPF")
                     resultado += FunctionWhatsApp.postMensageFlowCPF(from).Result;
@@ -132,9 +132,7 @@ namespace HoteldosNobresBlazor.Funcoes
                         {
                             Nota nota = reserva.Notas.Where(x => x.Texto.Contains("WHATSAPP CHAT")).FirstOrDefault();
                             nota.Texto +=  "  " + TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone).ToString("dd/MM/yyyy HH:mm") + " - " + texto;
-                            log.Log += FunctionAPICLOUDBEDs.putReservationNote(reserva.IDReserva, nota.Id, nota.Texto).Result;
-                            log.Log += FunctionAPICLOUDBEDs.deleteReservationNote(reserva.IDReserva, nota.Id).Result;
-                            log.Log += FunctionAPICLOUDBEDs.postReservationNote(reserva.IDReserva, nota.Texto).Result;
+                            log.Log += FunctionAPICLOUDBEDs.putReservationNote(reserva.IDReserva!, nota.Id, nota.Texto).Result; 
                         }else
                             {
                             reserva.Notas.Add(new Nota("", "WHATSAPP CHAT - Falou " + texto )); 
@@ -152,7 +150,7 @@ namespace HoteldosNobresBlazor.Funcoes
             }
             catch (Exception e)
             {
-                AppState.MyMessageLogWhatsapp = "Erro-" + e.Message + "\n";
+                AppState.MyMessageLogWhatsapp = "Erro-" + e.Message + "\n" + json + "\n";
             }
         }
 
@@ -238,16 +236,13 @@ namespace HoteldosNobresBlazor.Funcoes
 
                 if (logSistema.Log.Contains("SNRHos-MS0001"))
                 {
-                    string mensagem = "Olá, " + novareserva.NomeHospede + "! Seja Bem vindo em nosso Hotel.";
-                    logSistema.Log += FunctionWhatsApp.postMensagem(novareserva.ProxyCelular, mensagem).Result;
-                    logSistema.Log += FunctionWhatsApp.postMensagemTemplete(novareserva.ProxyCelular, "inf_inicial").Result;
-                    logSistema.Log += FunctionWhatsApp.postMensagem(novareserva.ProxyCelular).Result;
+                    logSistema.Log += FunctionWhatsApp.postMensagemTemplete(novareserva.ProxyCelular!, "inf_inicial").Result;
+                    logSistema.Log += FunctionWhatsApp.postMensagemTemplete(novareserva.ProxyCelular!, "inf_converse").Result;
                 }
                 else
                   if (logSistema.Log.Contains("CPF inválido"))
-                {
-                    logSistema.Log += FunctionWhatsApp.postMensagemTemplete(novareserva.ProxyCelular, "inf_mtur").Result;
-                    logSistema.Log += FunctionWhatsApp.postMensageFlowCPF(novareserva.ProxyCelular).Result;
+                { 
+                    logSistema.Log += FunctionWhatsApp.postMensageFlowCPF(novareserva.ProxyCelular!).Result;
                 }
 
 
@@ -441,15 +436,15 @@ namespace HoteldosNobresBlazor.Funcoes
                     {
                         reserva.DataCheckOutRealizado = DateTime.Parse(TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone).ToString("yyyy-MM-dd HH:mm:ss"));
                         retorno = FuncoesFNRH.CheckOut(reserva);
+                         
                     }
 
                     if (retorno.Contains("SNRHos-MS0004"))
                     {
                         retorno = retorno + FunctionAPICLOUDBEDs.deleteReservationNote(reserva, "SNRHos-MS0001").Result;
-
-                        string mensagem = "Obrigado por reservar conosco!!! Voltem sempre ";
-                        logSistema.Log += FunctionWhatsApp.postMensagem(reserva.ProxyCelular, mensagem).Result;
-                        logSistema.Log += FunctionWhatsApp.postMensageFlowAvaliacao(reserva.ProxyCelular).Result;
+                         
+                        logSistema.Log += FunctionWhatsApp.postMensagemTemplete(reserva.ProxyCelular!, "inf_obrigado").Result; 
+                        logSistema.Log += FunctionWhatsApp.postMensageFlowAvaliacao(reserva.ProxyCelular!).Result;
 
                     }
                 }
@@ -467,9 +462,10 @@ namespace HoteldosNobresBlazor.Funcoes
                             voltar = true;
                             logSistema.Log += FunctionWhatsApp.postMensagem("553537150180", "Por favor informe seu CPF na reserva do " + reserva.NomeHospede).Result;
 
-                            logSistema.Log += FunctionWhatsApp.postMensagem(reserva.ProxyCelular, "Por favor informe seu CPF para reserva.").Result;
-                            logSistema.Log += FunctionWhatsApp.postMensagem(reserva.ProxyCelular, " Na recepçao e solicite para preencher no sistema.").Result;
-                            logSistema.Log += FunctionWhatsApp.postMensageFlowCPF(reserva.ProxyCelular).Result;
+                            logSistema.Log += FunctionWhatsApp.postMensagemTemplete(reserva.ProxyCelular!, "inf_mtur").Result;
+                            logSistema.Log += FunctionWhatsApp.postMensagem(reserva.ProxyCelular!, "Por favor informe seu CPF para reserva.").Result;
+                            logSistema.Log += FunctionWhatsApp.postMensagem(reserva.ProxyCelular!, " Na recepçao e solicite para preencher no sistema.").Result;
+                            logSistema.Log += FunctionWhatsApp.postMensageFlowCPF(reserva.ProxyCelular!).Result;
                         }
 
                         if(reserva.Cpf != null && !ValidarCPF(reserva.Cpf))
@@ -477,9 +473,10 @@ namespace HoteldosNobresBlazor.Funcoes
                             voltar = true;
                             logSistema.Log += FunctionWhatsApp.postMensagem("553537150180", "Por favor informe seu CPF VALIDO - " + reserva.NomeHospede).Result;
 
-                            logSistema.Log += FunctionWhatsApp.postMensagem(reserva.ProxyCelular, "Por favor informe seu CPF VALIDO para reserva.").Result;
-                            logSistema.Log += FunctionWhatsApp.postMensagem(reserva.ProxyCelular, " Na recepçao e solicite para preencher no sistema.").Result;
-                            logSistema.Log += FunctionWhatsApp.postMensageFlowCPF(reserva.ProxyCelular).Result;
+                            logSistema.Log += FunctionWhatsApp.postMensagemTemplete(reserva.ProxyCelular!, "inf_mtur").Result;
+                            logSistema.Log += FunctionWhatsApp.postMensagem(reserva.ProxyCelular!, "Por favor informe seu CPF VALIDO para reserva.").Result;
+                            logSistema.Log += FunctionWhatsApp.postMensagem(reserva.ProxyCelular!, " Na recepçao e solicite para preencher no sistema.").Result;
+                            logSistema.Log += FunctionWhatsApp.postMensageFlowCPF(reserva.ProxyCelular!).Result;
                         }
 
                         if (voltar)
@@ -573,11 +570,9 @@ namespace HoteldosNobresBlazor.Funcoes
                 if (logSistema.Log.Contains("SNRHos-MS0001"))
                 {
                     logSistema.Log += FunctionGoogle.AddPeople(reserva.NomeHospede, reserva.Origem, reserva.ProxyCelular, reserva.Email.ToString());
-
-                    string mensagem = "Olá, " + reserva.NomeHospede + "! Seja Bem vindo em nosso Hotel.";
-                    logSistema.Log += FunctionWhatsApp.postMensagem(reserva.ProxyCelular, mensagem).Result;
+                     
                     logSistema.Log += FunctionWhatsApp.postMensagemTemplete(reserva.ProxyCelular, "inf_inicial").Result;
-                    logSistema.Log += FunctionWhatsApp.postMensagem(reserva.ProxyCelular).Result;
+                    logSistema.Log += FunctionWhatsApp.postMensagemTemplete(reserva.ProxyCelular, "inf_converse").Result;
                 }
 
                 logSistema.Log += retorno + " ";

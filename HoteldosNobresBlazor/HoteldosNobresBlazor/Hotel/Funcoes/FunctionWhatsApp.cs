@@ -36,7 +36,7 @@ namespace HoteldosNobresBlazor.Funcoes
 
         }
 
-        public static async Task<string> postMensagem(string numero, string mensagem = null)
+        public static async Task<string> postMensagem(string numero, string mensagem)
         {
             try
             {
