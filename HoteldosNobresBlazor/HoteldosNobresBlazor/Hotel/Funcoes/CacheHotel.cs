@@ -455,6 +455,7 @@ namespace HoteldosNobresBlazor.Funcoes
             }
 
         }
+
         public async void CacheDetails_changedMetodo(object objeto)
         {
             try
@@ -500,10 +501,7 @@ namespace HoteldosNobresBlazor.Funcoes
             }
 
         }
-
-
-
-
+         
         public void CacheExecutanado()
         {
             Thread threadreserva = new Thread(ListaReservaMetodo);
@@ -522,9 +520,9 @@ namespace HoteldosNobresBlazor.Funcoes
             //reserva.IDReserva = "1912274757061";
             //reserva = FunctionAPICLOUDBEDs.getReservationAsync(reserva).Result;
             //string log;
-            //log = FunctionWhatsApp.postMensagemTemplete(reserva.ProxyCelular, "inf_mtur").Result;
-            //log += FunctionWhatsApp.postMensageFlowCPF(reserva.ProxyCelular).Result;
-
+            ////log = FunctionWhatsApp.postMensagemTemplete(reserva.ProxyCelular, "inf_mtur").Result;
+            ////log += FunctionWhatsApp.postMensageFlowCPF(reserva.ProxyCelular).Result;
+            //log = FunctionWhatsApp.postMensagemTemplete("5511998958811", "inf_inicial").Result;
 
         }
 
@@ -641,15 +639,17 @@ namespace HoteldosNobresBlazor.Funcoes
                 if (reserva.Notas.Where(x => x.Texto == retorno).Count() == 0)
                 {
                     reserva.Notas.Add(new Nota("", retorno));
-                    if (retorno.Contains("SNRHos-MS0001"))
+                    if (retorno.Contains("SNRHos-MS0001") || retorno.Contains("SNRHos-ME0026"))
                     {
                         reserva.SnNum = retorno.Replace("SNRHos-MS0003(", "").Replace("SNRHos-MS0001(", "").Replace(")", "");
                         if (reserva.Notas.Where(x => x.Texto == "CPF inválido").Count() > 0)
                         {
-                            retorno += FunctionAPICLOUDBEDs.deleteReservationNote(reserva, "CPF inválido").Result;
+                            retorno += FunctionAPICLOUDBEDs.putReservationNote(reserva.IDReserva!, reserva.Notas.FirstOrDefault(x => x.Texto == "CPF inválido").Id!, retorno).Result;
                         }
+                        else
+                            reserva = FunctionAPICLOUDBEDs.postReservationNote(reserva, retorno).Result;
                     }
-                    reserva = FunctionAPICLOUDBEDs.postReservationNote(reserva, retorno).Result;
+                    
                 }
 
 
