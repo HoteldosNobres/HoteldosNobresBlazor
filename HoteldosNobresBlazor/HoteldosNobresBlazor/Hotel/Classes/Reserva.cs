@@ -81,7 +81,7 @@ namespace HoteldosNobresBlazor.Classes
             {
                 if (string.IsNullOrEmpty(Numerotelefone))
                     return "37150180";
-                return Numerotelefone.Replace("+", "").Count() > 11 ? Numerotelefone.Replace("+", "").Substring(4, Numerotelefone.Length - 5) : Numerotelefone.Replace("+", "").Substring(2, 9);
+                return Numerotelefone.Replace("+", "").Count() > 11 ? Numerotelefone.Replace("+", "").Substring(4, Numerotelefone.Length - 5) : Numerotelefone.Replace("+", "").Count() <= 9 ? Numerotelefone :  Numerotelefone.Replace("+", "").Substring(2, 9);
             }
         }
 

@@ -51,14 +51,14 @@ else
         try
         {
             // Simulate asynchronous loading to demonstrate streaming rendering
-                 await Task.Delay(500); 
+            await Task.Delay(500); 
 
             appState.MyMessage += "Passou pela reserva \n";
 
             if (appState.ListReservas.Count() > 0)
                 listReserva = appState.ListReservas;
             else 
-            {
+            { 
                 listReserva = FunctionAPICLOUDBEDs.getReservationsAsync(DateTime.Now.ToString("yyyy-MM-dd")).Result;
                 listReserva.AddRange(FunctionAPICLOUDBEDs.getReservationsAsync(null, DateTime.Now.ToString("yyyy-MM-dd")).Result);
                 appState.ListReservas = listReserva;
@@ -69,18 +69,7 @@ else
             Console.WriteLine(ex.Message);
         }
         
-
-        // }
-        // {
-        //     listReserva = FunctionAPICLOUDBEDs.getReservationsAsync(DateTime.Now.ToString("yyyy-MM-dd")).Result;
-        //     listReserva.AddRange(FunctionAPICLOUDBEDs.getReservationsAsync(null, DateTime.Now.ToString("yyyy-MM-dd")).Result);
-        //     appState.ListReservas = listReserva;
-        // }
-        // else
-        // {
-        //     listReserva = appState.ListReservas;
-        // }
-
+         
          
     }
 

@@ -1,20 +1,22 @@
 ﻿@page "/fnrh"
 @inject AppState appState
+@rendermode InteractiveServer
+@inject NavigationManager NavigationManager2
+@attribute [StreamRendering(true)]
 
 <PageTitle>FNRH</PageTitle>
-
 <h1>Log FNRH!</h1>
-
-@foreach (var linha in arrayDeLinhas)
+@if (arrayDeLinhas.Length > 0)
 {
-     @linha <br />
+    @foreach (var linha in arrayDeLinhas)
+    {
+        @linha
+        <br />
+    }
 }
+<button class="btn btn-primary" @onclick="Clear">Clear</button>
 
-@if (listLog == null)
-{
-    <p><em>Carregando...</em></p>
-}
-else
+@if (listLog != null && listLog.Count > 0)
 {
     <table class="table">
         <thead>
@@ -40,17 +42,49 @@ else
         </tbody>
     </table>
 }
-
+else
+{
+    <p role="status">Carregando...</p>
+}
 
 
 @code
 {
     public List<LogSistema>? listLog;
-    string[] arrayDeLinhas ;
+    string[] arrayDeLinhas = Array.Empty<string>();
+
     protected override async Task OnInitializedAsync()
     {
-        listLog = appState.ListLogSistemaFNRH;
         arrayDeLinhas = appState.MyMessageFNRH.Split('\n');
 
+        // Simulate asynchronous loading to demonstrate streaming rendering
+        await Task.Delay(500);
+
+        appState.MyMessage += "Passou pela reserva \n";
+
+        if (appState.ListReservas.Count() > 0)
+            listLog = appState.ListLogSistemaFNRH;
+        StateHasChanged();
     }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        // if (firstRender)
+        // {
+        await Task.Delay(5000);
+
+        listLog = appState.ListLogSistemaFNRH;
+        arrayDeLinhas = appState.MyMessageFNRH.Split('\n');
+        if (NavigationManager2.Uri.Contains("fnrh"))
+            StateHasChanged();
+        // }
+    }
+
+    private void Clear()
+    {
+        appState.MyMessageFNRH = string.Empty;
+        arrayDeLinhas = Array.Empty<string>();
+    }
+
+
 } 

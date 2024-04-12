@@ -80,7 +80,7 @@ namespace HoteldosNobresBlazor.Funcoes
                 else if (mensagem.Entry[0].Changes[0].Value.Statuses != null && mensagem.Entry[0].Changes[0].Value.Statuses[0].StatusStatus != null)
                     texto = " STATUS DA MENSAGEM " + mensagem.Entry[0].Changes[0].Value.Statuses[0].StatusStatus;
 
-                    if (!string.IsNullOrEmpty(cpf))
+                if (!string.IsNullOrEmpty(cpf))
                 {
                     resultado += FunctionWhatsApp.postMensagem("5535984151764", texto).Result;
                     resultado += FunctionWhatsApp.postMensagemTemplete(from, "inf_inicial").Result;
@@ -131,7 +131,7 @@ namespace HoteldosNobresBlazor.Funcoes
                         if (reserva.Notas.Where(x => x.Texto.Contains("WHATSAPP CHAT")).Count() > 0)
                         {
                             Nota nota = reserva.Notas.Where(x => x.Texto.Contains("WHATSAPP CHAT")).FirstOrDefault();
-                            nota.Texto +=  "  " + TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone).ToString("dd/MM/yyyy HH:mm") + " - " + texto;
+                            nota.Texto +=  "  " + TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone).ToString("dd/MM/yyyy HH:mm:ss") + " - " + texto;
                             log.Log += FunctionAPICLOUDBEDs.putReservationNote(reserva.IDReserva!, nota.Id, nota.Texto).Result; 
                         }else
                             {
