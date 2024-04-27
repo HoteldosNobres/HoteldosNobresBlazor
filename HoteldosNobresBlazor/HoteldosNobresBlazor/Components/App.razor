@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+﻿ <!DOCTYPE html>
 <html lang="pt-br" data-bs-theme="dark">
 <head>
     <meta charset="utf-8" />
@@ -25,13 +25,36 @@
     <!-- Add chartjs-plugin-datalabels.min.js reference if chart components with data label feature is used in your application. -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js" integrity="sha512-JPcRR8yFa8mmCsfrw4TNte1ZvF1e3+1SdGMslZvmrzDYxS69J7J49vkFL8u6u8PlPJK+H3voElBtUCzaXj+6ig==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="_content/Blazor.Bootstrap/blazor.bootstrap.js"></script> 
-<script> 
-    function toggleTheme(){
-            if (document.documentElement.getAttribute('data-bs-theme') == 'dark') {
-                document.documentElement.setAttribute('data-bs-theme', 'light')
+    <script> 
+        function toggleTheme(){
+                if (document.documentElement.getAttribute('data-bs-theme') == 'dark') {
+                    document.documentElement.setAttribute('data-bs-theme', 'light');
+                    document.cookie = "cookietheme=light";
+                }
+                else {
+                    document.documentElement.setAttribute('data-bs-theme', 'dark');
+                    document.cookie = "cookietheme=dark";
+                }
+                var element = document.querySelector('.fas.fa-solid.fa-moon');
+                if (element == null)
+                    element = document.querySelector('.fas.fa-solid.fa-sun');
+                if (element.classList.contains('fa-moon')) {
+                    element.classList.remove('fa-moon');
+                    element.classList.add('fa-sun');
+                } else {
+                    element.classList.remove('fa-sun');
+                    element.classList.add('fa-moon');
+                }
+        }
+
+        function toggleTheme(string thema) {
+            if (thema == 'dark') {
+                document.documentElement.setAttribute('data-bs-theme', 'light');
+                document.cookie = "cookietheme=light";
             }
             else {
-                document.documentElement.setAttribute('data-bs-theme', 'dark')
+                document.documentElement.setAttribute('data-bs-theme', 'dark');
+                document.cookie = "cookietheme=dark";
             }
             var element = document.querySelector('.fas.fa-solid.fa-moon');
             if (element == null)
@@ -43,7 +66,7 @@
                 element.classList.remove('fa-sun');
                 element.classList.add('fa-moon');
             }
-    }
-</script>
+        }
+    </script>
 </body>
 </html>

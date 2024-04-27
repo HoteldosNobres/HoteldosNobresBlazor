@@ -12,6 +12,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using System.Net.Mime;
+using Blazored.LocalStorage;
+using Microsoft.AspNetCore.Components.Web;
+using HoteldosNobresBlazor.Client.Funcoes;
+using KEYs = HoteldosNobresBlazor.Client.Funcoes.KEYs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +23,15 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
+
+builder.Services.AddTransient<CloudbedsAPI>();
+
+builder.Services.AddHttpClient("APICloudbeds", client =>
+{
+    client.BaseAddress = new Uri("https://api.cloudbeds.com/api/v1.2");
+    client.DefaultRequestHeaders.Add("Accept", "application/json");
+    client.DefaultRequestHeaders.Add("Authorization", "Bearer " + KEYs.TOKEN_CLOUDBEDS);
+});
 
 
 builder.Services.AddHttpClient();
@@ -28,6 +41,8 @@ builder.Services.AddBlazorBootstrap();
 builder.Services.AddScoped<AppState>();
 builder.Services.AddSingleton<AppState>();
 
+builder.Services.AddBlazoredLocalStorage();   // local storage
+builder.Services.AddBlazoredLocalStorage(config => config.JsonSerializerOptions.WriteIndented = true);  // local storage
 
 var app = builder.Build();
 

@@ -1,5 +1,10 @@
 ﻿@page "/"
 @inject AppState appState
+@inject Blazored.LocalStorage.ILocalStorageService localStorage 
+@inject NavigationManager NavigationManagerHome
+@rendermode InteractiveServer
+@inject IJSRuntime JS
+
 
 <PageTitle>Home</PageTitle>
 
@@ -13,12 +18,57 @@ Welcome to your new app.
     <br />
 } 
 
+ 
+<button class="btn btn-primary" @onclick="HandleSubmit">Click me 2</button>
+
+
+
 @code
-{ 
-    string[] arrayDeLinhas;
+{  
+    string[] arrayDeLinhas; 
+
     protected override async Task OnInitializedAsync()
     { 
-        arrayDeLinhas = appState.MyMessage.Split('\n'); 
+        arrayDeLinhas = appState.MyMessage.Split('\n');  
+         
+        // var cookieContent = await localStorage.GetItemAsync<string>("cookietheme");
 
+        // if (cookieContent == null)
+        // {
+        //     await JS.InvokeVoidAsync("toggleTheme");
+        // }
+        // else
+        // {
+        //     await JS.InvokeVoidAsync("toggleTheme", cookieContent);
+        // }
+
+    }
+
+    private  async Task HandleSubmit()
+    {
+        // await localStorage.SetItemAsync("cookietheme", "dark");
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        // var cookieContent = await localStorage.GetItemAsync<string>("cookietheme");
+
+        // if (cookieContent == null)
+        // {
+        //     Console.WriteLine("Cookie is Theme");
+        // }
+        // else
+        // {
+        //     Console.WriteLine("We have a cookie with contents: " + cookieContent);
+        // }
+
+        // if (cookieContent == null)
+        // {
+        //     await JS.InvokeVoidAsync("toggleTheme");
+        // }
+        // else
+        // {
+        //     await JS.InvokeVoidAsync("toggleTheme", cookieContent);
+        // }
     }
 } 

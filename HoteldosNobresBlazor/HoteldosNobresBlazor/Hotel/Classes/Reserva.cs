@@ -1,6 +1,7 @@
 ﻿using MosaicoSolutions.ViaCep;
 using MosaicoSolutions.ViaCep.Modelos;
 using System.Globalization;
+using System.Text.RegularExpressions;
 
 namespace HoteldosNobresBlazor.Classes
 {
@@ -49,6 +50,7 @@ namespace HoteldosNobresBlazor.Classes
         public string? Cidade { get; set; }
         public string? Estado { get; set; }
         public string? CodigoIBGE { get; set; }
+        public EUF? UF { get; set; }
 
         //Cartao
         public string? NumeroCartao { get; set; }
@@ -205,7 +207,7 @@ namespace HoteldosNobresBlazor.Classes
                 foreach (var item in guest.CustomFields)
                 {
                     if (item.CustomFieldName.Equals("CPF"))
-                        Cpf = item.CustomFieldValue;
+                        Cpf = Regex.Replace(item.CustomFieldValue, @"[^\d]", "");
 
                     if (item.CustomFieldName.Equals("Data de Nascimento"))
                     {
@@ -244,6 +246,8 @@ namespace HoteldosNobresBlazor.Classes
                     var viaCepService = ViaCepService.Default();
                     var endereco = viaCepService.ObterEndereco(cep);
                     Cidade = endereco.Localidade;
+                    if(endereco.UF != null)
+                        UF = (EUF)Enum.Parse(typeof(EUF), endereco.UF); 
                     Estado = endereco.UF;
                     CodigoIBGE = endereco.IBGE;
                     Contry = "BRASIL";

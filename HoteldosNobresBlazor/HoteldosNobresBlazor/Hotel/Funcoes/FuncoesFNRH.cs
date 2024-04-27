@@ -147,6 +147,7 @@ namespace HoteldosNobresBlazor.Funcoes
 
         private static string CriarXML(Reserva reserva)
         {
+            string nome = reserva.NomeHospede;
             string soapEnvelope = "";
             try
             { 
@@ -197,7 +198,7 @@ namespace HoteldosNobresBlazor.Funcoes
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                Console.WriteLine(nome + e.Message);
             }
 
             return soapEnvelope;

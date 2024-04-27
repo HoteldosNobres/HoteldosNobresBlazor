@@ -1,8 +1,9 @@
 ﻿@page "/reserva/{ReservationId}"
 @using HoteldosNobresBlazor.Classes
 @using HoteldosNobresBlazor.Funcoes
-@rendermode InteractiveAuto
+@rendermode InteractiveServer
 @inject AppState appState
+@inject CloudbedsAPI cloudbedsAPI
 
 <PageTitle>Reserva</PageTitle>
 
@@ -33,8 +34,16 @@
         novareserva.IDReserva = ReservationId;
 
         novareserva = FunctionAPICLOUDBEDs.getReservationAsync(novareserva).Result;
-        String log = FuncoesFNRH.Atualizar(novareserva);
+        // String log = FuncoesFNRH.Atualizar(novareserva);
+        string log = "teste";
 
         arrayDeLinhas = log.Split('\n');
+
+        DateTime inicio = DateTime.Now;
+        novareserva = await cloudbedsAPI.GetReservaAsync(novaReservationId);
+        // novareserva = FunctionAPICLOUDBEDs.getReservationAsync(novareserva).Result;
+        DateTime final = DateTime.Now;
+        TimeSpan diferenca =  final - inicio;
+        Console.WriteLine(diferenca);
     }
 }
