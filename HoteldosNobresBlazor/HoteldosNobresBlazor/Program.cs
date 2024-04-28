@@ -1,21 +1,14 @@
-using HoteldosNobresBlazor.Client.Pages;
 using HoteldosNobresBlazor.Components;
 using HoteldosNobresBlazor.Funcoes;
 using HoteldosNobresBlazor.Services;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.Extensions.DependencyInjection;
-using System;
-using static System.Formats.Asn1.AsnWriter;
 using System.Text;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json;
-using System.Net.Mime;
 using Blazored.LocalStorage;
-using Microsoft.AspNetCore.Components.Web;
-using HoteldosNobresBlazor.Client.Funcoes;
 using KEYs = HoteldosNobresBlazor.Client.Funcoes.KEYs;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Components.Authorization;
+using HoteldosNobresBlazor.Modelo;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.VisualBasic;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,23 +18,37 @@ builder.Services.AddRazorComponents()
     .AddInteractiveWebAssemblyComponents();
 
 builder.Services.AddTransient<CloudbedsAPI>();
-
+ 
 builder.Services.AddHttpClient("APICloudbeds", client =>
 {
+    client.BaseAddress = new Uri(builder.Configuration["APICloudbeds:Url"]!);
     client.BaseAddress = new Uri("https://api.cloudbeds.com/api/v1.2");
     client.DefaultRequestHeaders.Add("Accept", "application/json");
     client.DefaultRequestHeaders.Add("Authorization", "Bearer " + KEYs.TOKEN_CLOUDBEDS);
 });
 
+builder.Services.AddAuthorizationCore();
+builder.Services.AddCascadingAuthenticationState();
+//builder.Services.AddScoped<IdentityUserAccessor>();
+builder.Services.AddScoped<IdentityRedirectManager>();
+builder.Services.AddScoped<AuthenticationStateProvider, AuthAPI>();
+builder.Services.AddScoped<AuthAPI>(sp => (AuthAPI)sp.GetRequiredService<AuthenticationStateProvider>());
+ 
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultScheme = IdentityConstants.ApplicationScheme;
+    options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
+}).AddIdentityCookies();
 
 builder.Services.AddHttpClient();
 builder.Services.AddBlazorBootstrap();
 
-
-builder.Services.AddScoped<AppState>();
+//builder.Services.AddCascadingAuthenticationState();
+builder.Services.AddScoped<CookieHandler>();
+builder.Services.AddScoped<AppState>();  
 builder.Services.AddSingleton<AppState>();
-
-builder.Services.AddBlazoredLocalStorage();   // local storage
+ 
+//builder.Services.AddBlazoredLocalStorage();   // local storage
 builder.Services.AddBlazoredLocalStorage(config => config.JsonSerializerOptions.WriteIndented = true);  // local storage
 
 var app = builder.Build();
@@ -49,20 +56,18 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseWebAssemblyDebugging();
+    app.UseWebAssemblyDebugging(); 
 }
 else
 {
-    app.UseExceptionHandler("/Error", createScopeForErrors: true);
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    app.UseExceptionHandler("/Error", createScopeForErrors: true); 
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
- 
-app.UseStaticFiles();
-app.UseRouting();
+
 app.UseAntiforgery();
+app.UseStaticFiles(); 
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()
@@ -262,6 +267,8 @@ var cache = new CacheHotel(sCOPP);
 
 cache.CacheExecutanado();
 
+// Add additional endpoints required by the Identity /Account Razor components.
+/*app.MapAdditionalIdentityEndpoints()*/;
 
 app.Run();
 
