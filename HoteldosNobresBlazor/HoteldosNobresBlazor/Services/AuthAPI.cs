@@ -20,25 +20,25 @@ public class AuthAPI : AuthenticationStateProvider
     public AuthAPI( )
     {
         AuthenticationState state = authenticationStateTask.Result;
-        if (!state.User!.Identity!.IsAuthenticated)
+        if (state.User!.Identity == null || !state.User!.Identity!.IsAuthenticated)
         {
             return;
         }
 
-        Claim[] claims = [
-           new Claim(ClaimTypes.NameIdentifier, state.User!.Identities!.FirstOrDefault().Name!),
-            new Claim(ClaimTypes.Name,  state.User!.Identities.FirstOrDefault().Name!),
-            new Claim(ClaimTypes.Email,  state.User!.Identities.FirstOrDefault().Name!) ];
+        //Claim[] claims = [
+        //   new Claim(ClaimTypes.NameIdentifier, state.User!.Identities!.FirstOrDefault().Name!),
+        //    new Claim(ClaimTypes.Name,  state.User!.Identities.FirstOrDefault().Name!),
+        //    new Claim(ClaimTypes.Email,  state.User!.Identities.FirstOrDefault().Name!) ];
 
 
-        authenticationStateTask = Task.FromResult(
-            new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity(claims,
-                authenticationType: nameof(AuthAPI)))));
+        //authenticationStateTask = Task.FromResult(
+        //    new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity(claims,
+        //        authenticationType: nameof(AuthAPI)))));
     }
 
     public override Task<AuthenticationState> GetAuthenticationStateAsync() => authenticationStateTask;
 
-    public async Task<AuthResponse> LoginAsync(string email, string senha)
+    public  async Task<AuthResponse> LoginAsync(string email, string senha)
     {
         //var response = await _httpClient.PostAsJsonAsync("auth/login?useCookies=true", new
         //{
@@ -59,7 +59,7 @@ public class AuthAPI : AuthenticationStateProvider
         //if (response.IsSuccessStatusCode)
         //{
 
-        return new AuthResponse { Sucesso = true };
+        return new AuthResponse { Sucesso = autenticado };
         //}
 
         //return new AuthResponse { Sucesso = false, Erros = ["Login/senha inválidos"] };
@@ -89,10 +89,26 @@ public class AuthAPI : AuthenticationStateProvider
         return new AuthenticationState(pessoa);
     }
 
+    public static async Task<AuthenticationState> GetAuthenticationLogoutAsync()
+    {
+        var pessoa = new ClaimsPrincipal();
+        
+
+        //Claim[] claims = new();
+
+        //var identity = new ClaimsIdentity(claims, "Cookies");
+        //pessoa = new ClaimsPrincipal(identity);
+
+        authenticationStateTask = Task.FromResult(
+            new AuthenticationState(pessoa));
+
+        return new AuthenticationState(pessoa);
+    }
+
     public async Task LogoutAsync()
     {
         //await _httpClient.PostAsync("auth/logout", null);
-        NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
+        NotifyAuthenticationStateChanged(GetAuthenticationLogoutAsync());
     }
 
     public async Task<bool> VerificaAutenticado()

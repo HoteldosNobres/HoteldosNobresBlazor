@@ -27,15 +27,15 @@ internal class PersistentAuthenticationStateProvider : AuthenticationStateProvid
             return;
         }
 
-        Claim[] claims = [
-           new Claim(ClaimTypes.NameIdentifier, state.User!.Identities!.FirstOrDefault().Name!),
-            new Claim(ClaimTypes.Name,  state.User!.Identities.FirstOrDefault().Name!),
-            new Claim(ClaimTypes.Email,  state.User!.Identities.FirstOrDefault().Name!) ];
+        //Claim[] claims = [
+        //   new Claim(ClaimTypes.NameIdentifier, state.User!.Identities!.FirstOrDefault().Name!),
+        //    new Claim(ClaimTypes.Name,  state.User!.Identities.FirstOrDefault().Name!),
+        //    new Claim(ClaimTypes.Email,  state.User!.Identities.FirstOrDefault().Name!) ];
 
 
-        authenticationStateTask = Task.FromResult(
-            new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity(claims,
-                authenticationType: nameof(PersistentAuthenticationStateProvider)))));
+        //authenticationStateTask = Task.FromResult(
+        //    new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity(claims,
+        //        authenticationType: nameof(PersistentAuthenticationStateProvider)))));
     }
 
     public override Task<AuthenticationState> GetAuthenticationStateAsync() => authenticationStateTask;

@@ -7,8 +7,7 @@ using KEYs = HoteldosNobresBlazor.Client.Funcoes.KEYs;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Components.Authorization;
 using HoteldosNobresBlazor.Modelo;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.VisualBasic;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,15 +28,18 @@ builder.Services.AddHttpClient("APICloudbeds", client =>
 
 builder.Services.AddAuthorizationCore();
 builder.Services.AddCascadingAuthenticationState();
+builder.Services.AddOptions();
+
 //builder.Services.AddScoped<IdentityUserAccessor>();
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, AuthAPI>();
 builder.Services.AddScoped<AuthAPI>(sp => (AuthAPI)sp.GetRequiredService<AuthenticationStateProvider>());
- 
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultScheme = IdentityConstants.ApplicationScheme;
-    options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
+    //options.DefaultSignInScheme = IdentityConstants.ExternalScheme; 
+    
 }).AddIdentityCookies();
 
 builder.Services.AddHttpClient();
@@ -68,6 +70,9 @@ app.UseHttpsRedirection();
 
 app.UseAntiforgery();
 app.UseStaticFiles(); 
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()
@@ -268,7 +273,15 @@ var cache = new CacheHotel(sCOPP);
 cache.CacheExecutanado();
 
 // Add additional endpoints required by the Identity /Account Razor components.
-/*app.MapAdditionalIdentityEndpoints()*/;
+//app.MapAdditionalIdentityEndpoints();
+
+app.MapPost("/Logout", async (
+              [FromForm] string returnUrl) =>
+{
+    AuthAPI authapi = new();
+    await authapi.LogoutAsync();
+    return TypedResults.LocalRedirect($"~/{returnUrl}");
+});
 
 app.Run();
 
