@@ -1,7 +1,5 @@
-﻿using Google.Apis.Util;
-using HoteldosNobresBlazor.Client;
-using HoteldosNobresBlazor.Modelo;
-using Microsoft.AspNetCore.Components;
+﻿using HoteldosNobresBlazor.Client;
+using HoteldosNobresBlazor.Modelo; 
 using Microsoft.AspNetCore.Components.Authorization;  
 using System.Security.Claims;
 
@@ -24,6 +22,7 @@ public class AuthAPI : AuthenticationStateProvider
         {
             return;
         }
+
 
         //Claim[] claims = [
         //   new Claim(ClaimTypes.NameIdentifier, state.User!.Identities!.FirstOrDefault().Name!),
@@ -77,7 +76,8 @@ public class AuthAPI : AuthenticationStateProvider
         Claim[] claims = [
         new Claim(ClaimTypes.NameIdentifier, userInfo.UserId),
             new Claim(ClaimTypes.Name, userInfo.Email),
-            new Claim(ClaimTypes.Email, userInfo.Email) ];
+            new Claim(ClaimTypes.Email, userInfo.Email),
+            new Claim(ClaimTypes.Role, "administrador") ];
 
         var identity = new ClaimsIdentity(claims, "Cookies");
         pessoa = new ClaimsPrincipal(identity);

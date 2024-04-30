@@ -55,18 +55,22 @@
     [CascadingParameter]
     private HttpContext HttpContext { get; set; } = default!;
 
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+
     [SupplyParameterFromQuery]
     private string? ReturnUrl { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
 
-        if (HttpMethods.IsGet(HttpContext.Request.Method))
-        {
-            // Clear the existing external cookie to ensure a clean login process
-             //await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
-            // var resposta = await AuthAPI.LoginAsync(Input.Email, Input.Password);
-        }
+        var authenticationState = await authenticationStateTask;
+
+        // if (authenticationState.User.Identity.IsAuthenticated)
+        // {
+        //     // await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
+        // } 
     }
      
     private async Task LoginUser()

@@ -3,11 +3,12 @@ using HoteldosNobresBlazor.Funcoes;
 using HoteldosNobresBlazor.Services;
 using System.Text;
 using Blazored.LocalStorage;
-using KEYs = HoteldosNobresBlazor.Client.Funcoes.KEYs;
-using Microsoft.AspNetCore.Identity;
+using KEYs = HoteldosNobresBlazor.Client.Funcoes.KEYs; 
 using Microsoft.AspNetCore.Components.Authorization;
 using HoteldosNobresBlazor.Modelo;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,12 +36,36 @@ builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, AuthAPI>();
 builder.Services.AddScoped<AuthAPI>(sp => (AuthAPI)sp.GetRequiredService<AuthenticationStateProvider>());
 
+
+//builder.Services.AddAuthentication(options =>
+//{
+//    options.DefaultScheme = IdentityConstants.ApplicationScheme;
+//    //options.DefaultSignInScheme = IdentityConstants.ExternalScheme; 
+
+//}).AddIdentityCookies();
+
 builder.Services.AddAuthentication(options =>
 {
-    options.DefaultScheme = IdentityConstants.ApplicationScheme;
-    //options.DefaultSignInScheme = IdentityConstants.ExternalScheme; 
-    
-}).AddIdentityCookies();
+    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+}).AddCookie(options =>
+{
+    options.LoginPath = "/Account/Login";   
+});
+ 
+ 
+//builder.Services.AddAuthentication(options =>
+//{
+//    options.DefaultScheme = IdentityConstants.ApplicationScheme;
+//})
+//    .AddIdentityCookies();
+
+//.AddCookie("Admin", options =>
+// {
+//     options.LoginPath = "/admin/login";
+//     options.LogoutPath = "/admin/logout";
+// });
 
 builder.Services.AddHttpClient();
 builder.Services.AddBlazorBootstrap();
@@ -49,10 +74,13 @@ builder.Services.AddBlazorBootstrap();
 builder.Services.AddScoped<CookieHandler>();
 builder.Services.AddScoped<AppState>();  
 builder.Services.AddSingleton<AppState>();
- 
+builder.Services.AddSingleton<AuthenticationStateProvider, AuthAPI>();
+builder.Services.AddSingleton<IAuthorizationMiddlewareResultHandler, AuthorizationMiddlewareResultHandler>();
+
+
 //builder.Services.AddBlazoredLocalStorage();   // local storage
 builder.Services.AddBlazoredLocalStorage(config => config.JsonSerializerOptions.WriteIndented = true);  // local storage
-
+ 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -69,7 +97,7 @@ else
 app.UseHttpsRedirection();
 
 app.UseAntiforgery();
-app.UseStaticFiles(); 
+app.UseStaticFiles();
 
 app.UseAuthentication();
 app.UseAuthorization();
