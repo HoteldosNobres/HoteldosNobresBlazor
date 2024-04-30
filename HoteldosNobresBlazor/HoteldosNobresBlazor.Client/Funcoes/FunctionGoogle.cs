@@ -4,9 +4,9 @@ using Google.Apis.Services;
 using Google.Apis.PeopleService.v1;
 using Google.Apis.Auth.OAuth2.Flows;
 using Google.Apis.Auth.OAuth2.Responses;
-using HoteldosNobresBlazor.Client.Funcoes;
+using HoteldosNobresBlazor.Client.FuncoesClient;
 
-namespace HoteldosNobresBlazor.Funcoes
+namespace HoteldosNobresBlazor.FuncoesClient
 {
     public class FunctionGoogle
     {

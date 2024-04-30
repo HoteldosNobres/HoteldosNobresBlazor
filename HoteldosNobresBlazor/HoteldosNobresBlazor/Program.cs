@@ -3,29 +3,21 @@ using HoteldosNobresBlazor.Funcoes;
 using HoteldosNobresBlazor.Services;
 using System.Text;
 using Blazored.LocalStorage;
-using KEYs = HoteldosNobresBlazor.Client.Funcoes.KEYs; 
+using KEYs = HoteldosNobresBlazor.Funcoes.KEYs; 
 using Microsoft.AspNetCore.Components.Authorization;
 using HoteldosNobresBlazor.Modelo;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
+using HoteldosNobresBlazor.Client.API;
 
-var builder = WebApplication.CreateBuilder(args);
+var builder = WebApplication.CreateBuilder(args); 
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
 
-builder.Services.AddTransient<CloudbedsAPI>();
- 
-builder.Services.AddHttpClient("APICloudbeds", client =>
-{
-    client.BaseAddress = new Uri(builder.Configuration["APICloudbeds:Url"]!);
-    client.BaseAddress = new Uri("https://api.cloudbeds.com/api/v1.2");
-    client.DefaultRequestHeaders.Add("Accept", "application/json");
-    client.DefaultRequestHeaders.Add("Authorization", "Bearer " + KEYs.TOKEN_CLOUDBEDS);
-});
 
 builder.Services.AddAuthorizationCore();
 builder.Services.AddCascadingAuthenticationState();
@@ -37,12 +29,15 @@ builder.Services.AddScoped<AuthenticationStateProvider, AuthAPI>();
 builder.Services.AddScoped<AuthAPI>(sp => (AuthAPI)sp.GetRequiredService<AuthenticationStateProvider>());
 
 
-//builder.Services.AddAuthentication(options =>
-//{
-//    options.DefaultScheme = IdentityConstants.ApplicationScheme;
-//    //options.DefaultSignInScheme = IdentityConstants.ExternalScheme; 
+builder.Services.AddScoped<APICloudbeds>();
 
-//}).AddIdentityCookies();
+builder.Services.AddHttpClient("CloudbedsAPI", client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["APICloudbeds:Url"]!);
+    client.BaseAddress = new Uri("https://api.cloudbeds.com/api/v1.2");
+    client.DefaultRequestHeaders.Add("Accept", "application/json");
+    client.DefaultRequestHeaders.Add("Authorization", "Bearer " + KEYs.TOKEN_CLOUDBEDS);
+});
 
 builder.Services.AddAuthentication(options =>
 {

@@ -1,6 +1,8 @@
 ﻿@page "/minhareserva/{ReservationId}" 
-@using HoteldosNobresBlazor.Funcoes
-@rendermode InteractiveServer
+@inject NavigationManager navigationManager 
+@inject APICloudbeds cloudbedsAPI
+
+@rendermode InteractiveAuto
  
 
 <PageTitle>Reserva</PageTitle>
@@ -11,12 +13,7 @@
     Reserva: @novaReservationId; 
 </p>
 
-@foreach (var linha in arrayDeLinhas)
-{
-    @linha
-    <br />
-}
-
+ 
 
 @code {
     [Parameter]
@@ -27,9 +24,11 @@
 
     protected override async Task OnInitializedAsync()
     {
-        // novaReservationId = ReservationId; 
+        novaReservationId = ReservationId; 
         // Reserva novareserva = new Reserva();
         // novareserva.IDReserva = ReservationId;
+
+        string teste = await cloudbedsAPI.GetReservaAsync(novaReservationId);
 
         // novareserva = FunctionAPICLOUDBEDs.getReservationAsync(novareserva).Result;
         // // String log = FuncoesFNRH.Atualizar(novareserva);
@@ -44,4 +43,4 @@
         // TimeSpan diferenca =  final - inicio;
         // Console.WriteLine(diferenca);
     }
-}
+} 

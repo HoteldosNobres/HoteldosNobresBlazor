@@ -93,5 +93,56 @@ namespace HoteldosNobresBlazor.Funcoes
                 return e.Message;
             }
         }
+
+        public static async Task<string> AddPeopleAsync(string nome, string local, string telefone, string email)
+        {
+            try
+            {
+                UserCredential credential = UserCredential();
+                string givenome = nome;
+                if (!string.IsNullOrEmpty(local))
+                    givenome = nome + " - " + local;
+
+                var service = new PeopleServiceService(new BaseClientService.Initializer()
+                {
+                    HttpClientInitializer = credential,
+                    ApplicationName = "APP_NAME",
+                });
+
+                Person contactToCreate = new Person();
+                List<Name> names = new List<Name>();
+                names.Add(new Name()
+                {
+                    GivenName = givenome,
+                });
+                contactToCreate.Names = names;
+
+                List<PhoneNumber> phones = new List<PhoneNumber>();
+                phones.Add(new PhoneNumber()
+                {
+                    Value = "55" + telefone.Replace("+55", ""),
+                });
+                contactToCreate.PhoneNumbers = phones;
+
+                List<EmailAddress> emails = new List<EmailAddress>();
+                emails.Add(new EmailAddress()
+                {
+                    Value = email,
+                });
+                contactToCreate.EmailAddresses = emails;
+
+                var request = service.People.CreateContact(contactToCreate);
+
+                Person createdContact = await request.ExecuteAsync();
+
+                return "OK";
+
+            }
+            catch (FileNotFoundException e)
+            {
+                Console.WriteLine(e.Message);
+                return "ERRO: " + e.Message;
+            }
+        }
     }
 }

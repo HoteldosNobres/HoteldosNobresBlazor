@@ -2,8 +2,7 @@
 @using HoteldosNobresBlazor.Classes
 @using HoteldosNobresBlazor.Funcoes
 @rendermode InteractiveServer
-@inject AppState appState
-@inject CloudbedsAPI cloudbedsAPI
+@inject AppState appState 
 
 <PageTitle>Reserva</PageTitle>
 
@@ -39,11 +38,11 @@
 
         arrayDeLinhas = log.Split('\n');
 
-        DateTime inicio = DateTime.Now;
-        novareserva = await cloudbedsAPI.GetReservaAsync(novaReservationId);
-        // novareserva = FunctionAPICLOUDBEDs.getReservationAsync(novareserva).Result;
-        DateTime final = DateTime.Now;
-        TimeSpan diferenca =  final - inicio;
-        Console.WriteLine(diferenca);
+        // DateTime inicio = DateTime.Now;
+        // novareserva = await cloudbedsAPI.GetReservaAsync(novaReservationId);
+        // // novareserva = FunctionAPICLOUDBEDs.getReservationAsync(novareserva).Result;
+        // DateTime final = DateTime.Now;
+        // TimeSpan diferenca =  final - inicio;
+        // Console.WriteLine(diferenca);
     }
 }

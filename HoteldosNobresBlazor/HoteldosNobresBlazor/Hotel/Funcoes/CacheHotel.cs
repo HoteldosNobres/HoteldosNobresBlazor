@@ -15,8 +15,7 @@ namespace HoteldosNobresBlazor.Funcoes
         static TimeZoneInfo brazilTimeZone = TimeZoneInfo.FindSystemTimeZoneById("E. South America Standard Time");
         static string cache = "cache";
         static int count = 0;
-        static AppState AppState;
-        static CloudbedsAPI cloudbedsapi;
+        static AppState AppState; 
 
         public CacheHotel()
         {
