@@ -1,6 +1,7 @@
 ﻿using HoteldosNobresBlazor.Client;
-using HoteldosNobresBlazor.Modelo; 
-using Microsoft.AspNetCore.Components.Authorization;  
+using HoteldosNobresBlazor.Modelo;
+using Microsoft.AspNetCore.Components.Authorization;
+using System.Diagnostics.Eventing.Reader;
 using System.Security.Claims;
 
 namespace HoteldosNobresBlazor.Services;
@@ -15,7 +16,7 @@ public class AuthAPI : AuthenticationStateProvider
 
     private static Task<AuthenticationState> authenticationStateTask = defaultUnauthenticatedTask;
 
-    public AuthAPI( )
+    public AuthAPI()
     {
         AuthenticationState state = authenticationStateTask.Result;
         if (state.User!.Identity == null || !state.User!.Identity!.IsAuthenticated)
@@ -37,47 +38,64 @@ public class AuthAPI : AuthenticationStateProvider
 
     public override Task<AuthenticationState> GetAuthenticationStateAsync() => authenticationStateTask;
 
-    public  async Task<AuthResponse> LoginAsync(string email, string senha)
-    {
-        //var response = await _httpClient.PostAsJsonAsync("auth/login?useCookies=true", new
-        //{
-        //    email,
-        //    password = senha
-        //});
-
-        if (email == "fabiohcnobre@hotmail.com")
+    public async Task<AuthResponse> LoginAsync(string email, string senha)
+    { 
+        if (email == "fabiohcnobre@hotmail.com" && senha == "123")
         {
-            
-            NotifyAuthenticationStateChanged(GetAuthenticationAsync());
+            NotifyAuthenticationStateChanged(GetAuthenticationAsync(email));
+        }
+        if (email == "hoteldosnobres@hotmail.com" && senha == "123")
+        {
+            NotifyAuthenticationStateChanged(GetAuthenticationClienteAsync(email));
         }
         else
         {
             autenticado = false;
         }
-
-        //if (response.IsSuccessStatusCode)
-        //{
-
-        return new AuthResponse { Sucesso = autenticado };
-        //}
-
-        //return new AuthResponse { Sucesso = false, Erros = ["Login/senha inválidos"] };
+         
+        return new AuthResponse { Sucesso = autenticado }; 
     }
 
-    public static async Task<AuthenticationState> GetAuthenticationAsync()
-    {  
+    public static async Task<AuthenticationState> GetAuthenticationAsync(string email)
+    {
         var pessoa = new ClaimsPrincipal();
         //var response = await _httpClient.GetAsync("auth/manage/info");
 
         UserInfo userInfo = new();
-        userInfo.Email = "fabiohcnobre@hotmail.com";
+        userInfo.Email = email;
         userInfo.UserId = "1";
 
         Claim[] claims = [
         new Claim(ClaimTypes.NameIdentifier, userInfo.UserId),
             new Claim(ClaimTypes.Name, userInfo.Email),
             new Claim(ClaimTypes.Email, userInfo.Email),
-            new Claim(ClaimTypes.Role, "administrador") ];
+            new Claim(ClaimTypes.Role, "admin"),
+            new Claim(ClaimTypes.Role, "client") ];
+
+        var identity = new ClaimsIdentity(claims, "Cookies");
+        pessoa = new ClaimsPrincipal(identity);
+
+        authenticationStateTask = Task.FromResult(
+            new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity(claims,
+                authenticationType: nameof(AuthAPI)))));
+
+        return new AuthenticationState(pessoa);
+    }
+
+    public static async Task<AuthenticationState> GetAuthenticationClienteAsync(string email)
+    {
+        var pessoa = new ClaimsPrincipal();
+        //var response = await _httpClient.GetAsync("auth/manage/info");
+
+        UserInfo userInfo = new();
+        userInfo.Email = email;
+        userInfo.UserId = "1";
+
+        Claim[] claims = [
+        new Claim(ClaimTypes.NameIdentifier, userInfo.UserId),
+            new Claim(ClaimTypes.Name, userInfo.Email),
+            new Claim(ClaimTypes.Email, userInfo.Email), 
+            new Claim(ClaimTypes.Role, "client") ];
 
         var identity = new ClaimsIdentity(claims, "Cookies");
         pessoa = new ClaimsPrincipal(identity);
@@ -92,7 +110,7 @@ public class AuthAPI : AuthenticationStateProvider
     public static async Task<AuthenticationState> GetAuthenticationLogoutAsync()
     {
         var pessoa = new ClaimsPrincipal();
-        
+
 
         //Claim[] claims = new();
 

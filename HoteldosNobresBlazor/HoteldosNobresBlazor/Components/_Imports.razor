@@ -14,13 +14,10 @@
 @using Services
 @using BlazorBootstrap; 
 @using Microsoft.AspNetCore.Components.Authorization
-@attribute [Authorize]
-
-
-@* @attribute [Authorize(Roles = "Administrator")]
+@attribute [Authorize(Roles = "admin")]
 
 public class AdministrationController : Controller
 {
     public IActionResult Index() =>
-        Content("Administrator");
-} *@
+        Content("admin");
+}  
