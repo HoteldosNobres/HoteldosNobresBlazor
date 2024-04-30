@@ -44,7 +44,8 @@ public class AuthAPI : AuthenticationStateProvider
         {
             NotifyAuthenticationStateChanged(GetAuthenticationAsync(email));
         }
-        if (email == "hoteldosnobres@hotmail.com" && senha == "123")
+        if ((email == "hoteldosnobres@hotmail.com" || email == "1234567")
+            &&   senha == "123")
         {
             NotifyAuthenticationStateChanged(GetAuthenticationClienteAsync(email));
         }

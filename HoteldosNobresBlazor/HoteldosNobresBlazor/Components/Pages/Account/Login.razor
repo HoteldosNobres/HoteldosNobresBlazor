@@ -2,9 +2,12 @@
 @attribute [AllowAnonymous]
 
 @using System.ComponentModel.DataAnnotations
+@using HoteldosNobresBlazor.Classes
+@using HoteldosNobresBlazor.Client.API
 @using HoteldosNobresBlazor.Modelo 
 @using Microsoft.AspNetCore.Components.Authorization
-@inject AuthAPI AuthAPI
+@inject AuthAPI AuthAPI 
+@inject APICloudbeds cloudbedsAPI
 @inject NavigationManager Navigation 
 
  
@@ -21,7 +24,7 @@
                 <ValidationSummary class="text-danger" role="alert" />
                 <div class="form-floating mb-3">
                     <InputText @bind-Value="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
-                    <label for="email" class="form-label">E-mail CPF Reserva</label>
+                    <label for="name" class="form-label">E-mail CPF Reserva</label>
                     <ValidationMessage For="() => Input.Email" class="text-danger" />
                 </div>
                 <div class="form-floating mb-3">
@@ -81,6 +84,25 @@
         //     // Logger.LogInformation("User logged in.");
         //     RedirectManager.RedirectTo(ReturnUrl);
         // } 
+        // if (Input.Email != "fabiohcnobre@hotmail.com" && Input.Email != "hoteldosnobres@hotmail.com")
+        // {
+        //     Reserva novareserva = await cloudbedsAPI.GetReservaAsync(Input.Email);
+        //     // novareserva.IDReserva = ReservationId;
+
+        //     // novareserva = FunctionAPICLOUDBEDs.getReservationAsync(novareserva).Result;
+        //     // // String log = FuncoesFNRH.Atualizar(novareserva);
+        //     // string log = "teste";
+
+        //     // arrayDeLinhas = log.Split('\n');
+
+        //     // DateTime inicio = DateTime.Now;
+        //     // novareserva = await cloudbedsAPI.GetReservaAsync(novaReservationId);
+        //     // // novareserva = FunctionAPICLOUDBEDs.getReservationAsync(novareserva).Result;
+        //     // DateTime final = DateTime.Now;
+        //     // TimeSpan diferenca =  final - inicio;
+        //     // Console.WriteLine(diferenca);
+        // }
+     
          
         var resposta = await AuthAPI.LoginAsync(Input.Email, Input.Password);
         if (resposta.Sucesso)
@@ -93,7 +115,7 @@
     private sealed class InputModel
     {
         [Required]
-        [EmailAddress]
+        [DataType(DataType.Text)]
         public string Email { get; set; } = "";
 
         [Required]
