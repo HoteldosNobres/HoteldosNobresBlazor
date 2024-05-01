@@ -16,6 +16,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="8.0.4" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.4" />
     <PackageReference Include="MosaicoSolutions.ViaCep" Version="5.0.0" />
+    <PackageReference Include="MudBlazor" Version="6.19.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 
@@ -23,6 +24,10 @@
     <Content Update="Components\Layout\NavBar.razor">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
     </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\bootstrap\" />
   </ItemGroup>
 
 </Project>

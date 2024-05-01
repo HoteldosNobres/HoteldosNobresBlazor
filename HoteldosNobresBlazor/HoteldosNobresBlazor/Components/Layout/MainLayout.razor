@@ -1,45 +1,60 @@
-﻿@inject NavigationManager NavigationManager
+﻿@using HoteldosNobresBlazor.Layout
+@inject NavigationManager NavigationManager
 @inherits LayoutComponentBase
 
+<MudThemeProvider Theme="currentTheme" />
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
 
-<div class="page">
+<MudLayout>
+    <MudAppBar Color="Color.Primary" Fixed="true" Elevation="2">
+        <a class="navbar-brand" href="">
+            <MudImage Width="50" Height="50" Src="images/logo.png"></MudImage>
+            <span class="bi-icon-top-row"></span>Hotel dos Nobres
+        </a>
+    </MudAppBar>
     <AuthorizeView>
         <Authorized>
-            <div class="sidebar"> 
-                <NavMenu /> 
-            </div>
+            <MudDrawer Open="true" ClipMode="DrawerClipMode.Always" Elevation="2">
+                <div class="sidebar">
+                    <NavMenu />
+                </div>
+            </MudDrawer>
         </Authorized>
     </AuthorizeView>
-
-    <main>
-
-        <div class="top-row px-1">
-            <NavBar />
-            @* <a href="https://hotels.cloudbeds.com/connect/235132#/" target="_blank">Sistema</a> *@
-        </div>
-
+    <MudMainContent>
         <article class="content px-4">
             @Body
         </article>
-
-        <footer id="footer">
-            <div class="inner">
-                <ul class="copyright">
-                    <i class="fas fa-brands fa-creative-commons"></i> Feito com
-                    <i class="fas fa-heart"></i> pelo
-                    <a href="https://github.com/fabiohcnobre" target="_blank" rel="nofollow">FabioHCNobre</a>
-                </ul>
-            </div>
-        </footer>
-
-    </main>
-
-</div>
+    </MudMainContent>
+    <footer id="footer">
+        <div class="inner">
+            <ul class="copyright">
+                <i class="fas fa-brands fa-creative-commons"></i> Feito com
+                <i class="fas fa-heart"></i> pelo
+                <a href="https://github.com/fabiohcnobre" target="_blank" rel="nofollow">FabioHCNobre</a>
+            </ul>
+        </div>
+    </footer>
+</MudLayout>
 
 <div id="blazor-error-ui">
     An unhandled error has occurred.
     <a href="" class="reload">Reload</a>
     <a class="dismiss">🗙</a>
 </div>
+
+
+
+@code {
+    private MudTheme currentTheme = new MudTheme()
+        {
+            Palette = HoteldosNobresPallete.CreatePallete
+        };
+}
+
+
+
 
 
