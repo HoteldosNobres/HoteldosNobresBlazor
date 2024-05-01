@@ -1,14 +1,22 @@
-﻿@inherits LayoutComponentBase
+﻿@inject NavigationManager NavigationManager
+@inherits LayoutComponentBase
+
 
 <div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
+    <AuthorizeView>
+        <Authorized>
+            <div class="sidebar"> 
+                <NavMenu /> 
+            </div>
+        </Authorized>
+    </AuthorizeView>
 
     <main>
+
         <div class="top-row px-1">
-            <a href="https://hotels.cloudbeds.com/connect/235132#/" target="_blank">Sistema</a>
-        </div> 
+            <NavBar />
+            @* <a href="https://hotels.cloudbeds.com/connect/235132#/" target="_blank">Sistema</a> *@
+        </div>
 
         <article class="content px-4">
             @Body
@@ -23,9 +31,9 @@
                 </ul>
             </div>
         </footer>
-       
+
     </main>
-   
+
 </div>
 
 <div id="blazor-error-ui">
@@ -35,4 +43,3 @@
 </div>
 
 
- 

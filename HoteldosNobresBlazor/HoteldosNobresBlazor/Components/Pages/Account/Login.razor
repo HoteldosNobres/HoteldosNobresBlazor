@@ -19,7 +19,7 @@
         <section>
             <EditForm Model="Input" method="post" OnValidSubmit="LoginUser" FormName="login">
                 <DataAnnotationsValidator />
-                <h2>Use seu CPF ou e-mail.</h2>
+                <h2>Use seu CPF ou e-mail</h2>
                 <hr />
                 <ValidationSummary class="text-danger" role="alert" />
                 <div class="form-floating mb-3">
@@ -32,21 +32,21 @@
                     <label for="password" class="form-label">Senha</label>
                     <ValidationMessage For="() => Input.Password" class="text-danger" />
                 </div>
-                <div class="checkbox mb-3">
+                @* <div class="checkbox mb-3">
                     <label class="form-label">
                         <InputCheckbox @bind-Value="Input.RememberMe" class="darker-border-checkbox form-check-input" />
                         Remember me
                     </label>
-                </div>
+                </div> *@
                 <button type="submit" class="w-100 btn btn-lg btn-primary">Entrar</button>
             </EditForm>
         </section>
     </div>
     <div class="col-md-6 col-md-offset-2">
-        <section>
-            <br />
-            <h3>Em Breve informações .</h3>
+        <section> 
+            <h3>Bem vindo ao Hotel dos Nobres</h3>
             <hr /> 
+            <ExternalLoginPicker />
         </section>
     </div>
 </div>
