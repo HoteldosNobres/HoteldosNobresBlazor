@@ -1,42 +1,30 @@
-﻿@using HoteldosNobresBlazor.Layout
-@inject NavigationManager NavigationManager
-@inherits LayoutComponentBase
+﻿@using HoteldosNobresBlazor.Layout 
+ 
+@inherits LayoutComponentBase 
 
 <MudThemeProvider Theme="currentTheme" />
-<MudPopoverProvider />
-<MudDialogProvider />
-<MudSnackbarProvider />
+<MudDialogProvider @rendermode="InteractiveServer" />
+<MudSnackbarProvider @rendermode="InteractiveServer" />
 
-<MudLayout>
-    <MudAppBar Color="Color.Primary" Fixed="true" Elevation="2">
-        <a class="navbar-brand" href="">
-            <MudImage Width="50" Height="50" Src="images/logo.png"></MudImage>
-            <span class="bi-icon-top-row"></span>Hotel dos Nobres
-        </a>
-    </MudAppBar>
-    <AuthorizeView>
-        <Authorized>
-            <MudDrawer Open="true" ClipMode="DrawerClipMode.Always" Elevation="2">
-                <div class="sidebar">
-                    <NavMenu />
-                </div>
-            </MudDrawer>
-        </Authorized>
-    </AuthorizeView>
-    <MudMainContent>
-        <article class="content px-4">
-            @Body
-        </article>
+
+<MudLayout> 
+    <MainAppDrawerBar @rendermode="InteractiveServer" />
+        <MudMainContent Class="pt-16 px-50">
+            <MudContainer Class="mt-6">
+            <article class="content px-4">
+                @Body
+            </article>
+        </MudContainer>
     </MudMainContent>
     <footer id="footer">
         <div class="inner">
             <ul class="copyright">
-                <i class="fas fa-brands fa-creative-commons"></i> Feito com
-                <i class="fas fa-heart"></i> pelo
+                <i class="fas fa-brands fa-creative-commons"></i> Feito com <i class="fas fa-heart"></i> pelo
                 <a href="https://github.com/fabiohcnobre" target="_blank" rel="nofollow">FabioHCNobre</a>
             </ul>
         </div>
     </footer>
+   
 </MudLayout>
 
 <div id="blazor-error-ui">
@@ -46,12 +34,12 @@
 </div>
 
 
-
 @code {
     private MudTheme currentTheme = new MudTheme()
         {
-            Palette = HoteldosNobresPallete.CreatePallete
+            Palette = HoteldosNobresPallete.CreatePallete, 
         };
+ 
 }
 
 

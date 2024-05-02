@@ -7,6 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Components\Layout\MainAppDrawerBar.razor.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Components\Layout\MainAppDrawerBar.razor.js" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\HoteldosNobresBlazor.Client\HoteldosNobresBlazor.Client.csproj" />
     <PackageReference Include="Blazor.Bootstrap" Version="2.2.1" />
     <PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
@@ -21,7 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Update="Components\Layout\NavBar.razor">
+    <Content Update="Components\Layout\MainAppDrawerBar.razor">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
     </Content>
   </ItemGroup>

@@ -1,76 +1,28 @@
 ﻿@implements IDisposable
+<link href="https://use.fontawesome.com/releases/v5.14.0/css/all.css" rel="stylesheet">
 
 @inject NavigationManager NavigationManager
 
+<MudNavMenu Color="Color.Info" Class="mud-width-full">
+    <AuthorizeView Roles="admin">
+        <Authorized>
+            <MudNavLink Href="/" Match="NavLinkMatch.Prefix" Icon="fa-solid fa-house fa-lg"> Inicio</MudNavLink>
+            <MudNavLink Href="fnrh" Match="NavLinkMatch.Prefix"   Icon="fa-regular fa-file-code" > FNRH</MudNavLink>
+            <MudNavLink Href="pagamentoairbnb" Match="NavLinkMatch.Prefix" Icon="fa-brands fa-airbnb fa-lg"> Pagamento Airbnb</MudNavLink>
+            <MudNavLink Href="logwhatsapp" Match="NavLinkMatch.Prefix" Icon="fa-brands fa-whatsapp fa-lg">Log Whatsapp</MudNavLink>
+            <MudNavLink Href="addreservat" Match="NavLinkMatch.Prefix" Icon="fa-solid fa-folder-plus fa-lg">Adiciona Reserva</MudNavLink>
+            <MudNavLink Href="reservas" Match="NavLinkMatch.Prefix" Icon="fa-solid fa-list fa-lg">Reservas</MudNavLink> 
+        </Authorized>
+    </AuthorizeView> 
+    <AuthorizeView Roles="client">
+        <Authorized>
+            <MudNavLink Href="minhareserva" Match="NavLinkMatch.Prefix" Icon="fa-solid fa-bed">Minha Reserva</MudNavLink>
+        </Authorized>
+    </AuthorizeView>
 
-<input type="checkbox" title="Navigation menu" class="navbar-toggler" />
-
-<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
-    <nav class="flex-column">
-        <AuthorizeView Roles="admin">
-            <Authorized>
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                        <span class="bi-icon-nav-menu"> <i class="fa-solid fa-house fa-lg"></i> </span>  Home
-                    </NavLink>
-                </div>
-
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="fnrh" Match="NavLinkMatch.All">
-                        <span class="bi-icon-nav-menu"> <Icon Size="IconSize.x4" Name="IconName.FileCode" /> </span> FNRH
-                    </NavLink>
-                </div>
-
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="pagamentoairbnb" Match="NavLinkMatch.All">
-                        <span class="bi-icon-nav-menu"> <i class="fa-brands fa-airbnb fa-lg"></i> </span> Pagamento Airbnb
-                    </NavLink>
-                </div>
-
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="logwhatsapp" Match="NavLinkMatch.All">
-                        <span class="bi-icon-nav-menu"> <i class="fa-brands fa-whatsapp fa-lg"></i> </span> Log Whatsapp
-                    </NavLink>
-                </div>
-
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="addreservat" Match="NavLinkMatch.All">
-                        <span class="bi-icon-nav-menu"> <i class="fa-solid fa-folder-plus fa-lg"></i> </span>  Adiciona Reserva
-                    </NavLink>
-                </div>
-
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="reservas">
-                        <span class="bi-icon-nav-menu"> <i class="fa-solid fa-list fa-lg"></i> </span> Reservas
-                    </NavLink>
-                </div>
-            </Authorized>
-        </AuthorizeView>
-        <AuthorizeView Roles="client">
-            <Authorized>
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="minhareserva">
-                        <span class="bi-icon-nav-menu"> <i class="fa-solid fa-bed"></i> </span> Minha Reserva
-                    </NavLink>
-                </div>
-            </Authorized>
-        </AuthorizeView>
-    </nav>
-</div>
-
+</MudNavMenu> 
 
 @* https://demos.blazorbootstrap.com/icons#bootstrap-icons   *@
-
-<footer id="footer">
-    <div class="inner">
-        <ul class="copyright">
-            <i class="fas fa-brands fa-creative-commons"></i> Feito com
-            <i class="fas fa-heart"></i> pelo
-            <a href="https://github.com/fabiohcnobre" target="_blank" rel="nofollow">FabioHCNobre</a>
-            <i class="fas fa-solid fa-moon" onclick="toggleTheme()"></i>
-        </ul>
-    </div>
-</footer>
 
 @code {
     private string? currentUrl;

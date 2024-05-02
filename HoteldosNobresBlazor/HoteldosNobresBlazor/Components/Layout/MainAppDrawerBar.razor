@@ -1,0 +1,59 @@
+﻿@using HoteldosNobresBlazor.Layout
+@inject IJSRuntime JSRuntime
+
+@inject NavigationManager NavigationManager
+
+<MudAppBar Color="Color.Primary" Elevation="1" Style="height:85px; justify-content: center;">
+    <a href="">
+        <MudImage Width="75" Height="75" Src="images/logo.png" Alt="Mony the dog" Class="rounded-lg"></MudImage>
+        <span class="bi-icon-top-row"></span> Hotel dos Nobres
+    </a>
+    <MudSpacer />
+    <AuthorizeView>
+        <Authorized> 
+             <BotaoLogout /> 
+            <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.End" OnClick="@ToggleDrawer" />
+        </Authorized>
+    </AuthorizeView>
+</MudAppBar>
+<AuthorizeView>
+    <Authorized>
+        <MudDrawer Class="mud-drawer-fixed" ClipMode="DrawerClipMode.Always" @bind-Open="@_isDrawerOpen" PreserveOpenState="true" Elevation="0" Variant="@DrawerVariant.Responsive">
+             <MudDrawerHeader Style="height:5px;" />  
+                <NavMenu /> 
+        </MudDrawer>
+    </Authorized>
+</AuthorizeView>
+
+
+@code {
+    private MudTheme currentTheme = new MudTheme()
+        {
+            Palette = HoteldosNobresPallete.CreatePallete
+        };
+
+    private bool _isDrawerOpen = true;
+    private bool _shouldHandleDrawerToggled = false;
+    private IJSObjectReference? _jsModule;
+
+    void ToggleDrawer()
+    {
+        _isDrawerOpen = !_isDrawerOpen;
+        //shouldHandleDrawerToggled = true;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _jsModule = await JSRuntime.InvokeAsync<IJSObjectReference>("import", "./Components/Layout/MainAppDrawerBar.razor.js");
+        }
+        if (_shouldHandleDrawerToggled)
+        {
+            await _jsModule!.InvokeVoidAsync("HandleDrawerToggled", _isDrawerOpen);
+            _shouldHandleDrawerToggled = false;
+        }
+    }
+
+
+}
