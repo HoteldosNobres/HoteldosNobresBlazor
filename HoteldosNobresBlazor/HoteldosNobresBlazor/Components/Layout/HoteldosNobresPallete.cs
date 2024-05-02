@@ -3,7 +3,7 @@ using MudBlazor.Utilities;
 
 namespace HoteldosNobresBlazor.Layout;
 
-public sealed class HoteldosNobresPallete : PaletteDark
+public sealed class HoteldosNobresPallete : PaletteLight
 {
     private HoteldosNobresPallete()
     {
