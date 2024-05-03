@@ -1,9 +1,23 @@
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider authenticationStateProvider
 
 @code {
     protected override void OnInitialized()
     {
-        NavigationManager.NavigateTo($"Account/Login?returnUrl={Uri.EscapeDataString(NavigationManager.Uri)}", forceLoad: true);
+        if (authenticationStateProvider != null)
+        {
+            var retorno = authenticationStateProvider.GetAuthenticationStateAsync().Result;
+            if (retorno.User.Identity == null || !retorno.User.Identity!.IsAuthenticated)
+            {
+                NavigationManager.NavigateTo($"Account/Login?returnUrl={Uri.EscapeDataString(NavigationManager.Uri)}", forceLoad: true);
+            }else if (retorno.User.Identity.IsAuthenticated)
+            {
+                NavigationManager.NavigateTo($"minhareserva", forceLoad: true);
+            }
+           
+        }
+
+       
     }
 }

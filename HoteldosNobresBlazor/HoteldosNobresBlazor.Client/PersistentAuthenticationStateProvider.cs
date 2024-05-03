@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using System.Security.Claims;
 
+
 namespace HoteldosNobresBlazor.Client;
 
 // This is a client-side AuthenticationStateProvider that determines the user's authentication state by
@@ -27,15 +28,18 @@ internal class PersistentAuthenticationStateProvider : AuthenticationStateProvid
             return;
         }
 
-        //Claim[] claims = [
-        //   new Claim(ClaimTypes.NameIdentifier, state.User!.Identities!.FirstOrDefault().Name!),
-        //    new Claim(ClaimTypes.Name,  state.User!.Identities.FirstOrDefault().Name!),
-        //    new Claim(ClaimTypes.Email,  state.User!.Identities.FirstOrDefault().Name!) ];
+        //if (!state.TryTakeFromJson<UserInfo>(nameof(UserInfo), out var userInfo) || userInfo is null)
+        //{
+        //    return;
+        //}
 
+        Claim[] claims = [
+            new Claim(ClaimTypes.Name, "userInfo.UserId"),
+                new Claim(ClaimTypes.Name, "userInfo.Email") ];
 
-        //authenticationStateTask = Task.FromResult(
-        //    new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity(claims,
-        //        authenticationType: nameof(PersistentAuthenticationStateProvider)))));
+        authenticationStateTask = Task.FromResult(
+            new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity(claims,
+                authenticationType: nameof(PersistentAuthenticationStateProvider)))));
     }
 
     public override Task<AuthenticationState> GetAuthenticationStateAsync() => authenticationStateTask;

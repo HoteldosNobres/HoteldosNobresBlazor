@@ -1,44 +1,80 @@
 ﻿@page "/minhareserva"
+@using System.Security.Claims
+@using System.Net.NetworkInformation
+@using HoteldosNobresBlazor.Client.Pages.Component
 @inject APICloudbeds cloudbedsAPI
+@inject AuthenticationStateProvider authenticationStateProvider
+@inject AppState appState
+
 
 @rendermode InteractiveServer
  
-
 <PageTitle>Reserva</PageTitle>
-
-<h1>Reserva</h1>
-
-<p role="status">
-    Reserva: @novaReservationId; 
-</p>
-
  
+<MudStack  Row="true" Justify="Justify.SpaceBetween">
+    <MudText Typo="Typo.h4"> Reservas</MudText>
+    <MudPagination Count="@totalPaginas" SelectedChanged="PaginaMudou"></MudPagination>
+</MudStack>
+
+@if (listaPagina is not null)
+{
+    <MudGrid>
+        @foreach (var reser in listaPagina)
+        {
+            <MudItem  >
+                <CardReserva Reserva=reser/>
+            </MudItem>
+        }
+    </MudGrid>
+}
+else
+{
+    <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+}
+
 
 
 @code {
-    [Parameter]
-    public string ReservationId { get; set; }
- 
 
-    string novaReservationId;
+    private int tamanho = 8;
+    private int totalItens;
+    private int totalPaginas;
+
+    private UserInfo user = default!;
+    private List<Reserva>? listaCompleta = Enumerable.Empty<Reserva>().ToList();
+    private List<Reserva>? listaPagina;
 
     protected override async Task OnInitializedAsync()
     {
-        // novaReservationId = ReservationId; 
-        // Reserva novareserva = new Reserva();
-        // novareserva.IDReserva = ReservationId;
+        if (authenticationStateProvider != null)
+        {
+            var retorno = await authenticationStateProvider.GetAuthenticationStateAsync();
 
-        // novareserva = FunctionAPICLOUDBEDs.getReservationAsync(novareserva).Result;
-        // // String log = FuncoesFNRH.Atualizar(novareserva);
-        // string log = "teste";
+            user = new UserInfo(retorno.User);
+        }
 
-        // arrayDeLinhas = log.Split('\n');
+        List<Reserva>? listacompleta = await cloudbedsAPI.getReservationsAsyncGuestDetails();
 
-        // DateTime inicio = DateTime.Now;
-        // novareserva = await cloudbedsAPI.GetReservaAsync(novaReservationId);
-        // // novareserva = FunctionAPICLOUDBEDs.getReservationAsync(novareserva).Result;
-        // DateTime final = DateTime.Now;
-        // TimeSpan diferenca =  final - inicio;
-        // Console.WriteLine(diferenca);
+
+        listaCompleta = listacompleta.Where(a => a.Email == user.Email).ToList();
+        if (listaCompleta is not null)
+        {
+            listaCompleta = listaCompleta.OrderByDescending(a => a.NomeHospede).ToList();
+            totalItens = listaCompleta.Count();
+            totalPaginas = Convert.ToInt32(Math.Ceiling((totalItens * 1.0) / tamanho));
+            this.PaginaMudou(1);
+        }
     }
+
+    private void PaginaMudou(int pageNumber)
+    {
+        var indice = pageNumber - 1;
+        listaPagina = listaCompleta!
+            .Skip(tamanho * indice)
+            .Take(tamanho)
+            .ToList();
+    }
+
+
+
 }

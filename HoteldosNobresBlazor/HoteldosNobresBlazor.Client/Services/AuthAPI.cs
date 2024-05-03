@@ -1,7 +1,6 @@
 ﻿using HoteldosNobresBlazor.Client;
-using HoteldosNobresBlazor.Modelo;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
-using System.Diagnostics.Eventing.Reader;
 using System.Security.Claims;
 
 namespace HoteldosNobresBlazor.Services;
@@ -9,43 +8,50 @@ namespace HoteldosNobresBlazor.Services;
 public class AuthAPI : AuthenticationStateProvider
 {
     private static bool autenticado = true;
-    //private readonly HttpClient _httpClient = factory.CreateClient("API");
 
-    private static readonly Task<AuthenticationState> defaultUnauthenticatedTask =
-       Task.FromResult(new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity())));
+    private static Task<AuthenticationState> defaultUnauthenticatedTask =
+            Task.FromResult(new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity())));
 
-    private static Task<AuthenticationState> authenticationStateTask = defaultUnauthenticatedTask;
+    private readonly Task<AuthenticationState> authenticationStateTask = defaultUnauthenticatedTask;
 
-    public AuthAPI()
+    private int Idtask = 0;
+
+    public AuthAPI(PersistentComponentState state)
     {
-        AuthenticationState state = authenticationStateTask.Result;
-        if (state.User!.Identity == null || !state.User!.Identity!.IsAuthenticated)
-        {
-            return;
-        }
+        Idtask = authenticationStateTask.Id;
+
+        
+        if (state == null) return;
+
+      
+
+        // if (!state.TryTakeFromJson<UserInfo>(nameof(UserInfo), out var userInfo) || userInfo is null)
+        //     {
+        //         return;
+        //     }
+
+        // Claim[] claims = [
+        //new Claim(ClaimTypes.NameIdentifier, userInfo.UserId),
+        //     new Claim(ClaimTypes.Name, userInfo.Email), 
+        //     new Claim(ClaimTypes.Email, userInfo.Email) ];
+
+        // authenticationStateTask = Task.FromResult(
+        //     new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity(claims,
+        //         authenticationType: nameof(AuthAPI)))));
 
 
-        //Claim[] claims = [
-        //   new Claim(ClaimTypes.NameIdentifier, state.User!.Identities!.FirstOrDefault().Name!),
-        //    new Claim(ClaimTypes.Name,  state.User!.Identities.FirstOrDefault().Name!),
-        //    new Claim(ClaimTypes.Email,  state.User!.Identities.FirstOrDefault().Name!) ];
-
-
-        //authenticationStateTask = Task.FromResult(
-        //    new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity(claims,
-        //        authenticationType: nameof(AuthAPI)))));
     }
 
     public override Task<AuthenticationState> GetAuthenticationStateAsync() => authenticationStateTask;
 
     public async Task<AuthResponse> LoginAsync(string email, string senha)
-    { 
+    {
         if (email == "fabiohcnobre@hotmail.com" && senha == "123")
         {
             NotifyAuthenticationStateChanged(GetAuthenticationAsync(email));
         }
-        else if ((email == "hoteldosnobres@hotmail.com" || email == "1234567")
-            &&   senha == "123")
+        else if ((email == "hoteldosnobres@hotmail.com" || senha == "1234567")
+            && senha == "123")
         {
             NotifyAuthenticationStateChanged(GetAuthenticationClienteAsync(email));
         }
@@ -53,8 +59,8 @@ public class AuthAPI : AuthenticationStateProvider
         {
             autenticado = false;
         }
-         
-        return new AuthResponse { Sucesso = autenticado }; 
+
+        return new AuthResponse { Sucesso = autenticado };
     }
 
     public static async Task<AuthenticationState> GetAuthenticationAsync(string email)
@@ -76,9 +82,11 @@ public class AuthAPI : AuthenticationStateProvider
         var identity = new ClaimsIdentity(claims, "Cookies");
         pessoa = new ClaimsPrincipal(identity);
 
-        authenticationStateTask = Task.FromResult(
+        defaultUnauthenticatedTask = Task.FromResult(
             new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity(claims,
                 authenticationType: nameof(AuthAPI)))));
+
+        
 
         return new AuthenticationState(pessoa);
     }
@@ -95,15 +103,16 @@ public class AuthAPI : AuthenticationStateProvider
         Claim[] claims = [
         new Claim(ClaimTypes.NameIdentifier, userInfo.UserId),
             new Claim(ClaimTypes.Name, userInfo.Email),
-            new Claim(ClaimTypes.Email, userInfo.Email), 
+            new Claim(ClaimTypes.Email, userInfo.Email),
             new Claim(ClaimTypes.Role, "client") ];
 
         var identity = new ClaimsIdentity(claims, "Cookies");
         pessoa = new ClaimsPrincipal(identity);
 
-        authenticationStateTask = Task.FromResult(
+        defaultUnauthenticatedTask = Task.FromResult(
             new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity(claims,
                 authenticationType: nameof(AuthAPI)))));
+
 
         return new AuthenticationState(pessoa);
     }
@@ -118,7 +127,7 @@ public class AuthAPI : AuthenticationStateProvider
         //var identity = new ClaimsIdentity(claims, "Cookies");
         //pessoa = new ClaimsPrincipal(identity);
 
-        authenticationStateTask = Task.FromResult(
+        defaultUnauthenticatedTask = Task.FromResult(
             new AuthenticationState(pessoa));
 
         return new AuthenticationState(pessoa);

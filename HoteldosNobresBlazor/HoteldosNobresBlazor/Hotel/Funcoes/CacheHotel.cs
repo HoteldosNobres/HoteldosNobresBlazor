@@ -1,12 +1,6 @@
 ﻿using HoteldosNobresBlazor.Classes;
-using HoteldosNobresBlazor.Components.Pages;
 using HoteldosNobresBlazor.Services;
-using Microsoft.AspNetCore.Http.HttpResults;
-using System.ComponentModel;
 using System.Globalization;
-using System.Net.NetworkInformation;
-using System.Runtime.CompilerServices;
-using System.Threading.Channels;
 
 namespace HoteldosNobresBlazor.Funcoes
 {

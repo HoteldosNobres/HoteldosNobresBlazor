@@ -233,7 +233,8 @@ namespace HoteldosNobresBlazor.Classes
 
             Address = guest.GuestAddress;
             Postalcode = guest.GuestZip;
-            Contry = guest.GuestCountry.Contains("BR") ? "BRASIL" : guest.GuestCountry;
+
+            Contry = guest.GuestCountry == null || guest.GuestCountry.Contains("BR")  ? "BRASIL" : guest.GuestCountry;
             CEP = guest.GuestZip.Replace("-", "");
             Cidade = guest.GuestCity;
             Estado = guest.GuestState;
@@ -297,6 +298,7 @@ namespace HoteldosNobresBlazor.Classes
                 GuestList guest = reservation.GuestList.Values.FirstOrDefault();
                 NumeroCelular = guest != null && !string.IsNullOrEmpty(guest.GuestCellPhone) ? guest.GuestCellPhone : string.Empty;
                 Numerotelefone = guest != null && !string.IsNullOrEmpty(guest.GuestPhone) ? guest.GuestPhone : string.Empty;
+                Email = guest != null && !string.IsNullOrEmpty(guest.GuestEmail) ? guest.GuestEmail : string.Empty;
 
             }
 

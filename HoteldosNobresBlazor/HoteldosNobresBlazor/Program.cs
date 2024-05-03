@@ -72,7 +72,6 @@ builder.Services.AddBlazorBootstrap();
 builder.Services.AddScoped<CookieHandler>();
 builder.Services.AddScoped<AppState>();  
 builder.Services.AddSingleton<AppState>();
-builder.Services.AddSingleton<AuthenticationStateProvider, AuthAPI>();
 builder.Services.AddSingleton<IAuthorizationMiddlewareResultHandler, AuthorizationMiddlewareResultHandler>();
 
 
@@ -304,7 +303,7 @@ cache.CacheExecutanado();
 app.MapPost("/Logout", async (
               [FromForm] string returnUrl) =>
 {
-    AuthAPI authapi = new();
+    AuthAPI authapi = new(null);
     await authapi.LogoutAsync();
     return TypedResults.LocalRedirect($"~/{returnUrl}");
 });
