@@ -91,8 +91,7 @@ public class AuthAPI : AuthenticationStateProvider
     public static async Task<AuthenticationState> GetAuthenticationClienteAsync(string email)
     {
         var pessoa = new ClaimsPrincipal();
-        //var response = await _httpClient.GetAsync("auth/manage/info");
-
+         
         UserInfo userInfo = new();
         userInfo.Email = email;
         userInfo.UserId = "1";
