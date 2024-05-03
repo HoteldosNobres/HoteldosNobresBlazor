@@ -51,19 +51,7 @@ builder.Services.AddAuthentication(options =>
 {
     options.LoginPath = "/Account/Login";   
 });
- 
- 
-//builder.Services.AddAuthentication(options =>
-//{
-//    options.DefaultScheme = IdentityConstants.ApplicationScheme;
-//})
-//    .AddIdentityCookies();
-
-//.AddCookie("Admin", options =>
-// {
-//     options.LoginPath = "/admin/login";
-//     options.LogoutPath = "/admin/logout";
-// });
+  
 
 builder.Services.AddHttpClient();
 builder.Services.AddBlazorBootstrap();
