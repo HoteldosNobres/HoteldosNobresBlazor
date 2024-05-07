@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using HoteldosNobresBlazor.Client.API;
 using MudBlazor.Services;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,15 +23,28 @@ builder.Services.AddRazorComponents()
     .AddInteractiveWebAssemblyComponents();
 
 
-builder.Services.AddAuthorizationCore();
+//builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("Policy_Name", x => x.RequireRole("admin", "client"));
+});
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddOptions();
 
 //builder.Services.AddScoped<IdentityUserAccessor>();
 builder.Services.AddScoped<IdentityRedirectManager>();
-builder.Services.AddScoped<AuthenticationStateProvider, AuthAPI>();
-builder.Services.AddScoped<AuthAPI>(sp => (AuthAPI)sp.GetRequiredService<AuthenticationStateProvider>());
+builder.Services.AddScoped<AuthenticationStateProvider, PersistingRevalidatingAuthenticationStateProvider>();
+//builder.Services.AddScoped<AuthenticationStateProvider, AuthAPI>();
+//builder.Services.AddScoped<AuthAPI>(sp => (AuthAPI)sp.GetRequiredService<AuthenticationStateProvider>()); 
 
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+           .AddCookie();
+
+builder.Services.AddDbContext<ApplicationDbContext>(); 
+builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddSignInManager()
+    .AddDefaultTokenProviders();
 
 builder.Services.AddScoped<APICloudbeds>();
 
@@ -41,17 +55,6 @@ builder.Services.AddHttpClient("CloudbedsAPI", client =>
     client.DefaultRequestHeaders.Add("Accept", "application/json");
     client.DefaultRequestHeaders.Add("Authorization", "Bearer " + KEYs.TOKEN_CLOUDBEDS);
 });
-
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-}).AddCookie(options =>
-{
-    options.LoginPath = "/Account/Login";   
-});
-  
 
 builder.Services.AddHttpClient();
 builder.Services.AddBlazorBootstrap();
@@ -86,6 +89,7 @@ app.UseStaticFiles();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()
@@ -284,17 +288,7 @@ app.MapGet("/whatsapp", async (HttpContext httpContext) =>
 var cache = new CacheHotel(sCOPP);
 
 cache.CacheExecutanado();
-
-// Add additional endpoints required by the Identity /Account Razor components.
-//app.MapAdditionalIdentityEndpoints();
-
-app.MapPost("/Logout", async (
-              [FromForm] string returnUrl) =>
-{
-    AuthAPI authapi = new(null);
-    await authapi.LogoutAsync();
-    return TypedResults.LocalRedirect($"~/{returnUrl}");
-});
+ 
 
 app.Run();
 

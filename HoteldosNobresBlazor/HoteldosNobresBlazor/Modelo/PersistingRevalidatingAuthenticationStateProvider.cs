@@ -38,6 +38,7 @@ internal sealed class PersistingRevalidatingAuthenticationStateProvider : Revali
         AuthenticationStateChanged += OnAuthenticationStateChanged;
         subscription = state.RegisterOnPersisting(OnPersistingAsync, RenderMode.InteractiveWebAssembly);
     }
+    public override Task<AuthenticationState> GetAuthenticationStateAsync() => authenticationStateTask;
 
     protected override TimeSpan RevalidationInterval => TimeSpan.FromMinutes(30);
 
@@ -70,7 +71,7 @@ internal sealed class PersistingRevalidatingAuthenticationStateProvider : Revali
     }
 
     private void OnAuthenticationStateChanged(Task<AuthenticationState> task)
-    {
+    { 
         authenticationStateTask = task;
     }
 
@@ -106,4 +107,13 @@ internal sealed class PersistingRevalidatingAuthenticationStateProvider : Revali
         AuthenticationStateChanged -= OnAuthenticationStateChanged;
         base.Dispose(disposing);
     }
+
+    public void AuthenticateUser(Task<AuthenticationState> task)
+    {
+        authenticationStateTask = task;
+
+        NotifyAuthenticationStateChanged(task);
+    }
+
+
 }

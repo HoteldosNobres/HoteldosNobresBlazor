@@ -1,8 +1,18 @@
-﻿@page "/Account/Lockout"
+﻿@page "/account/logout" 
 
-<PageTitle>Locked out</PageTitle>
+@inject AuthAPI AuthAPI
+@attribute [AllowAnonymous]
+@inject NavigationManager NavigationManager 
 
-<header>
-    <h1 class="text-danger">Locked out</h1>
-    <p class="text-danger">This account has been locked out, please try again later.</p>
-</header>
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        if (await AuthAPI.VerificaAutenticado())
+        {
+            await AuthAPI.LogoutAsync();  
+            
+        } 
+        NavigationManager.NavigateTo($"Account/Login?returnUrl={Uri.EscapeDataString(NavigationManager.Uri)}", forceLoad: true);
+    }
+
+}

@@ -4,11 +4,16 @@
 @using System.ComponentModel.DataAnnotations
 @using HoteldosNobresBlazor.Classes
 @using HoteldosNobresBlazor.Client.API
-@using HoteldosNobresBlazor.Modelo 
-@using Microsoft.AspNetCore.Components.Authorization 
-@inject NavigationManager Navigation  
+@using HoteldosNobresBlazor.Modelo
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Identity
+@inject NavigationManager Navigation
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IAuthorizationService AuthorizationService
+@inject SignInManager<ApplicationUser> SignInManager
+@inject IAuthenticationService AuthenticationService;
 
- 
 <PageTitle>Entre no sistema</PageTitle>
 
 @* <h1>Log in</h1>
@@ -32,19 +37,19 @@
                     <ValidationMessage For="() => Input.Password" class="text-danger" />
                 </div>
                 @* <div class="checkbox mb-3">
-                    <label class="form-label">
-                        <InputCheckbox @bind-Value="Input.RememberMe" class="darker-border-checkbox form-check-input" />
-                        Remember me
-                    </label>
+                <label class="form-label">
+                <InputCheckbox @bind-Value="Input.RememberMe" class="darker-border-checkbox form-check-input" />
+                Remember me
+                </label>
                 </div> *@
                 <button type="submit" class="w-100 btn btn-lg btn-primary">Entrar</button>
             </EditForm>
         </section>
     </div>
     <div class="col-md-6 col-md-offset-2">
-        <section> 
+        <section>
             <h3>Bem vindo ao Hotel dos Nobres</h3>
-            <hr /> 
+            <hr />
             <ExternalLoginPicker />
         </section>
     </div>
@@ -57,10 +62,6 @@
     [CascadingParameter]
     private HttpContext HttpContext { get; set; } = default!;
 
-    [CascadingParameter]
-    private Task<AuthenticationState> authenticationStateTask { get; set; }
-
-
     [SupplyParameterFromQuery]
     private string? userName { get; set; }
 
@@ -69,54 +70,42 @@
 
     protected override async Task OnInitializedAsync()
     {
+        // var authenticationState = await authenticationStateTask;
 
-        var authenticationState = await authenticationStateTask;
-
-        if(userName != null)
+        if (userName != null)
         {
             Input.Email = userName;
         }
-
-        // if (authenticationState.User.Identity.IsAuthenticated)
-        // {
-        //     // await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
-        // } 
     }
 
     private async Task LoginUser()
     {
-        // var result = await SignInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
-        // if (result.Succeeded)
-        // {
-        //     // Logger.LogInformation("User logged in.");
-        //     RedirectManager.RedirectTo(ReturnUrl);
-        // } 
-        // if (Input.Email != "fabiohcnobre@hotmail.com" && Input.Email != "hoteldosnobres@hotmail.com")
-        // {
-        //     Reserva novareserva = await cloudbedsAPI.GetReservaAsync(Input.Email);
-        //     // novareserva.IDReserva = ReservationId;
-
-        //     // novareserva = FunctionAPICLOUDBEDs.getReservationAsync(novareserva).Result;
-        //     // // String log = FuncoesFNRH.Atualizar(novareserva);
-        //     // string log = "teste";
-
-        //     // arrayDeLinhas = log.Split('\n');
-
-        //     // DateTime inicio = DateTime.Now;
-        //     // novareserva = await cloudbedsAPI.GetReservaAsync(novaReservationId);
-        //     // // novareserva = FunctionAPICLOUDBEDs.getReservationAsync(novareserva).Result;
-        //     // DateTime final = DateTime.Now;
-        //     // TimeSpan diferenca =  final - inicio;
-        //     // Console.WriteLine(diferenca);
-        // }
         AuthAPI authAPI = new AuthAPI(null);
         var resposta = await authAPI.LoginAsync(Input.Email, Input.Password);
         if (resposta.Sucesso)
         {
-            if (ReturnUrl is not null)
-                Navigation.NavigateTo(ReturnUrl);
-             else 
-                Navigation.NavigateTo(Navigation.BaseUri);
+            var authorization = await AuthorizationService.AuthorizeAsync(resposta.User, "Policy_Name");
+
+            if (authorization.Succeeded)
+            { 
+                var teste = (PersistingRevalidatingAuthenticationStateProvider)AuthenticationStateProvider;
+                teste.AuthenticateUser(authAPI.GetAuthenticationStateAsync());
+
+                ApplicationUser user = new ApplicationUser();
+                user.Email = Input.Email;
+                user.UserName = Input.Email;
+                user.Id = Input.Email;
+
+                HttpContext.User = resposta.User;
+                await HttpContext.SignInAsync(resposta.User);
+                var authResult = await HttpContext.AuthenticateAsync();
+
+                if (ReturnUrl is not null)
+                    Navigation.NavigateTo(ReturnUrl);
+                else
+                    Navigation.NavigateTo(Navigation.BaseUri);
+            }
+
         }
     }
 
@@ -132,6 +121,6 @@
 
         [Display(Name = "Remember me?")]
         public bool RememberMe { get; set; }
-         
+
     }
 }

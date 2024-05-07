@@ -8,6 +8,7 @@ public class UserInfo
 {
     public  string UserId { get; set; }
     public  string Email { get; set; }
+    public string Role { get; set; }
 
     public UserInfo (string userId, string email)
     {
@@ -23,7 +24,8 @@ public class UserInfo
     {
         if (claimsPrincipal.Identity!.IsAuthenticated){
             Email = claimsPrincipal.Identity.Name!;
-            UserId = claimsPrincipal.FindFirst(ClaimTypes.NameIdentifier)?.Value!; 
+            UserId = claimsPrincipal.FindFirst(ClaimTypes.NameIdentifier)?.Value!;
+            Role = claimsPrincipal.FindFirst(ClaimTypes.Role)?.Value!;
         } 
     }
 }

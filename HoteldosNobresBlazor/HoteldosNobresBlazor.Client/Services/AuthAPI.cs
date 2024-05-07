@@ -1,45 +1,36 @@
 ﻿using HoteldosNobresBlazor.Client;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
 using System.Security.Claims;
 
 namespace HoteldosNobresBlazor.Services;
 
 public class AuthAPI : AuthenticationStateProvider
 {
-    private static bool autenticado = true;
+    private static bool autenticado = false; 
 
-    private static Task<AuthenticationState> defaultUnauthenticatedTask =
+    private static Task<AuthenticationState>  defaultUnauthenticatedTask =
             Task.FromResult(new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity())));
 
     private readonly Task<AuthenticationState> authenticationStateTask = defaultUnauthenticatedTask;
 
-    private int Idtask = 0;
-
-    public AuthAPI(PersistentComponentState state)
+    public AuthAPI(PersistentComponentState state) 
     {
-        Idtask = authenticationStateTask.Id;
+        //if (!state.TryTakeFromJson<UserInfo>(nameof(UserInfo), out var userInfo) || userInfo is null)
+        //{
+        //    return;
+        //}
 
-        
-        if (state == null) return;
+        //Claim[] claims = [
+        //    new Claim(ClaimTypes.NameIdentifier, userInfo.UserId),
+        //        new Claim(ClaimTypes.Name, userInfo.Email),
+        //        new Claim(ClaimTypes.Email, userInfo.Email) ];
 
-      
-
-        // if (!state.TryTakeFromJson<UserInfo>(nameof(UserInfo), out var userInfo) || userInfo is null)
-        //     {
-        //         return;
-        //     }
-
-        // Claim[] claims = [
-        //new Claim(ClaimTypes.NameIdentifier, userInfo.UserId),
-        //     new Claim(ClaimTypes.Name, userInfo.Email), 
-        //     new Claim(ClaimTypes.Email, userInfo.Email) ];
-
-        // authenticationStateTask = Task.FromResult(
-        //     new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity(claims,
-        //         authenticationType: nameof(AuthAPI)))));
-
-
+        //authenticationStateTask = Task.FromResult(
+        //    new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity(claims,
+        //        authenticationType: nameof(PersistentAuthenticationStateProvider)))));
     }
 
     public override Task<AuthenticationState> GetAuthenticationStateAsync() => authenticationStateTask;
@@ -47,7 +38,7 @@ public class AuthAPI : AuthenticationStateProvider
     public async Task<AuthResponse> LoginAsync(string email, string senha)
     {
         if (email == "fabiohcnobre@hotmail.com" && senha == "123")
-        {
+        { 
             NotifyAuthenticationStateChanged(GetAuthenticationAsync(email));
         }
         else if ((email == "hoteldosnobres@hotmail.com" || senha == "1234567")
@@ -60,14 +51,14 @@ public class AuthAPI : AuthenticationStateProvider
             autenticado = false;
         }
 
-        return new AuthResponse { Sucesso = autenticado };
+        return new AuthResponse { Sucesso = autenticado, User = defaultUnauthenticatedTask.Result.User };
     }
 
-    public static async Task<AuthenticationState> GetAuthenticationAsync(string email)
+    public async Task<AuthenticationState> GetAuthenticationAsync(string email)
     {
         var pessoa = new ClaimsPrincipal();
         //var response = await _httpClient.GetAsync("auth/manage/info");
-
+        autenticado = true;
         UserInfo userInfo = new();
         userInfo.Email = email;
         userInfo.UserId = "1";
@@ -82,18 +73,15 @@ public class AuthAPI : AuthenticationStateProvider
         var identity = new ClaimsIdentity(claims, "Cookies");
         pessoa = new ClaimsPrincipal(identity);
 
-        defaultUnauthenticatedTask = Task.FromResult(
-            new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity(claims,
-                authenticationType: nameof(AuthAPI)))));
+        defaultUnauthenticatedTask = Task.FromResult(new AuthenticationState(pessoa));
 
-        
-
-        return new AuthenticationState(pessoa);
+        return defaultUnauthenticatedTask.Result;
     }
 
-    public static async Task<AuthenticationState> GetAuthenticationClienteAsync(string email)
+    public async Task<AuthenticationState> GetAuthenticationClienteAsync(string email)
     {
         var pessoa = new ClaimsPrincipal();
+        autenticado = true;
         //var response = await _httpClient.GetAsync("auth/manage/info");
 
         UserInfo userInfo = new();
@@ -109,24 +97,15 @@ public class AuthAPI : AuthenticationStateProvider
         var identity = new ClaimsIdentity(claims, "Cookies");
         pessoa = new ClaimsPrincipal(identity);
 
-        defaultUnauthenticatedTask = Task.FromResult(
-            new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity(claims,
-                authenticationType: nameof(AuthAPI)))));
+        defaultUnauthenticatedTask = Task.FromResult(new AuthenticationState(pessoa));
 
-
-        return new AuthenticationState(pessoa);
+        return defaultUnauthenticatedTask.Result;
     }
 
-    public static async Task<AuthenticationState> GetAuthenticationLogoutAsync()
+    public async Task<AuthenticationState> GetAuthenticationLogoutAsync()
     {
         var pessoa = new ClaimsPrincipal();
-
-
-        //Claim[] claims = new();
-
-        //var identity = new ClaimsIdentity(claims, "Cookies");
-        //pessoa = new ClaimsPrincipal(identity);
-
+         
         defaultUnauthenticatedTask = Task.FromResult(
             new AuthenticationState(pessoa));
 

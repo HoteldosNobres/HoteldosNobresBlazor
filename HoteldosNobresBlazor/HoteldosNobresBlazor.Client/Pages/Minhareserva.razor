@@ -2,8 +2,7 @@
 @using System.Security.Claims
 @using System.Net.NetworkInformation
 @using HoteldosNobresBlazor.Client.Pages.Component
-@inject APICloudbeds cloudbedsAPI
-@inject AuthenticationStateProvider authenticationStateProvider
+@inject APICloudbeds cloudbedsAPI 
 @inject AppState appState
 
 
@@ -46,24 +45,24 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        if (authenticationStateProvider != null)
-        {
-            var retorno = await authenticationStateProvider.GetAuthenticationStateAsync();
+        // if (authenticationStateProvider != null)
+        // {
+        //     var retorno = await authenticationStateProvider.GetAuthenticationStateAsync();
 
-            user = new UserInfo(retorno.User);
-        }
+        //     user = new UserInfo(retorno.User);
+        // }
 
         List<Reserva>? listacompleta = await cloudbedsAPI.getReservationsAsyncGuestDetails();
 
 
-        listaCompleta = listacompleta.Where(a => a.Email == user.Email).ToList();
-        if (listaCompleta is not null)
-        {
-            listaCompleta = listaCompleta.OrderByDescending(a => a.NomeHospede).ToList();
-            totalItens = listaCompleta.Count();
-            totalPaginas = Convert.ToInt32(Math.Ceiling((totalItens * 1.0) / tamanho));
-            this.PaginaMudou(1);
-        }
+        // listaCompleta = listacompleta.Where(a => a.Email == user.Email).ToList();
+        // if (listaCompleta is not null)
+        // {
+        //     listaCompleta = listaCompleta.OrderByDescending(a => a.NomeHospede).ToList();
+        //     totalItens = listaCompleta.Count();
+        //     totalPaginas = Convert.ToInt32(Math.Ceiling((totalItens * 1.0) / tamanho));
+        //     this.PaginaMudou(1);
+        // }
     }
 
     private void PaginaMudou(int pageNumber)
