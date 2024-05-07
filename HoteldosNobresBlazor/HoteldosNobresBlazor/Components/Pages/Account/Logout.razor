@@ -33,12 +33,11 @@
                     RedirectUri = NavigationManager.BaseUri,
                 });
 
-            AuthAPI authAPI = new AuthAPI();
+            
             var teste = (PersistingRevalidatingAuthenticationStateProvider)AuthenticationStateProvider;
-            teste.LogoutAsync();
-            authAPI.GetAuthenticationLogout();
-            teste.AuthenticateUser(authAPI.GetAuthenticationStateAsync());
-            teste.SetAuthenticationState(authAPI.GetAuthenticationStateAsync());
+            teste.LogoutAsync(); 
+            teste.AuthenticateUser(teste.GetAuthenticationStateAsync());
+            teste.SetAuthenticationState(teste.GetAuthenticationStateAsync());
            
             NavigationManager.NavigateTo(NavigationManager.BaseUri, forceLoad: true); 
         }

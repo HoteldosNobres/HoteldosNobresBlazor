@@ -474,7 +474,7 @@ namespace HoteldosNobresBlazor.Funcoes
                 Details_changed changed = (Details_changed)objeto;
                 TimeZoneInfo brazilTimeZone = TimeZoneInfo.FindSystemTimeZoneById("E. South America Standard Time");
 
-                List<Reserva> listaReserva = await FunctionAPICLOUDBEDs.getReservationsAsync();
+                List<Reserva> listaReserva = await FunctionAPICLOUDBEDs.getReservationsAsyncGuestDetails();
                 Reserva reserva = listaReserva.FirstOrDefault(x => changed.guestID == x.GuestID);
                 reserva = await FunctionAPICLOUDBEDs.getReservationAsync(reserva);
 
@@ -545,12 +545,9 @@ namespace HoteldosNobresBlazor.Funcoes
         {
             try
             {
-                List<Reserva> listReserva = FunctionAPICLOUDBEDs.getReservationsAsync(null).Result;
-                listReserva = FunctionAPICLOUDBEDs.getReservationsAsync(DateTime.Now.ToString("yyyy-MM-dd")).Result;
-                listReserva.AddRange(FunctionAPICLOUDBEDs.getReservationsAsync(null, DateTime.Now.ToString("yyyy-MM-dd")).Result);
+                List<Reserva> listReserva = FunctionAPICLOUDBEDs.getReservationsAsyncGuestDetails().Result; 
                 AppState.ListReservas = listReserva;
-
-
+                 
                 AppState.MyMessage = cache + " Data: " + TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone).ToString("yyyy-MM-dd HH:mm:ss") + "\n";
             }
             catch (Exception e)
@@ -558,8 +555,7 @@ namespace HoteldosNobresBlazor.Funcoes
                 AppState.MyMessage = e.Message + "\n";
             }
         }
-
-
+         
         static void NovoMetodo()
         {
             while (true)
@@ -602,7 +598,7 @@ namespace HoteldosNobresBlazor.Funcoes
                     List<Reserva> listReserva = new List<Reserva>(); 
                     listReserva = FunctionAPICLOUDBEDs.getReservationsAsync(DateTime.Now.ToString("yyyy-MM-dd")).Result;
                     listReserva.AddRange(FunctionAPICLOUDBEDs.getReservationsAsync(null, DateTime.Now.ToString("yyyy-MM-dd")).Result);
-                    listReserva.AddRange(FunctionAPICLOUDBEDs.getReservationsAsync().Result);
+                    listReserva.AddRange(FunctionAPICLOUDBEDs.getReservationsAsyncGuestDetails().Result);
 
                     foreach (Reserva reserva1 in listReserva)
                     {

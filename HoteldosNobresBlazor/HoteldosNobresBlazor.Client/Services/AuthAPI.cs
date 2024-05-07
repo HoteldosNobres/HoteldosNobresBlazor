@@ -1,9 +1,12 @@
 ﻿using Google.Apis.PeopleService.v1.Data;
+using HoteldosNobresBlazor.Classes;
 using HoteldosNobresBlazor.Client;
+using HoteldosNobresBlazor.Client.API;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
+using MudBlazor;
 using System.Security.Claims;
 
 namespace HoteldosNobresBlazor.Services;
@@ -15,28 +18,49 @@ public class AuthAPI : AuthenticationStateProvider
 
     private Task<AuthenticationState> authenticationStateTask = defaultUnauthenticatedTask;
 
-    public AuthAPI() 
+    private List<Reserva> listaReserva;
+
+    public AuthAPI(List<Reserva> listaReserv) 
     {
-       
+        listaReserva = listaReserv; 
     }
 
     public override Task<AuthenticationState> GetAuthenticationStateAsync() => authenticationStateTask;
 
     public async Task<AuthResponse> LoginAsync(string email, string senha)
     {
-        bool autenticado = true;
+        bool autenticado = false;
         if (email == "fabiohcnobre@hotmail.com" && senha == "123")
-        { 
+        {
+            autenticado = true;
             NotifyAuthenticationStateChanged(GetAuthenticationAsync(email));
         }
-        else if ((email == "hoteldosnobres@hotmail.com" || senha == "1234567")
-            && senha == "123")
+        else if (email == "hoteldosnobres@hotmail.com" && senha == "123")
         {
-            NotifyAuthenticationStateChanged(GetAuthenticationClienteAsync(email));
+            autenticado = true;
+            NotifyAuthenticationStateChanged(GetAuthenticationClienteAsync("1", email));
         }
         else
         {
-            autenticado = false;
+            List<Reserva> listaReservaaqui;
+            listaReservaaqui = listaReserva.Where(a => (a.Email != null && a.Email.Equals(email))
+            || a.IDReserva.Equals(email)
+            ||  (a.IDReservaAgencia != null && a.IDReservaAgencia.Equals(email))
+            ).ToList();
+            if(listaReservaaqui.Count > 0)
+            {
+                foreach (var reserva in listaReservaaqui)
+                {
+                    if (!string.IsNullOrEmpty(reserva.ProxyCelular)
+                       && reserva.ProxyCelular.Length > 4
+                       && reserva.ProxyCelular.Substring(reserva.ProxyCelular.Length - 4) == senha)
+                    {
+                        email = string.IsNullOrEmpty(reserva.Email) ? email : reserva.Email;
+                        NotifyAuthenticationStateChanged(GetAuthenticationClienteAsync(reserva.GuestID!, email));
+                        autenticado = true;
+                    }
+                }
+            }   
         }
 
         return new AuthResponse { Sucesso = autenticado, User = defaultUnauthenticatedTask.Result.User };
@@ -65,14 +89,14 @@ public class AuthAPI : AuthenticationStateProvider
         return defaultUnauthenticatedTask.Result;
     }
 
-    public async Task<AuthenticationState> GetAuthenticationClienteAsync(string email)
+    public async Task<AuthenticationState> GetAuthenticationClienteAsync(string id, string email)
     {
         var pessoa = new ClaimsPrincipal(); 
         //var response = await _httpClient.GetAsync("auth/manage/info");
 
         UserInfo userInfo = new();
         userInfo.Email = email;
-        userInfo.UserId = "1";
+        userInfo.UserId = id;
 
         Claim[] claims = [
         new Claim(ClaimTypes.NameIdentifier, userInfo.UserId),

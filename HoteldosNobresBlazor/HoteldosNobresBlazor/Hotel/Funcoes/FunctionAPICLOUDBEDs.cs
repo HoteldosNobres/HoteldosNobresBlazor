@@ -148,7 +148,7 @@ public class FunctionAPICLOUDBEDs
     #endregion Payment 
 
     #region Reservation
-    public static async Task<List<Reserva>> getReservationsAsync(string checkInFrom = null, string checkOutFrom = null)
+    public static async Task<List<Reserva>> getReservationsAsync(string checkInFrom, string checkOutFrom = null)
     {
         try
         {

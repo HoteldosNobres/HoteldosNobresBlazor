@@ -4,12 +4,14 @@
 @using System.ComponentModel.DataAnnotations
 @using HoteldosNobresBlazor.Classes
 @using HoteldosNobresBlazor.Client.API
+@using HoteldosNobresBlazor.Funcoes
 @using HoteldosNobresBlazor.Modelo
 @using Microsoft.AspNetCore.Authentication
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Identity
 @inject NavigationManager Navigation
 @inject AuthenticationStateProvider AuthenticationStateProvider  
+@inject APICloudbeds cloudbedsAPI
 
 <PageTitle>Entre no sistema</PageTitle>
 
@@ -65,14 +67,18 @@
     [SupplyParameterFromQuery]
     private string? ReturnUrl { get; set; }
 
+    private AuthAPI authAPI { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
+        List<Reserva> listaReserva = await cloudbedsAPI.getReservationsAsyncGuestDetails();
+        authAPI = new AuthAPI(listaReserva);
 
     }
 
     private async Task LoginUser()
     {
-        AuthAPI authAPI = new AuthAPI();
+        
         var resposta = await authAPI.LoginAsync(Input.Email, Input.Password);
         if (resposta.Sucesso)
         {

@@ -4,7 +4,7 @@
 @using HoteldosNobresBlazor.Client.Pages.Component
 @inject APICloudbeds cloudbedsAPI
 @inject AuthenticationStateProvider AuthenticationStateProvider
-
+@inject AppState appState
 
 @rendermode InteractiveServer
 
@@ -31,8 +31,6 @@ else
     <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
 }
 
-
-
 @code {
     private int tamanho = 8;
     private int totalItens;
@@ -47,11 +45,20 @@ else
         var authorization = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         if (!authorization.User.Identity!.IsAuthenticated)
             return;
-             
-        user = new UserInfo(authorization.User);
-        List<Reserva>? listacompleta = await cloudbedsAPI.getReservationsAsyncGuestDetails();
 
-        listaCompleta = listacompleta.Where(a => a.Email == user.Email).ToList();
+        user = new UserInfo(authorization.User);
+        string clientId = user.UserId;
+
+        if (appState.ListReservas.Count() > 0)
+            listaCompleta = appState.ListReservas;
+        else
+            listaCompleta = await cloudbedsAPI.getReservationsAsyncGuestDetails();
+
+        listaCompleta = listaCompleta.Where(a => (a.Email != null && a.Email.Equals(user.UserId))
+            || (a.GuestID != null && a.GuestID.Equals(user.UserId))
+             ).ToList();
+
+
         if (listaCompleta is not null)
         {
             listaCompleta = listaCompleta.OrderByDescending(a => a.NomeHospede).ToList();
