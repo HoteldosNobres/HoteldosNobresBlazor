@@ -19,4 +19,4 @@ await builder.Build().RunAsync();
 
 //builder.Services.AddScoped<AuthAPI>();
 //builder.Services.AddSingleton<AuthAPI>(sp => (AuthAPI)sp.GetRequiredService<AuthenticationStateProvider>());
-builder.Services.AddSingleton<AuthenticationStateProvider, AuthAPI>();
+//builder.Services.AddSingleton<AuthenticationStateProvider, AuthAPI>();

@@ -1,0 +1,51 @@
+﻿@page "/account/logout"
+@attribute [AllowAnonymous]
+
+@using System.ComponentModel.DataAnnotations
+@using HoteldosNobresBlazor.Classes
+@using HoteldosNobresBlazor.Client.API
+@using HoteldosNobresBlazor.Modelo
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Authentication.Cookies
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Identity
+@using System.Security.Claims
+
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+@code {
+
+    [CascadingParameter]
+    private HttpContext HttpContext { get; set; } = default!;
+
+    [SupplyParameterFromQuery]
+    private string? ReturnUrl { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authorization = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        if (authorization.User.Identity!.IsAuthenticated)
+        {
+            HttpContext.User = new ClaimsPrincipal();
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme, new AuthenticationProperties
+                {
+                    RedirectUri = NavigationManager.BaseUri,
+                });
+
+            AuthAPI authAPI = new AuthAPI();
+            var teste = (PersistingRevalidatingAuthenticationStateProvider)AuthenticationStateProvider;
+            teste.LogoutAsync();
+            authAPI.GetAuthenticationLogout();
+            teste.AuthenticateUser(authAPI.GetAuthenticationStateAsync());
+            teste.SetAuthenticationState(authAPI.GetAuthenticationStateAsync());
+           
+            NavigationManager.NavigateTo(NavigationManager.BaseUri, forceLoad: true); 
+        }
+        else
+            NavigationManager.NavigateTo(NavigationManager.BaseUri, forceLoad: true);
+
+
+    }
+
+}

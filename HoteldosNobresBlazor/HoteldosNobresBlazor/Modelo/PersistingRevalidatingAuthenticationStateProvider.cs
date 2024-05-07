@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using System.Diagnostics;
 using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace HoteldosNobresBlazor.Modelo;
 
@@ -22,7 +23,7 @@ internal sealed class PersistingRevalidatingAuthenticationStateProvider : Revali
 
     private readonly PersistingComponentStateSubscription subscription;
 
-    private Task<AuthenticationState>? authenticationStateTask;
+    private Task<AuthenticationState>? authenticationStateTask = Task.FromResult(new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity())));
 
     public PersistingRevalidatingAuthenticationStateProvider(
         ILoggerFactory loggerFactory,
@@ -112,7 +113,15 @@ internal sealed class PersistingRevalidatingAuthenticationStateProvider : Revali
     {
         authenticationStateTask = task;
 
-        NotifyAuthenticationStateChanged(task);
+        NotifyAuthenticationStateChanged(authenticationStateTask);
+    }
+
+    public void LogoutAsync()
+    {
+        authenticationStateTask = Task.FromResult(new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity())));
+        NotifyAuthenticationStateChanged(authenticationStateTask); 
+        OnAuthenticationStateChanged(authenticationStateTask); 
+        NotifyAuthenticationStateChanged(authenticationStateTask);
     }
 
 

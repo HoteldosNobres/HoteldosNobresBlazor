@@ -2,15 +2,15 @@
 @using System.Security.Claims
 @using System.Net.NetworkInformation
 @using HoteldosNobresBlazor.Client.Pages.Component
-@inject APICloudbeds cloudbedsAPI 
-@inject AppState appState
+@inject APICloudbeds cloudbedsAPI
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 
 @rendermode InteractiveServer
- 
+
 <PageTitle>Reserva</PageTitle>
- 
-<MudStack  Row="true" Justify="Justify.SpaceBetween">
+
+<MudStack Row="true" Justify="Justify.SpaceBetween">
     <MudText Typo="Typo.h4"> Reservas</MudText>
     <MudPagination Count="@totalPaginas" SelectedChanged="PaginaMudou"></MudPagination>
 </MudStack>
@@ -20,8 +20,8 @@
     <MudGrid>
         @foreach (var reser in listaPagina)
         {
-            <MudItem  >
-                <CardReserva Reserva=reser/>
+            <MudItem>
+                <CardReserva Reserva=reser />
             </MudItem>
         }
     </MudGrid>
@@ -34,7 +34,6 @@ else
 
 
 @code {
-
     private int tamanho = 8;
     private int totalItens;
     private int totalPaginas;
@@ -45,24 +44,22 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        // if (authenticationStateProvider != null)
-        // {
-        //     var retorno = await authenticationStateProvider.GetAuthenticationStateAsync();
-
-        //     user = new UserInfo(retorno.User);
-        // }
-
+        var authorization = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        if (!authorization.User.Identity!.IsAuthenticated)
+            return;
+             
+        user = new UserInfo(authorization.User);
         List<Reserva>? listacompleta = await cloudbedsAPI.getReservationsAsyncGuestDetails();
 
+        listaCompleta = listacompleta.Where(a => a.Email == user.Email).ToList();
+        if (listaCompleta is not null)
+        {
+            listaCompleta = listaCompleta.OrderByDescending(a => a.NomeHospede).ToList();
+            totalItens = listaCompleta.Count();
+            totalPaginas = Convert.ToInt32(Math.Ceiling((totalItens * 1.0) / tamanho));
+            this.PaginaMudou(1);
+        }
 
-        // listaCompleta = listacompleta.Where(a => a.Email == user.Email).ToList();
-        // if (listaCompleta is not null)
-        // {
-        //     listaCompleta = listaCompleta.OrderByDescending(a => a.NomeHospede).ToList();
-        //     totalItens = listaCompleta.Count();
-        //     totalPaginas = Convert.ToInt32(Math.Ceiling((totalItens * 1.0) / tamanho));
-        //     this.PaginaMudou(1);
-        // }
     }
 
     private void PaginaMudou(int pageNumber)

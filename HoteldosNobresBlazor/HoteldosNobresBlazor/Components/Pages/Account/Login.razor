@@ -9,10 +9,7 @@
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Identity
 @inject NavigationManager Navigation
-@inject AuthenticationStateProvider AuthenticationStateProvider
-@inject IAuthorizationService AuthorizationService
-@inject SignInManager<ApplicationUser> SignInManager
-@inject IAuthenticationService AuthenticationService;
+@inject AuthenticationStateProvider AuthenticationStateProvider  
 
 <PageTitle>Entre no sistema</PageTitle>
 
@@ -70,41 +67,26 @@
 
     protected override async Task OnInitializedAsync()
     {
-        // var authenticationState = await authenticationStateTask;
 
-        if (userName != null)
-        {
-            Input.Email = userName;
-        }
     }
 
     private async Task LoginUser()
     {
-        AuthAPI authAPI = new AuthAPI(null);
+        AuthAPI authAPI = new AuthAPI();
         var resposta = await authAPI.LoginAsync(Input.Email, Input.Password);
         if (resposta.Sucesso)
         {
-            var authorization = await AuthorizationService.AuthorizeAsync(resposta.User, "Policy_Name");
+            var teste = (PersistingRevalidatingAuthenticationStateProvider)AuthenticationStateProvider;
+            teste.AuthenticateUser(authAPI.GetAuthenticationStateAsync());
 
-            if (authorization.Succeeded)
-            { 
-                var teste = (PersistingRevalidatingAuthenticationStateProvider)AuthenticationStateProvider;
-                teste.AuthenticateUser(authAPI.GetAuthenticationStateAsync());
+            HttpContext.User = resposta.User;
+            await HttpContext.SignInAsync(resposta.User);
+            // var authResult = await HttpContext.AuthenticateAsync();
 
-                ApplicationUser user = new ApplicationUser();
-                user.Email = Input.Email;
-                user.UserName = Input.Email;
-                user.Id = Input.Email;
-
-                HttpContext.User = resposta.User;
-                await HttpContext.SignInAsync(resposta.User);
-                var authResult = await HttpContext.AuthenticateAsync();
-
-                if (ReturnUrl is not null)
-                    Navigation.NavigateTo(ReturnUrl);
-                else
-                    Navigation.NavigateTo(Navigation.BaseUri);
-            }
+            if (ReturnUrl is not null)
+                Navigation.NavigateTo(ReturnUrl);
+            else
+                Navigation.NavigateTo(Navigation.BaseUri);
 
         }
     }

@@ -5,14 +5,13 @@
 <MudThemeProvider Theme="currentTheme" />
 <MudDialogProvider @rendermode="InteractiveServer" />
 <MudSnackbarProvider @rendermode="InteractiveServer" />
-
-
+ 
 <MudLayout> 
     <MainAppDrawerBar @rendermode="InteractiveServer" />
-        <MudMainContent Class="pt-16 px-50">
-            <MudContainer Class="mt-6"> 
-                @Body 
-        </MudContainer>
+    <MudMainContent Class="pt-16 px-50">
+        <MudContainer Class="mt-6"> 
+            @Body 
+    </MudContainer>
     </MudMainContent> 
 </MudLayout>
 

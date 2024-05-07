@@ -11,6 +11,7 @@
             if (retorno.User.Identity == null || !retorno.User.Identity!.IsAuthenticated)
             {
                 NavigationManager.NavigateTo($"Account/Login?returnUrl={Uri.EscapeDataString(NavigationManager.Uri)}", forceLoad: true);
+
             }else if (retorno.User.Identity.IsAuthenticated)
             {
                 NavigationManager.NavigateTo($"minhareserva", forceLoad: true);

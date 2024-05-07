@@ -26,7 +26,7 @@ builder.Services.AddRazorComponents()
 //builder.Services.AddAuthorization();
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("Policy_Name", x => x.RequireRole("admin", "client"));
+options.AddPolicy("Policy_Name", x => x.RequireRole("admin", "client") );
 });
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddOptions();
@@ -37,8 +37,7 @@ builder.Services.AddScoped<AuthenticationStateProvider, PersistingRevalidatingAu
 //builder.Services.AddScoped<AuthenticationStateProvider, AuthAPI>();
 //builder.Services.AddScoped<AuthAPI>(sp => (AuthAPI)sp.GetRequiredService<AuthenticationStateProvider>()); 
 
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-           .AddCookie();
+builder.Services.AddAuthentication().AddCookie();
 
 builder.Services.AddDbContext<ApplicationDbContext>(); 
 builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
