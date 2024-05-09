@@ -8,39 +8,45 @@
 <PageTitle>Reservas</PageTitle>
 
 <h1>Lista Reserva </h1>
- 
 
-@if (listReserva == null) 
-{
-    <p><em>Carregando...</em></p>
-}
-else
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Data Check In</th>
-                <th>Nome Hospede</th>
-                <th>Origem</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @if (listReserva.Count() > 0)
-            @foreach (Reserva reserva1 in listReserva)
-            { 
-                <tr>
-                    <td><a href='@reserva1.LinkReserva' target='_blank'> @reserva1.IDReserva </a></td>
-                    <td>@reserva1.DataCheckIn.ToString("dd/MM/yyyy")</td>
-                        <td>@reserva1.NomeHospede.Split(' ')[0].ToString()</td>
-                    <td>@reserva1.Origem</td>
-                    <td></td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
+
+<MudContainer>
+    <MudPaper>
+        @if (listReserva == null)
+        {
+            <p><em>Carregando...</em></p>
+        }
+        else
+        {
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Data Check In</th>
+                        <th>Nome Hospede</th>
+                        <th>Origem</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (listReserva.Count() > 0)
+                        @foreach (Reserva reserva1 in listReserva)
+                        {
+                            <tr>
+                                <td><a href='@reserva1.LinkReserva' target='_blank'> @reserva1.IDReserva </a></td>
+                                <td>@reserva1.DataCheckIn.GetValueOrDefault().ToString("dd/MM/yyyy")</td>
+                                <td>@reserva1.NomeHospede.Split(' ')[0].ToString()</td>
+                                <td>@reserva1.Origem</td>
+                                <td></td>
+                            </tr>
+                        }
+                </tbody>
+            </table>
+        }
+
+    </MudPaper>
+</MudContainer>
+
 
 @code {
     public List<Reserva>? listReserva;
@@ -51,28 +57,28 @@ else
         try
         {
             // Simulate asynchronous loading to demonstrate streaming rendering
-            await Task.Delay(500); 
+            await Task.Delay(500);
 
             appState.MyMessage += "Passou pela reserva \n";
 
             if (appState.ListReservas.Count() > 0)
                 listReserva = appState.ListReservas;
-            else 
-            { 
-                listReserva = FunctionAPICLOUDBEDs.getReservationsAsync(DateTime.Now.ToString("yyyy-MM-dd")).Result;
-                listReserva.AddRange(FunctionAPICLOUDBEDs.getReservationsAsync(null, DateTime.Now.ToString("yyyy-MM-dd")).Result);
+            else
+            {
+                listReserva = FunctionAPICLOUDBEDs.getReservationsAsyncGuestDetails().Result;
+                // listReserva.AddRange(FunctionAPICLOUDBEDs.getReservationsAsync(null, DateTime.Now.ToString("yyyy-MM-dd")).Result);
                 appState.ListReservas = listReserva;
-            } 
+            }
         }
         catch (Exception ex)
         {
             Console.WriteLine(ex.Message);
         }
-        
-         
-         
+
+
+
     }
 
-   
-     
+
+
 }

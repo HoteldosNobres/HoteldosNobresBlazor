@@ -3,24 +3,30 @@
 
 @inject NavigationManager NavigationManager
 
-<MudNavMenu Color="Color.Info" Class="mud-width-full">
+<MudNavMenu>
     <AuthorizeView Roles="admin">
         <Authorized>
-            @* <MudNavLink Href="/" Match="NavLinkMatch.Prefix" Icon="fa-solid fa-house fa-lg"> Inicio</MudNavLink> *@
-            <MudNavLink Href="fnrh" Match="NavLinkMatch.Prefix"   Icon="fa-regular fa-file-code" > FNRH</MudNavLink>
-            <MudNavLink Href="pagamentoairbnb" Match="NavLinkMatch.Prefix" Icon="fa-brands fa-airbnb fa-lg"> Pagamento Airbnb</MudNavLink>
-            <MudNavLink Href="logwhatsapp" Match="NavLinkMatch.Prefix" Icon="fa-brands fa-whatsapp fa-lg">Log Whatsapp</MudNavLink>
-            <MudNavLink Href="addreservat" Match="NavLinkMatch.Prefix" Icon="fa-solid fa-folder-plus fa-lg">Adiciona Reserva</MudNavLink>
-            <MudNavLink Href="reservas" Match="NavLinkMatch.Prefix" Icon="fa-solid fa-list fa-lg">Reservas</MudNavLink> 
-        </Authorized>
-    </AuthorizeView> 
-    <AuthorizeView Roles="client">
-        <Authorized>
-            <MudNavLink Href="minhareserva" Match="NavLinkMatch.Prefix" Icon="fa-solid fa-bed">Minha Reserva</MudNavLink>
+            <MudNavGroup Title="Administrativo" Icon="@Icons.Material.Filled.Settings" Expanded="true">
+                @* <MudNavLink Href="/" Match="NavLinkMatch.Prefix" Icon="fa-solid fa-house fa-lg"> Inicio</MudNavLink> *@
+                <MudNavLink Href="fnrh" Match="NavLinkMatch.Prefix" Icon="fa-regular fa-file-code"> FNRH</MudNavLink>
+                <MudNavLink Href="pagamentoairbnb" Match="NavLinkMatch.Prefix" Icon="fa-brands fa-airbnb fa-lg"> Pagamento Airbnb</MudNavLink>
+                <MudNavLink Href="logwhatsapp" Match="NavLinkMatch.Prefix" Icon="fa-brands fa-whatsapp fa-lg">Log Whatsapp</MudNavLink>
+                <MudNavLink Href="addreservat" Match="NavLinkMatch.Prefix" Icon="fa-solid fa-folder-plus fa-lg">Adiciona Reserva</MudNavLink>
+                <MudNavLink Href="reservas" Match="NavLinkMatch.Prefix" Icon="fa-solid fa-list fa-lg">Reservas</MudNavLink>
+            </MudNavGroup>
         </Authorized>
     </AuthorizeView>
-
-</MudNavMenu> 
+    <AuthorizeView Roles="client">
+        <Authorized>
+            <MudNavGroup Title="Suas Reservas" Icon="@Icons.Material.Filled.Bed" Expanded="true">
+                <MudNavLink Href="minhareserva" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.ListAlt">Lista</MudNavLink>
+            </MudNavGroup> 
+            <MudNavGroup Title="Seu Perfil" Icon="@Icons.Material.Filled.ManageAccounts" Expanded="true">
+                <MudNavLink Href="/hospede/editar" Icon="@Icons.Material.Filled.Edit">Editar Informações</MudNavLink>
+            </MudNavGroup>
+        </Authorized>
+    </AuthorizeView> 
+</MudNavMenu>
 
 @* https://demos.blazorbootstrap.com/icons#bootstrap-icons   *@
 

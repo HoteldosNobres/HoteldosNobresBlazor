@@ -259,7 +259,7 @@ namespace HoteldosNobresBlazor.Funcoes
                 {
                     foreach (Quarto quarto in reservalocal.ListaQuartos)
                     {
-                        Rate rate = FunctionAPICLOUDBEDs.getRatesAsync(quarto.ID.ToString(), reservalocal.DataCheckIn, reservalocal.DataCheckOut).Result;
+                        Rate rate = FunctionAPICLOUDBEDs.getRatesAsync(quarto.ID.ToString(), reservalocal.DataCheckIn.GetValueOrDefault(), reservalocal.DataCheckOut.GetValueOrDefault()).Result;
                         if (rate.Success)
                         {
                             foreach (RoomRateDetailed roomRateDetailed in rate.Data.RoomRateDetailed)
@@ -279,7 +279,7 @@ namespace HoteldosNobresBlazor.Funcoes
                 {
                     foreach (Quarto quarto in reservalocal.ListaQuartosCancelados)
                     {
-                        Rate rate = FunctionAPICLOUDBEDs.getRatesAsync(quarto.ID.ToString(), reservalocal.DataCheckIn, reservalocal.DataCheckOut).Result;
+                        Rate rate = FunctionAPICLOUDBEDs.getRatesAsync(quarto.ID.ToString(), reservalocal.DataCheckIn.GetValueOrDefault(), reservalocal.DataCheckOut.GetValueOrDefault()).Result;
                         if (rate.Success)
                         {
                             foreach (RoomRateDetailed roomRateDetailed in rate.Data.RoomRateDetailed)
@@ -562,7 +562,7 @@ namespace HoteldosNobresBlazor.Funcoes
             {
                 try
                 {
-                    AppState.ListReservas = FunctionAPICLOUDBEDs.getReservationsAsync(null).Result;
+                    AppState.ListReservas = FunctionAPICLOUDBEDs.getReservationsAsyncGuestDetails().Result;
 
                     // Dorme por 5000 milissegundos, ou seja, 5 segundos
 

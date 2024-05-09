@@ -10,49 +10,49 @@
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Identity
 @inject NavigationManager Navigation
-@inject AuthenticationStateProvider AuthenticationStateProvider  
+@inject AuthenticationStateProvider AuthenticationStateProvider
 @inject APICloudbeds cloudbedsAPI
 
 <PageTitle>Entre no sistema</PageTitle>
 
-@* <h1>Log in</h1>
- *@
-<div class="row">
-    <div class="col-md-4">
-        <section>
-            <EditForm Model="Input" method="post" OnValidSubmit="LoginUser" FormName="login">
-                <DataAnnotationsValidator />
-                <h2>Use seu CPF ou e-mail</h2>
-                <hr />
-                <ValidationSummary class="text-danger" role="alert" />
-                <div class="form-floating mb-3">
-                    <InputText @bind-Value="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
-                    <label for="name" class="form-label">E-mail CPF Reserva</label>
-                    <ValidationMessage For="() => Input.Email" class="text-danger" />
-                </div>
-                <div class="form-floating mb-3">
-                    <InputText type="password" @bind-Value="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="password" />
-                    <label for="password" class="form-label">Senha</label>
-                    <ValidationMessage For="() => Input.Password" class="text-danger" />
-                </div>
-                @* <div class="checkbox mb-3">
-                <label class="form-label">
-                <InputCheckbox @bind-Value="Input.RememberMe" class="darker-border-checkbox form-check-input" />
-                Remember me
-                </label>
-                </div> *@
-                <button type="submit" class="w-100 btn btn-lg btn-primary">Entrar</button>
-            </EditForm>
-        </section>
-    </div>
-    <div class="col-md-6 col-md-offset-2">
-        <section>
-            <h3>Bem vindo ao Hotel dos Nobres</h3>
-            <hr />
+<MudGrid Justify="Justify.SpaceAround" Class="mt-8">
+    <MudItem xs="12" sm="12" md="4">
+        <MudPaper Class="d-flex flex-column align-center justify-center mud-width-full py-8">
+            <section>
+                <EditForm Model="Input" method="post" OnValidSubmit="LoginUser" FormName="login">
+                    <DataAnnotationsValidator />
+                    <h2>Sistema Hotel dos Nobres</h2>
+                    <hr />
+                    <ValidationSummary class="text-danger" role="alert" />
+                    <div class="form-floating mb-3">
+                        <InputText @bind-Value="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+                        <label for="name" class="form-label">E-mail ou Número da reserva</label>
+                        <ValidationMessage For="() => Input.Email" class="text-danger" />
+                    </div>
+                    <div class="form-floating mb-3">
+                        <InputText type="password" @bind-Value="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="password" />
+                        <label for="password" class="form-label">Senha</label>
+                        <ValidationMessage For="() => Input.Password" class="text-danger" />
+                    </div>
+                    <label for="name" class="form-label">Os 4 últimos digitos do seu telefone.</label>
+                    @* <div class="checkbox mb-3">
+                    <label class="form-label">
+                    <InputCheckbox @bind-Value="Input.RememberMe" class="darker-border-checkbox form-check-input" />
+                    Remember me
+                    </label>
+                    </div> *@
+                    <button type="submit" class="w-100 btn btn-lg btn-primary">Entrar</button>
+                </EditForm>
+            </section>
+        </MudPaper>
+    </MudItem>
+    <MudItem xs="12" sm="12" md="7">
+        <MudPaper Class="d-flex flex-column align-center justify-center mud-width-full py-8">
             <ExternalLoginPicker />
-        </section>
-    </div>
-</div>
+        </MudPaper>
+    </MudItem>
+</MudGrid>
+
 
 @code {
     [SupplyParameterFromForm]
@@ -78,7 +78,7 @@
 
     private async Task LoginUser()
     {
-        
+
         var resposta = await authAPI.LoginAsync(Input.Email, Input.Password);
         if (resposta.Sucesso)
         {
@@ -111,4 +111,7 @@
         public bool RememberMe { get; set; }
 
     }
+
+
+
 }

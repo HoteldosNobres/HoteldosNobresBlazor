@@ -1,18 +1,16 @@
-﻿@using HoteldosNobresBlazor.Layout 
- 
-@inherits LayoutComponentBase 
+﻿@using HoteldosNobresBlazor.Layout
 
-<MudThemeProvider Theme="currentTheme" />
+@inherits LayoutComponentBase
+
+<MudThemeProvider Theme="MyCustomTheme" @ref="@_mudThemeProvider" @bind-IsDarkMode="@_isDarkMode" />
 <MudDialogProvider @rendermode="InteractiveServer" />
 <MudSnackbarProvider @rendermode="InteractiveServer" />
- 
-<MudLayout> 
+
+<MudLayout>
     <MainAppDrawerBar @rendermode="InteractiveServer" />
-    <MudMainContent Class="pt-16 px-50">
-        <MudContainer Class="mt-6"> 
-            @Body 
-    </MudContainer>
-    </MudMainContent> 
+    <MudMainContent Class="mud-theme-background, mud-height-full">
+        @Body
+    </MudMainContent>
 </MudLayout>
 
 <div id="blazor-error-ui">
@@ -23,11 +21,52 @@
 
 
 @code {
-    private MudTheme currentTheme = new MudTheme()
+
+    private bool _isDarkMode;
+    private MudThemeProvider _mudThemeProvider;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
         {
-            Palette = HoteldosNobresPallete.CreatePallete, 
+            _isDarkMode = await _mudThemeProvider.GetSystemPreference();
+            await _mudThemeProvider.WatchSystemPreference(OnSystemPreferenceChanged);
+            StateHasChanged();
+        }
+    }
+
+    private Task OnSystemPreferenceChanged(bool newValue)
+    {
+        _isDarkMode = newValue;
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    MudTheme MyCustomTheme = new MudTheme()
+        {
+            Palette = new PaletteLight()
+            {
+                Primary = new MudColor("#D2154E"),
+                BackgroundGrey = new MudColor("#F5F4F4"),
+                Background = new MudColor("#F5F4F4"),
+                // BackgroundGrey = Colors.Grey.Lighten1,
+                // Secondary = Colors.Green.Accent4,
+                // AppbarBackground = Colors.Red.Default,
+            },
+            PaletteDark = new PaletteDark()
+            {
+                Primary = new MudColor("#D2154E"),
+                BackgroundGrey = Colors.Grey.Lighten1,
+                // DefautBackground = Colors.Grey.Lighten1,
+            },
+
+            // LayoutProperties = new LayoutProperties()
+            // {
+            //     DrawerWidthLeft = "260px",
+            //     DrawerWidthRight = "300px"
+            // }
         };
- 
+
 }
 
 

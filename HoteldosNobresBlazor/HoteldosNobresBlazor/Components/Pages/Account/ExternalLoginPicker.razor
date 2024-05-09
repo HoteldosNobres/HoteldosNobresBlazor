@@ -1,33 +1,71 @@
 ﻿@using Microsoft.AspNetCore.Authentication
 @using Microsoft.AspNetCore.Identity 
  
-@inject IdentityRedirectManager RedirectManager
+@inject IdentityRedirectManager RedirectManager 
 
-@if (externalLogins.Length == 0)
-{
-    <div>
-        <p>
-            Confira nossa disponibilidade e valores no site  <a href="https://hoteldosnobres.com.br">www.hoteldosnobres.com.br</a>.
-        </p>
-    </div>
-}
-else
-{
-    <form class="form-horizontal" action="Account/PerformExternalLogin" method="post">
-        <div>
-            <AntiforgeryToken />
-            <input type="hidden" name="ReturnUrl" value="@ReturnUrl" />
-            <p>
-                @foreach (var provider in externalLogins)
-                {
-                    <button type="submit" class="btn btn-primary" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">@provider.DisplayName</button>
-                }
-            </p>
-        </div>
-    </form>
+<MudText Typo="Typo.h3" Align="Align.Center" GutterBottom="true">Hotel dos Nobres</MudText>
+<MudText Align="Align.Center">O Hotel dos Nobres está no Centro de Poços de Caldas, oferecemos Quarto de Casal, com duas cama de solteiro ou uma cama de casal e uma de solteiro.Ideal para familia ou vindo a trabalho.​Estamos perto do Cristo Redentor e das Thermas Antônio Carlos. Localizado a cerca de 400 metros da Praça Pedro Sanches, o hotel também fica a 500 metros do Parque Dr. Afonso Junqueira.A propriedade fica a 600 metros do Cassino Palace.​Venha hospedar conosco!.</MudText>
+<MudGrid Class="mt-8">
+    <MudItem xs="12" sm="6" md="6">
+        <MudCard Elevation="25" Class="rounded-lg pb-4">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h5" Align="Align.Center">Quartos Por Pessoa</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                <div class="d-flex justify-center">
+                    <MudText Typo="Typo.h3">R$90</MudText>
+                    <MudText Typo="Typo.h5" Class="ml-1 mt-5" Color="Color.Secondary">/Aparti</MudText>
+                </div>
+                <MudList Class="mx-auto mt-4" Style="width:300px;">
+                    <MudListItem Icon="fa-solid fa-car">
+                        Estacionamento
+                    </MudListItem>
+                    <MudListItem Icon="fa-solid fa-mug-saucer">
+                        Café da Manhã
+                    </MudListItem>
+                    <MudListItem Icon="fa-solid fa-toilet">
+                        Banheiro Privativo
+                    </MudListItem>
+                </MudList>
+            </MudCardContent>
+        <MudCardActions Class="d-flex justify-center">
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="MudBlazor.Size.Small" Href="https://hoteldosnobres.com.br/" Style="width:50%;">Reserve Agora</MudButton>
+            </MudCardActions>
+        </MudCard>
+    </MudItem>
+    <MudItem xs="12" sm="6" md="6">
+        <MudCard Elevation="25" Class="rounded-lg pb-4">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h5" Align="Align.Center">Quarto de Casal</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                <div class="d-flex justify-center">
+                    <MudText Typo="Typo.h3">R$140</MudText>
+                    <MudText Typo="Typo.h5" Class="ml-1 mt-5" Color="Color.Secondary">/Aparti</MudText>
+                </div>
+                <MudList Class="mx-auto mt-4" Style="width:300px;">
+                    <MudListItem Icon="fa-solid fa-car">
+                        Estacionamento
+                    </MudListItem>
+                    <MudListItem Icon="fa-solid fa-mug-saucer">
+                        Café da Manhã
+                    </MudListItem>
+                    <MudListItem Icon="fa-solid fa-toilet">
+                        Banheiro Privativo
+                    </MudListItem>
+                </MudList>
+            </MudCardContent>
+            <MudCardActions Class="d-flex justify-center">
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="MudBlazor.Size.Small" Href="https://hoteldosnobres.com.br/" Style="width:50%;">Reserve Agora</MudButton>
+            </MudCardActions>
+        </MudCard>
+    </MudItem> 
+</MudGrid>
 
-
-}
 
 <footer id="footer">
     <div class="inner">

@@ -54,7 +54,7 @@ else
         else
             listaCompleta = await cloudbedsAPI.getReservationsAsyncGuestDetails();
 
-        listaCompleta = listaCompleta.Where(a => (a.Email != null && a.Email.Equals(user.UserId))
+        listaCompleta = listaCompleta.Where(a => (a.Email != null && a.Email.Equals(user.Email))
             || (a.GuestID != null && a.GuestID.Equals(user.UserId))
              ).ToList();
 

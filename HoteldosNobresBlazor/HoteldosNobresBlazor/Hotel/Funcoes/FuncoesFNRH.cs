@@ -182,8 +182,8 @@ namespace HoteldosNobresBlazor.Funcoes
                          <bgstdsccidadedest>POÇOS DE CALDAS</bgstdsccidadedest>
                          <snmotvia>09</snmotvia>
                          <sntiptran>07</sntiptran>  
-                         <snprevent>{reserva.DataCheckIn.ToString("yyyy-MM-ddT14:00:00")}</snprevent>
-                         <snprevsai>{reserva.DataCheckOut.ToString("yyyy-MM-ddT11:59:00")}</snprevsai>
+                         <snprevent>{reserva.DataCheckIn.GetValueOrDefault().ToString("yyyy-MM-ddT14:00:00")}</snprevent>
+                         <snprevsai>{reserva.DataCheckOut.GetValueOrDefault().ToString("yyyy-MM-ddT11:59:00")}</snprevsai>
                          <snobs>{reserva.Obs.Trim()}</snobs>
                          <snnumhosp>{reserva.Hospedes.GetValueOrDefault(1)}</snnumhosp>
                          <snuhnum>{reserva.Snuhnum}</snuhnum> 
@@ -241,8 +241,8 @@ namespace HoteldosNobresBlazor.Funcoes
                          <bgstdsccidadedest>POÇOS DE CALDAS</bgstdsccidadedest>
                          <snmotvia>09</snmotvia>
                          <sntiptran>07</sntiptran>
-                         <snprevent>{reserva.DataCheckIn.ToString("yyyy-MM-ddT14:00:00")}</snprevent>
-                         <snprevsai>{reserva.DataCheckOut.ToString("yyyy-MM-ddT11:59:00")}</snprevsai>
+                         <snprevent>{reserva.DataCheckIn.GetValueOrDefault().ToString("yyyy-MM-ddT14:00:00")}</snprevent>
+                         <snprevsai>{reserva.DataCheckOut.GetValueOrDefault().ToString("yyyy-MM-ddT11:59:00")}</snprevsai>
                          <snobs>{reserva.Obs.ToString().Trim()}</snobs>
                          <snnumhosp>{reserva.Hospedes.GetValueOrDefault(1)}</snnumhosp>
                          <snuhnum>{reserva.Snuhnum}</snuhnum> 

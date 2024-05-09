@@ -3,9 +3,9 @@
 
 @inject NavigationManager NavigationManager
 
-<MudAppBar Color="Color.Primary" Elevation="1" Style="color:white; height:85px; justify-content: center;">
-    <a href="" Style="color:white;">
-        <MudImage Width="75" Height="75" Src="images/logo.png" Alt="Mony the dog" Class="rounded-lg"></MudImage>  Hotel dos Nobres
+<MudAppBar Color="Color.Primary" Elevation="1" >
+    <a href="" Style="color:white; margin-right: 50px">
+        <MudImage Width="50" Height="50" Src="images/logo.png" Alt="Mony the dog" Style="margin-right: 10px" Class="rounded-lg"></MudImage> Hotel dos Nobres
     </a>
     <MudSpacer />
     <AuthorizeView>
@@ -19,7 +19,7 @@
 <AuthorizeView>
     <Authorized>
         <MudDrawer Class="mud-drawer-fixed" ClipMode="DrawerClipMode.Always" @bind-Open="@_isDrawerOpen" PreserveOpenState="true" Elevation="0" Variant="@DrawerVariant.Responsive">
-             <MudDrawerHeader Style="height:5px;" />  
+             @* <MudDrawerHeader Style="height:5px;" />   *@
                 <NavMenu /> 
         </MudDrawer>
     </Authorized>
