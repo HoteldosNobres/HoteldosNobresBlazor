@@ -1,0 +1,57 @@
+﻿@page "/hospede/editar"
+@using System.Security.Claims
+@using System.Net.NetworkInformation
+@using HoteldosNobresBlazor.Client.Pages.Component
+@inject APICloudbeds cloudbedsAPI
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject AppState appState
+
+@rendermode InteractiveServer
+
+<PageTitle>Meu Perfil</PageTitle>
+
+
+<MudPaper Class="px-8 pt-2 pb-4 mx-12 my-8" Justify="Justify.Center">
+    @if (guest is not null)
+    {
+
+        <MudText Align="Align.Center" Class="mb-n4" Ena> Suas informações  </MudText>
+        <MudText Align="Align.Center" Class="mb-n4"> - </MudText>
+        <MudForm Disabled="Disabled">
+            <MudTextField T="string" Label="Nome" Disabled="true" @bind-Value="guest.FirstName" />
+            <MudTextField T="string" Label="E-mail" Disabled="true" @bind-Value="guest.Email" />
+            <MudTextField T="string" Label="Telefone" Disabled="true" @bind-Value="guest.Phone" />
+            <MudTextField T="string" Label="Telefone" Disabled="true" @bind-Value="guest.CellPhone" />
+            <MudDatePicker Label="Data de Nascimento" Disabled="true" @bind-Date="guest.Birthdate" Mask="@(new DateMask("dd/MM/yyyy"))" DateFormat="dd/MM/yyyy" Placeholder="pt-BR Date" />
+        </MudForm>
+    }
+    else
+    {
+        <MudProgressCircular Indeterminate="true"></MudProgressCircular>
+
+    }
+</MudPaper>
+
+
+@code {
+    public Guest guest { get; set; }
+    private UserInfo user = default!;
+
+    bool ReadOnly = true;
+    bool NestedReadOnly;
+    bool Disabled = true;
+    bool NestedDisabled;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authorization = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        if (!authorization.User.Identity!.IsAuthenticated)
+            return;
+
+        user = new UserInfo(authorization.User);
+        string clientId = user.UserId;
+
+        guest = await cloudbedsAPI.GetGuestAsync(clientId);
+    }
+
+}

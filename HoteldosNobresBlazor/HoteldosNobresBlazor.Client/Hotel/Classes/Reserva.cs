@@ -1,5 +1,6 @@
 ﻿using MosaicoSolutions.ViaCep;
 using MosaicoSolutions.ViaCep.Modelos;
+using System.Diagnostics.Metrics;
 using System.Globalization;
 using System.Text.RegularExpressions;
 
@@ -173,6 +174,16 @@ public class Reserva
                 return "0";
         }
     }
+
+    public string? ProxyStatus
+    {
+        get
+        {
+            EStatus status = Status != null ? (EStatus)Enum.Parse(typeof(EStatus), Status) : EStatus.None;
+            return status.GetEnumDescription(); 
+        }
+    }
+  
 
     public void Converte(Reservation reservation)
     {

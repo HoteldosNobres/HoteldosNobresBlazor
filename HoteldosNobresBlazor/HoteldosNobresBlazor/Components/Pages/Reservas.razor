@@ -5,48 +5,45 @@
 @attribute [StreamRendering]
 @inject AppState appState
 
-<PageTitle>Reservas</PageTitle>
+<MudPaper Class="px-8 pt-2 pb-4 mx-12 my-8" Justify="Justify.Center">
+    <PageTitle>Lista Reserva</PageTitle>
+    <MudContainer>
+        <MudPaper>
+            @if (listReserva == null)
+            {
+                <p><em>Carregando...</em></p>
+            }
+            else
+            {
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Data Check In</th>
+                            <th>Nome Hospede</th>
+                            <th>Origem</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (listReserva.Count() > 0)
+                            @foreach (Reserva reserva1 in listReserva)
+                            {
+                                <tr>
+                                    <td><a href='@reserva1.LinkReserva' target='_blank'> @reserva1.IDReserva </a></td>
+                                    <td>@reserva1.DataCheckIn.GetValueOrDefault().ToString("dd/MM/yyyy")</td>
+                                    <td>@reserva1.NomeHospede.Split(' ')[0].ToString()</td>
+                                    <td>@reserva1.Origem</td>
+                                    <td></td>
+                                </tr>
+                            }
+                    </tbody>
+                </table>
+            }
 
-<h1>Lista Reserva </h1>
-
-
-<MudContainer>
-    <MudPaper>
-        @if (listReserva == null)
-        {
-            <p><em>Carregando...</em></p>
-        }
-        else
-        {
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Id</th>
-                        <th>Data Check In</th>
-                        <th>Nome Hospede</th>
-                        <th>Origem</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @if (listReserva.Count() > 0)
-                        @foreach (Reserva reserva1 in listReserva)
-                        {
-                            <tr>
-                                <td><a href='@reserva1.LinkReserva' target='_blank'> @reserva1.IDReserva </a></td>
-                                <td>@reserva1.DataCheckIn.GetValueOrDefault().ToString("dd/MM/yyyy")</td>
-                                <td>@reserva1.NomeHospede.Split(' ')[0].ToString()</td>
-                                <td>@reserva1.Origem</td>
-                                <td></td>
-                            </tr>
-                        }
-                </tbody>
-            </table>
-        }
-
-    </MudPaper>
-</MudContainer>
-
+        </MudPaper>
+    </MudContainer>
+</MudPaper>
 
 @code {
     public List<Reserva>? listReserva;
@@ -81,4 +78,4 @@
 
 
 
-}
+    }

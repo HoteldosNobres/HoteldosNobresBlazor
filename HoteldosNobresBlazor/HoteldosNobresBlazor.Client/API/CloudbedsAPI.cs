@@ -1,5 +1,6 @@
 ﻿using HoteldosNobresBlazor.Classes;
-using Newtonsoft.Json; 
+using Newtonsoft.Json;
+using System.Net.Http.Json;
 
 namespace HoteldosNobresBlazor.Client.API;
 
@@ -14,7 +15,7 @@ public class APICloudbeds
     }
 
     public async Task<Reserva> GetReservaAsync(string ID)
-    { 
+    {
         Reserva reserva = new Reserva();
         try
         {
@@ -58,7 +59,7 @@ public class APICloudbeds
     public async Task<List<Reserva>> getReservationsAsyncGuestDetails()
     {
         try
-        { 
+        {
             string response = await _httpClient.GetStringAsync(_httpClient.BaseAddress + "/getReservations?includeGuestsDetails=true");
 
             Reservations resevations = await LerRespostaComoObjetoAsync<Reservations>(response);
@@ -87,5 +88,27 @@ public class APICloudbeds
         T obj = JsonConvert.DeserializeObject<T>(jsonString);
         return obj;
     }
+
+    #region Guest
+    public async Task<Guest> GetGuestAsync(string Id)
+    {
+        try
+        { 
+            string retorno = await _httpClient.GetStringAsync(_httpClient.BaseAddress + "/getGuest?guestID=" + Id);
+            GuestData response = await LerRespostaComoObjetoAsync<GuestData>(retorno);
+             
+            if (response.Success)
+                return response.Guest!;
+
+            return null;
+
+        }
+        catch (FileNotFoundException e)
+        {
+            return null;
+        }
+    }
+
+    #endregion
 
 }

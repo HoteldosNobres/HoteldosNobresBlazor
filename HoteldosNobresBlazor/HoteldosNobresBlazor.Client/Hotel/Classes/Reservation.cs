@@ -203,99 +203,141 @@ public partial class Guest
     [JsonConverter(typeof(ParseStringConverter))]
     public long GuestId { get; set; }
 
+    [JsonProperty("firstName")]
+    public string? FirstName { get; set; }
+
     [JsonProperty("guestFirstName")]
-    public string GuestFirstName { get; set; }
+    public string? GuestFirstName
+    {
+        get { return FirstName; }
+        set { FirstName = value; }
+    }
+     
+    [JsonProperty("LastName")]
+    public string? LastName { get; set; }
 
     [JsonProperty("guestLastName")]
-    public string GuestLastName { get; set; }
+    public string? GuestLastName
+    {
+        get { return LastName; }
+        set { LastName = value; }
+    }
 
     [JsonProperty("guestGender")]
-    public string GuestGender { get; set; }
+    public string? GuestGender { get; set; }
+
+    [JsonProperty("email")]
+    public string? Email { get; set; }
 
     [JsonProperty("guestEmail")]
-    public string GuestEmail { get; set; }
+    public string? GuestEmail
+    {
+        get { return Email; }
+        set { Email = value; }
+    }
+
+    [JsonProperty("Phone")]
+    public string? Phone { get; set; }
 
     [JsonProperty("guestPhone")]
-    public string GuestPhone { get; set; }
+    public string? GuestPhone
+    {
+        get { return Phone; }
+        set { Phone = value; }
+    }
+
+    [JsonProperty("cellPhone")]
+    public string? CellPhone { get; set; }
 
     [JsonProperty("guestCellPhone")]
-    public string GuestCellPhone { get; set; }
+    public string? GuestCellPhone
+    {
+        get { return CellPhone; }
+        set { CellPhone = value; }
+    }
 
     [JsonProperty("guestCountry")]
-    public string GuestCountry { get; set; }
+    public string? GuestCountry { get; set; }
 
     [JsonProperty("guestAddress")]
-    public string GuestAddress { get; set; }
+    public string? GuestAddress { get; set; }
 
     [JsonProperty("guestAddress2")]
-    public string GuestAddress2 { get; set; }
+    public string? GuestAddress2 { get; set; }
 
     [JsonProperty("guestCity")]
-    public string GuestCity { get; set; }
+    public string? GuestCity { get; set; }
 
     [JsonProperty("guestZip")]
-    public string GuestZip { get; set; }
+    public string? GuestZip { get; set; }
 
     [JsonProperty("guestState")]
-    public string GuestState { get; set; }
+    public string? GuestState { get; set; }
 
     [JsonProperty("guestStatus")]
-    public string GuestStatus { get; set; }
+    public string? GuestStatus { get; set; }
+
+    [JsonProperty("birthdate")]
+    public DateTime? Birthdate { get; set; }
 
     [JsonProperty("guestBirthdate")]
-    public string GuestBirthdate { get; set; }
+    public DateTime? GuestBirthdate
+    {
+        get { return Birthdate; }
+        set { Birthdate = value; }
+    }
 
     [JsonProperty("guestDocumentType")]
-    public string GuestDocumentType { get; set; }
+    public string? GuestDocumentType { get; set; }
 
     [JsonProperty("guestDocumentNumber")]
-    public string GuestDocumentNumber { get; set; }
+    public string? GuestDocumentNumber { get; set; }
 
     [JsonProperty("guestDocumentIssueDate")]
-    public string GuestDocumentIssueDate { get; set; }
+    public string? GuestDocumentIssueDate { get; set; }
 
     [JsonProperty("guestDocumentIssuingCountry")]
-    public string GuestDocumentIssuingCountry { get; set; }
+    public string? GuestDocumentIssuingCountry { get; set; }
 
     [JsonProperty("guestDocumentExpirationDate")]
-    public string GuestDocumentExpirationDate { get; set; }
+    public string? GuestDocumentExpirationDate { get; set; }
 
     [JsonProperty("assignedRoom")]
-    public bool AssignedRoom { get; set; }
+    public bool? AssignedRoom { get; set; }
 
     [JsonProperty("roomID")]
-    public string RoomId { get; set; }
+    public string? RoomId { get; set; }
 
     [JsonProperty("roomName")]
     [JsonConverter(typeof(ParseStringConverter))]
-    public long RoomName { get; set; }
+    public long? RoomName { get; set; }
 
     [JsonProperty("roomTypeName")]
-    public string RoomTypeName { get; set; }
+    public string? RoomTypeName { get; set; }
 
     [JsonProperty("isMainGuest")]
-    public bool IsMainGuest { get; set; }
+    public bool? IsMainGuest { get; set; }
 
     [JsonProperty("isAnonymized")]
-    public bool IsAnonymized { get; set; }
+    public bool? IsAnonymized { get; set; }
 
     [JsonProperty("taxID")]
-    public string TaxId { get; set; }
+    public string? TaxId { get; set; }
 
     [JsonProperty("companyTaxID")]
-    public string CompanyTaxId { get; set; }
+    public string? CompanyTaxId { get; set; }
 
     [JsonProperty("companyName")]
-    public string CompanyName { get; set; }
+    public string? CompanyName { get; set; }
 
     [JsonProperty("customFields")]
     public CustomField[] CustomFields { get; set; }
 
     [JsonProperty("unassignedRooms")]
-    public object[] UnassignedRooms { get; set; }
+    public object[]? UnassignedRooms { get; set; }
 
     [JsonProperty("rooms")]
-    public Room[] Rooms { get; set; }
+    public Room[]? Rooms { get; set; }
 }
 
 public partial class CustomField
@@ -356,4 +398,14 @@ internal class ParseStringConverter : JsonConverter
     }
 
     public static readonly ParseStringConverter Singleton = new ParseStringConverter();
+}
+
+
+public partial class GuestData
+{
+    [JsonProperty("success")]
+    public bool Success { get; set; }
+
+    [JsonProperty("data")]
+    public Guest? Guest { get; set; }
 }

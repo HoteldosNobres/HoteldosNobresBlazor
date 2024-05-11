@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using MudBlazor;
+using System.Linq;
 using System.Security.Claims;
 
 namespace HoteldosNobresBlazor.Services;
@@ -38,7 +39,10 @@ public class AuthAPI : AuthenticationStateProvider
         else if (email == "hoteldosnobres@hotmail.com" && senha == "123")
         {
             autenticado = true;
-            NotifyAuthenticationStateChanged(GetAuthenticationClienteAsync("1", email));
+
+            Reserva reserva = listaReserva.Where(a => (a.Email != null && a.Email.Equals(email))).FirstOrDefault();
+             
+            NotifyAuthenticationStateChanged(GetAuthenticationClienteAsync(reserva.GuestID!, email));
         }
         else
         {

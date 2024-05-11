@@ -10,26 +10,29 @@
 
 <PageTitle>Reserva</PageTitle>
 
-<MudStack Row="true" Justify="Justify.SpaceBetween">
-    <MudText Typo="Typo.h4"> Reservas</MudText>
-    <MudPagination Count="@totalPaginas" SelectedChanged="PaginaMudou"></MudPagination>
-</MudStack>
+<MudPaper Class="px-8 pt-2 pb-4 mx-12 my-8" Justify="Justify.Center">
+    <MudStack Row="true" Justify="Justify.SpaceBetween">
+        <MudText Typo="Typo.h4"> Reservas</MudText>
+        <MudPagination Count="@totalPaginas" SelectedChanged="PaginaMudou"></MudPagination>
+    </MudStack>
 
-@if (listaPagina is not null)
-{
-    <MudGrid>
-        @foreach (var reser in listaPagina)
-        {
-            <MudItem>
-                <CardReserva Reserva=reser />
-            </MudItem>
-        }
-    </MudGrid>
-}
-else
-{
-    <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
-}
+    @if (listaPagina is not null)
+    {
+        <MudGrid>
+            @foreach (var reser in listaPagina)
+            {
+                <MudItem>
+                    <CardReserva Reserva=reser />
+                </MudItem>
+            }
+        </MudGrid>
+    }
+    else
+    {
+        <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+    }
+
+</MudPaper>
 
 @code {
     private int tamanho = 8;

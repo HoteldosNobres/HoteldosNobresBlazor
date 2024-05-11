@@ -1,54 +1,55 @@
-﻿@page "/addreservat"
+﻿@page "/logreservas"
 @using Microsoft.AspNetCore.Antiforgery
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Mvc
 @using Newtonsoft.Json
 @using System.Net
 @inject HttpClient Http
-@inject AppState appState 
+@inject AppState appState
 @attribute [AutoValidateAntiforgeryToken]
 
-<PageTitle>Adicionar e Mudar Reserva</PageTitle>
+<PageTitle>Log Reservas</PageTitle>
 
-<h1>Log Adicionar e Mudar Reserva!</h1>
+<MudPaper Class="px-8 pt-2 pb-4 mx-12 my-8" Justify="Justify.Center">
+    <h1>Log Adicionar e Mudar Reserva!</h1>
 
-@foreach (var linha in arrayDeLinhas)
-{
-    @linha
-    <br />
-}
+    @foreach (var linha in arrayDeLinhas)
+    {
+        @linha
+        <br />
+    }
 
-@if (listLog == null || listLog.Count == 0)
-{
-    <p><em>Carregando...</em></p>
-}
-else
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Data </th>
-                <th>IdReserva</th>
-                <th>Status</th>
-                <th>Log</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (LogSistema logs in listLog)
-            {
+    @if (listLog == null || listLog.Count == 0)
+    {
+        <p><em>Carregando...</em></p>
+    }
+    else
+    {
+        <table class="table">
+            <thead>
                 <tr>
-                    <td>@logs.DataLog.ToString("dd/MM/yyyy HH:mm:ss")</td>
-                    <td><a href='@logs.LinkReserva' target='_blank'> @logs.IDReserva</a></td>
-                    <td>@logs.Status</td>
-                    <td>@logs.Log</td>
-                    <td></td>
+                    <th>Data </th>
+                    <th>IdReserva</th>
+                    <th>Status</th>
+                    <th>Log</th>
+                    <th></th>
                 </tr>
-            }
-        </tbody>
-    </table>
-}
-
+            </thead>
+            <tbody>
+                @foreach (LogSistema logs in listLog)
+                {
+                    <tr>
+                        <td>@logs.DataLog.ToString("dd/MM/yyyy HH:mm:ss")</td>
+                        <td><a href='@logs.LinkReserva' target='_blank'> @logs.IDReserva</a></td>
+                        <td>@logs.Status</td>
+                        <td>@logs.Log</td>
+                        <td></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</MudPaper>
 
 @code {
     public List<LogSistema>? listLog;
@@ -83,5 +84,4 @@ else
     //     {
     //         return null;
     //     }
-
-    }
+}

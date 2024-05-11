@@ -5,6 +5,8 @@
 @attribute [StreamRendering(true)]
 
 <PageTitle>Log Whatsapp</PageTitle>
+
+<MudPaper Class="px-8 pt-2 pb-4 mx-12 my-8" Justify="Justify.Center">
 <h1>Log Whatsapp!</h1>
 @if (arrayDeLinhas.Length > 0)
 {
@@ -45,7 +47,7 @@ else
 {
     <p role="status">Carregando...</p>
 }
-
+</MudPaper>
 
 @code
 {
