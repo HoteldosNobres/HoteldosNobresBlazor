@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using Google.Apis.PeopleService.v1.Data;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
@@ -259,20 +260,55 @@ public partial class Guest
     [JsonProperty("guestCountry")]
     public string? GuestCountry { get; set; }
 
+    [JsonProperty("address")]
+    public string? Address { get; set; }
+
     [JsonProperty("guestAddress")]
-    public string? GuestAddress { get; set; }
+    public string? GuestAddress
+    {
+        get { return Address; }
+        set { Address = value; }
+    }
+
+    [JsonProperty("address2")]
+    public string? Address2 { get; set; }
 
     [JsonProperty("guestAddress2")]
-    public string? GuestAddress2 { get; set; }
+    public string? GuestAddress2
+    {
+        get { return Address2; }
+        set { Address2 = value; }
+    }
+
+    [JsonProperty("city")]
+    public string? City { get; set; }
 
     [JsonProperty("guestCity")]
-    public string? GuestCity { get; set; }
+    public string? GuestCity
+    {
+        get { return City; }
+        set { City = value; }
+    }
+
+    [JsonProperty("zip")]
+    public string? Zip { get; set; }
 
     [JsonProperty("guestZip")]
-    public string? GuestZip { get; set; }
+    public string? GuestZip
+    {
+        get { return Zip; }
+        set { Zip = value; }
+    }
+
+    [JsonProperty("state")]
+    public string? State { get; set; }
 
     [JsonProperty("guestState")]
-    public string? GuestState { get; set; }
+    public string? GuestState
+    {
+        get { return State; }
+        set { State = value; }
+    }
 
     [JsonProperty("guestStatus")]
     public string? GuestStatus { get; set; }

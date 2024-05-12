@@ -2,27 +2,62 @@
 @using System.Security.Claims
 @using System.Net.NetworkInformation
 @using HoteldosNobresBlazor.Client.Pages.Component
+@using System.Text.RegularExpressions
+@using MosaicoSolutions.ViaCep
+@using MosaicoSolutions.ViaCep.Modelos
 @inject APICloudbeds cloudbedsAPI
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject AppState appState
+@inject ISnackbar Snackbar
 
 @rendermode InteractiveServer
+@inherits LayoutComponentBase
 
 <PageTitle>Meu Perfil</PageTitle>
 
 
-<MudPaper Class="px-8 pt-2 pb-4 mx-12 my-8" Justify="Justify.Center">
+<MudPaper Class="px-8 pt-2 pb-4 mx-12 my-8 rounded-xl" Justify="Justify.Center">
     @if (guest is not null)
     {
-
         <MudText Align="Align.Center" Class="mb-n4" Ena> Suas informações  </MudText>
         <MudText Align="Align.Center" Class="mb-n4"> - </MudText>
-        <MudForm Disabled="Disabled">
-            <MudTextField T="string" Label="Nome" Disabled="true" @bind-Value="guest.FirstName" />
-            <MudTextField T="string" Label="E-mail" Disabled="true" @bind-Value="guest.Email" />
-            <MudTextField T="string" Label="Telefone" Disabled="true" @bind-Value="guest.Phone" />
-            <MudTextField T="string" Label="Telefone" Disabled="true" @bind-Value="guest.CellPhone" />
-            <MudDatePicker Label="Data de Nascimento" Disabled="true" @bind-Date="guest.Birthdate" Mask="@(new DateMask("dd/MM/yyyy"))" DateFormat="dd/MM/yyyy" Placeholder="pt-BR Date" />
+        <MudForm> 
+            <MudList>
+                <MudListItem Avatar="@Icons.Material.Filled.Info"> Trending </MudListItem>
+                <MudTextField T="string" Label="Nome" Disabled="true" @bind-Value="guest.FirstName" />
+                <MudTextField T="string" Label="E-mail" Disabled="true" @bind-Value="guest.Email" />
+                <MudTextField T="string" Label="Telefone" Disabled="true" @bind-Value="guest.Phone" />
+                <MudTextField T="string" Label="Telefone" Disabled="true" @bind-Value="guest.CellPhone" />
+                <MudTextField T="string" Label="CPF" Disabled="@DisabledCPF" @bind-Value="CPF" />
+                <MudDatePicker Label="Data de Nascimento" PickerVariant="PickerVariant.Dialog" Editable="@(!Disabled)" Elevation="12" Disabled="@Disabled" @bind-Date="guest.Birthdate" DateFormat="dd/MM/yyyy" />
+                <MudDivider /> 
+                <MudListItem Avatar="@Icons.Material.Filled.House"> Endereço </MudListItem>
+                <MudAutocomplete T="string" Label="CEP" @bind-Value="guest.Zip" SearchFunc="@SearchCEP" Editable="@Disabled"
+                   Disabled="@Disabled" AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary" /> 
+                <MudTextField T="string" Label="Endereço" Disabled="true" @bind-Value="guest.GuestAddress" />
+                <MudTextField T="string" Label="Bairro" Disabled="true" @bind-Value="guest.GuestAddress2" />
+                <MudTextField T="string" Label="Cidade" Disabled="true" @bind-Value="guest.City" />
+                <MudTextField T="string" Label="Estado" Disabled="true" @bind-Value="guest.GuestState" />
+                <MudTextField T="string" Label="Pais" Disabled="true" @bind-Value="guest.GuestCountry" />
+            </MudList>
+
+
+            <div class="d-flex mt-4">
+                <MudButton Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           Class="ml-auto"
+                           Disabled="@(!Disabled)"
+                           @onclick="Editar">
+                    Editar
+                </MudButton>
+                <MudButton Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           Class="ml-auto"
+                           Disabled="@DisabledSave"
+                           @onclick="Salvar">
+                    Salvar
+                </MudButton>
+            </div>
         </MudForm>
     }
     else
@@ -36,11 +71,14 @@
 @code {
     public Guest guest { get; set; }
     private UserInfo user = default!;
+    public string CPF { get; set; }
 
     bool ReadOnly = true;
     bool NestedReadOnly;
     bool Disabled = true;
     bool NestedDisabled;
+    bool DisabledSave = true;
+    bool DisabledCPF = true;
 
     protected override async Task OnInitializedAsync()
     {
@@ -52,6 +90,79 @@
         string clientId = user.UserId;
 
         guest = await cloudbedsAPI.GetGuestAsync(clientId);
+
+        if (guest is not null)
+        {
+            foreach (var item in guest.CustomFields)
+            {
+                if (item.CustomFieldName.Equals("CPF"))
+                {
+                    string cpfstring = Regex.Replace(item.CustomFieldValue, @"[^\d]", "");
+                    if (!string.IsNullOrEmpty(cpfstring))
+                    {
+                        DisabledCPF = true;
+                        CPF = "***.***." + cpfstring.Substring(cpfstring.Length - 4);
+                    }
+
+                }
+
+            }
+        }
+    }
+
+    protected async Task Editar()
+    {
+        Disabled = !Disabled;
+        ReadOnly = !ReadOnly;
+        DisabledSave = !DisabledSave;
+
+    }
+
+    protected async Task Salvar()
+    {
+        try
+        {
+            if (guest.Birthdate is not null)
+            {
+                cloudbedsAPI.PutGuestAsync(guest.GuestId.ToString(), "guestBirthDate", guest.Birthdate.Value.ToString("yyyy-MM-dd"));
+            }
+
+            // if (!string.CPF)
+            // {
+            //     cloudbedsAPI.PutGuestAsync(guest.GuestId.ToString(), "CPF", guest.Birthdate.Value.ToString("yyyy-MM-dd"));
+            // }
+
+            Snackbar.Add("Cadastrado alterado com sucesso!", Severity.Success);
+
+            Disabled = !Disabled;
+            ReadOnly = !ReadOnly;
+            DisabledSave = !DisabledSave;
+            DisabledCPF = true;
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("Erro ao alterar o cadastro!", Severity.Error);
+        }
+    }
+
+    private async Task<IEnumerable<string>> SearchCEP(string value)
+    {
+        Cep cep = value;
+        var viaCepService = ViaCepService.Default();
+        var endereco = viaCepService.ObterEndereco(cep);
+        string Cidade = endereco.Localidade;
+        guest.City = Cidade;
+        guest.Address = endereco.Logradouro;
+        guest.State = endereco.UF;
+        // guest.Country = "BRASIL";
+        guest.Address2 = endereco.Bairro;
+        guest.Zip = cep;
+        // if (endereco.UF != null)
+        //     UF = (EUF)Enum.Parse(typeof(EUF), endereco.UF);
+        // Estado = endereco.UF;
+        // CodigoIBGE = endereco.IBGE;
+        // Contry = "BRASIL"; 
+        return null;
     }
 
 }
