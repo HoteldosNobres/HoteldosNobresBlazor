@@ -17,7 +17,7 @@
 
 <MudGrid Justify="Justify.SpaceAround" Class="mt-8">
     <MudItem xs="12" sm="12" md="4">
-        <MudPaper Class="d-flex flex-column align-center justify-center mud-width-full py-8">
+        <MudPaper Class="d-flex flex-column align-center justify-center mud-width-full py-8 rounded-xl" Outlined="true">
             <section>
                 <EditForm Model="Input" method="post" OnValidSubmit="LoginUser" FormName="login">
                     <DataAnnotationsValidator />
@@ -47,7 +47,7 @@
         </MudPaper>
     </MudItem>
     <MudItem xs="12" sm="12" md="7">
-        <MudPaper Class="d-flex flex-column align-center justify-center mud-width-full py-8">
+        <MudPaper Class="d-flex flex-column align-center justify-center mud-width-full py-8  rounded-xl" Outlined="true">
             <ExternalLoginPicker />
         </MudPaper>
     </MudItem>
