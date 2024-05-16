@@ -12,7 +12,7 @@ using System.Security.Claims;
 
 namespace HoteldosNobresBlazor.Services;
 
-public class AuthAPI : AuthenticationStateProvider
+public class AuthAPI  
 {
     private static Task<AuthenticationState>  defaultUnauthenticatedTask =
             Task.FromResult(new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity())));
@@ -26,7 +26,7 @@ public class AuthAPI : AuthenticationStateProvider
         listaReserva = listaReserv; 
     }
 
-    public override Task<AuthenticationState> GetAuthenticationStateAsync() => authenticationStateTask;
+    public Task<AuthenticationState> GetAuthenticationStateAsync() => authenticationStateTask;
 
     public async Task<AuthResponse> LoginAsync(string email, string senha)
     {
@@ -34,7 +34,7 @@ public class AuthAPI : AuthenticationStateProvider
         if (email == "fabiohcnobre@hotmail.com" && senha == "123")
         {
             autenticado = true;
-            NotifyAuthenticationStateChanged(GetAuthenticationAsync(email));
+            GetAuthenticationAsync(email);
         }
         else if (email == "hoteldosnobres@hotmail.com" && senha == "123")
         {
@@ -42,7 +42,7 @@ public class AuthAPI : AuthenticationStateProvider
 
             Reserva reserva = listaReserva.Where(a => (a.Email != null && a.Email.Equals(email))).FirstOrDefault();
              
-            NotifyAuthenticationStateChanged(GetAuthenticationClienteAsync(reserva.GuestID!, email));
+            GetAuthenticationClienteAsync(reserva.GuestID!, email);
         }
         else
         {
@@ -60,7 +60,7 @@ public class AuthAPI : AuthenticationStateProvider
                        && reserva.ProxyCelular.Substring(reserva.ProxyCelular.Length - 4) == senha)
                     {
                         email = string.IsNullOrEmpty(reserva.Email) ? email : reserva.Email;
-                        NotifyAuthenticationStateChanged(GetAuthenticationClienteAsync(reserva.GuestID!, email));
+                         GetAuthenticationClienteAsync(reserva.GuestID!, email);
                         autenticado = true;
                     }
                 }
@@ -70,7 +70,7 @@ public class AuthAPI : AuthenticationStateProvider
         return new AuthResponse { Sucesso = autenticado, User = defaultUnauthenticatedTask.Result.User };
     }
 
-    public async Task<AuthenticationState> GetAuthenticationAsync(string email)
+    public async void GetAuthenticationAsync(string email)
     {
         var pessoa = new ClaimsPrincipal();
         //var response = await _httpClient.GetAsync("auth/manage/info"); 
@@ -90,10 +90,10 @@ public class AuthAPI : AuthenticationStateProvider
 
         defaultUnauthenticatedTask = Task.FromResult(new AuthenticationState(pessoa));
 
-        return defaultUnauthenticatedTask.Result;
+        //return defaultUnauthenticatedTask.Result;
     }
 
-    public async Task<AuthenticationState> GetAuthenticationClienteAsync(string id, string email)
+    public async void GetAuthenticationClienteAsync(string id, string email)
     {
         var pessoa = new ClaimsPrincipal(); 
         //var response = await _httpClient.GetAsync("auth/manage/info");
@@ -112,15 +112,13 @@ public class AuthAPI : AuthenticationStateProvider
         pessoa = new ClaimsPrincipal(identity);
 
         defaultUnauthenticatedTask = Task.FromResult(new AuthenticationState(pessoa));
-
-        return defaultUnauthenticatedTask.Result;
+         
     }
 
-    public void GetAuthenticationLogout()
+    public void Logout()
     { 
-        defaultUnauthenticatedTask = Task.FromResult(new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity())));
-        authenticationStateTask = defaultUnauthenticatedTask;
-        NotifyAuthenticationStateChanged(defaultUnauthenticatedTask);
+        defaultUnauthenticatedTask = Task.FromResult(new AuthenticationState(new ClaimsPrincipal()));
+        authenticationStateTask = defaultUnauthenticatedTask; 
 
     }
      

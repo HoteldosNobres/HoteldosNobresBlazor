@@ -4,7 +4,7 @@
 @inject NavigationManager NavigationManager
 
 <MudNavMenu>
-    <AuthorizeView Roles="admin">
+    <AuthorizeView Roles="admin" Context="AuthorizeContext">
         <Authorized>
             <MudNavGroup Title="Administrativo" Icon="@Icons.Material.Filled.Settings" Expanded="true">
                 @* <MudNavLink Href="/" Match="NavLinkMatch.Prefix" Icon="fa-solid fa-house fa-lg"> Inicio</MudNavLink> *@

@@ -14,14 +14,13 @@
 @inherits LayoutComponentBase
 
 <PageTitle>Meu Perfil</PageTitle>
-
-
+ 
 <MudPaper Class="px-8 pt-2 pb-4 mx-12 my-8 rounded-xl" Justify="Justify.Center">
     @if (guest is not null)
     {
         <MudText Align="Align.Center" Class="mb-n4" Ena> Suas informações  </MudText>
         <MudText Align="Align.Center" Class="mb-n4"> - </MudText>
-        <MudForm> 
+        <MudForm>
             <MudList>
                 <MudListItem Avatar="@Icons.Material.Filled.Info"> Trending </MudListItem>
                 <MudTextField T="string" Label="Nome" Disabled="true" @bind-Value="guest.FirstName" />
@@ -30,11 +29,11 @@
                 <MudTextField T="string" Label="Telefone" Disabled="true" @bind-Value="guest.CellPhone" />
                 <MudTextField T="string" Label="CPF" Disabled="@DisabledCPF" @bind-Value="CPF" />
                 <MudDatePicker Label="Data de Nascimento" PickerVariant="PickerVariant.Dialog" Editable="@(!Disabled)" Elevation="12" Disabled="@Disabled" @bind-Date="guest.Birthdate" DateFormat="dd/MM/yyyy" />
-                <MudDivider /> 
+                <MudDivider />
                 <MudListItem Avatar="@Icons.Material.Filled.House"> Endereço </MudListItem>
                 <MudAutocomplete T="string" Label="CEP" @bind-Value="guest.Zip" SearchFunc="@SearchCEP" Editable="@Disabled"
-                   Disabled="@Disabled" AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary" /> 
-                <MudTextField T="string" Label="Endereço" Disabled="true" @bind-Value="guest.GuestAddress" />
+                                 Disabled="@Disabled" AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary" />
+                <MudTextField T="string" Label="Endereço" Disabled="DisableEndereco" @bind-Value="guest.GuestAddress" />
                 <MudTextField T="string" Label="Bairro" Disabled="true" @bind-Value="guest.GuestAddress2" />
                 <MudTextField T="string" Label="Cidade" Disabled="true" @bind-Value="guest.City" />
                 <MudTextField T="string" Label="Estado" Disabled="true" @bind-Value="guest.GuestState" />
@@ -79,6 +78,7 @@
     bool NestedDisabled;
     bool DisabledSave = true;
     bool DisabledCPF = true;
+    bool DisableEndereco = true;
 
     protected override async Task OnInitializedAsync()
     {
@@ -138,6 +138,9 @@
             ReadOnly = !ReadOnly;
             DisabledSave = !DisabledSave;
             DisabledCPF = true;
+
+            if (!DisableEndereco)
+                DisableEndereco = true;
         }
         catch (Exception ex)
         {
@@ -147,22 +150,34 @@
 
     private async Task<IEnumerable<string>> SearchCEP(string value)
     {
-        Cep cep = value;
-        var viaCepService = ViaCepService.Default();
-        var endereco = viaCepService.ObterEndereco(cep);
-        string Cidade = endereco.Localidade;
-        guest.City = Cidade;
-        guest.Address = endereco.Logradouro;
-        guest.State = endereco.UF;
-        // guest.Country = "BRASIL";
-        guest.Address2 = endereco.Bairro;
-        guest.Zip = cep;
-        // if (endereco.UF != null)
-        //     UF = (EUF)Enum.Parse(typeof(EUF), endereco.UF);
-        // Estado = endereco.UF;
-        // CodigoIBGE = endereco.IBGE;
-        // Contry = "BRASIL"; 
-        return null;
+        if (value.Length >= 8)
+        {
+            Cep cep = value;
+            var viaCepService = ViaCepService.Default();
+            var endereco = viaCepService.ObterEndereco(cep);
+            string Cidade = endereco.Localidade;
+            guest.City = Cidade;
+            guest.Address = endereco.Logradouro;
+            guest.State = endereco.UF;
+            // guest.Country = "BRASIL";
+            guest.Address2 = endereco.Bairro;
+            guest.Zip = cep;
+            // if (endereco.UF != null)
+            //     UF = (EUF)Enum.Parse(typeof(EUF), endereco.UF);
+            // Estado = endereco.UF;
+            // CodigoIBGE = endereco.IBGE;
+            // Contry = "BRASIL";
+            string[] retorno = { value };
+
+            if (DisableEndereco)
+                DisableEndereco = false;
+
+            return retorno;
+        } else 
+        {
+            return null;
+        }
+
     }
 
 }

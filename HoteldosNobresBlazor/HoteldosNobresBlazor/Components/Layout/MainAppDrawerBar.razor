@@ -1,14 +1,13 @@
-﻿@using HoteldosNobresBlazor.Layout
-@inject IJSRuntime JSRuntime
-
-@inject NavigationManager NavigationManager
-
+﻿
+@inject AuthenticationStateProvider authStateProvider 
+@inherits LayoutComponentBase 
+ 
 <MudAppBar Color="Color.Primary" Elevation="1" >
     <a href="" Style="color:white; margin-right: 50px">
         <MudImage Width="50" Height="50" Src="images/logo.png" Alt="Mony the dog" Style="margin-right: 10px" Class="rounded-lg"></MudImage> Hotel dos Nobres
     </a>
     <MudSpacer />
-    <AuthorizeView>
+    <AuthorizeView Roles="client">
         <Authorized >
             <MudIconButton Icon="fa-solid fa-right-from-bracket" Color="Color.Inherit" Edge="Edge.End" Href="account/logout" />
            @*  <BotaoLogout /> *@
@@ -16,7 +15,7 @@
         </Authorized> 
     </AuthorizeView>
 </MudAppBar>
-<AuthorizeView>
+<AuthorizeView Roles="client">
     <Authorized>
         <MudDrawer Class="mud-drawer-fixed" ClipMode="DrawerClipMode.Always" @bind-Open="@_isDrawerOpen" PreserveOpenState="true" Elevation="0" Variant="@DrawerVariant.Responsive">
              @* <MudDrawerHeader Style="height:5px;" />   *@
@@ -26,11 +25,10 @@
 </AuthorizeView>
 
 
-@code {
-    private MudTheme currentTheme = new MudTheme()
-        {
-            Palette = HoteldosNobresPallete.CreatePallete
-        };
+@code { 
+    private bool isAuthorized;
+      
+    private string? currentUrl;
 
     private bool _isDrawerOpen = true;
     private bool _shouldHandleDrawerToggled = false;
@@ -40,20 +38,8 @@
     {
         _isDrawerOpen = !_isDrawerOpen;
         //shouldHandleDrawerToggled = true;
-    }
+    } 
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            _jsModule = await JSRuntime.InvokeAsync<IJSObjectReference>("import", "./Components/Layout/MainAppDrawerBar.razor.js");
-        }
-        if (_shouldHandleDrawerToggled)
-        {
-            await _jsModule!.InvokeVoidAsync("HandleDrawerToggled", _isDrawerOpen);
-            _shouldHandleDrawerToggled = false;
-        }
-    }
-
+    
 
 }

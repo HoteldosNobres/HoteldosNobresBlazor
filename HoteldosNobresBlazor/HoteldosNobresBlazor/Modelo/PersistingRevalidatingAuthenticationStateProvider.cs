@@ -23,7 +23,7 @@ internal sealed class PersistingRevalidatingAuthenticationStateProvider : Revali
 
     private readonly PersistingComponentStateSubscription subscription;
 
-    private Task<AuthenticationState>? authenticationStateTask = Task.FromResult(new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity())));
+    private Task<AuthenticationState>? authenticationStateTask = Task.FromResult(new AuthenticationState(new ClaimsPrincipal()));
 
     public PersistingRevalidatingAuthenticationStateProvider(
         ILoggerFactory loggerFactory,
@@ -111,17 +111,16 @@ internal sealed class PersistingRevalidatingAuthenticationStateProvider : Revali
 
     public void AuthenticateUser(Task<AuthenticationState> task)
     {
-        authenticationStateTask = task;
-
+        authenticationStateTask = task; 
         NotifyAuthenticationStateChanged(authenticationStateTask);
     }
 
     public void LogoutAsync()
     {
-        authenticationStateTask = Task.FromResult(new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity())));
+        authenticationStateTask = Task.FromResult(new AuthenticationState(new ClaimsPrincipal())); 
+
+        //OnAuthenticationStateChanged(authenticationStateTask); 
         NotifyAuthenticationStateChanged(authenticationStateTask); 
-        OnAuthenticationStateChanged(authenticationStateTask); 
-        NotifyAuthenticationStateChanged(authenticationStateTask);
     }
 
 
