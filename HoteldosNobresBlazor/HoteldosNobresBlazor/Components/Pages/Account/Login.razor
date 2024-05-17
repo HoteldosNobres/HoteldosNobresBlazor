@@ -26,22 +26,19 @@
                     <ValidationSummary class="text-danger" role="alert" />
                     <div class="form-floating mb-3">
                         <InputText @bind-Value="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
-                        <label for="name" class="form-label">E-mail ou Número da reserva</label>
-                        <ValidationMessage For="() => Input.Email" class="text-danger" />
+                        <label for="name" class="form-label">E-mail ou Número da reserva</label> 
                     </div>
                     <div class="form-floating mb-3">
                         <InputText type="password" @bind-Value="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="password" />
-                        <label for="password" class="form-label">Senha</label>
-                        <ValidationMessage For="() => Input.Password" class="text-danger" />
+                        <label for="password" class="form-label">Senha</label> 
                     </div>
-                    <label for="name" class="form-label">Os 4 últimos digitos do seu telefone.</label>
-                    @* <div class="checkbox mb-3">
-                    <label class="form-label">
-                    <InputCheckbox @bind-Value="Input.RememberMe" class="darker-border-checkbox form-check-input" />
-                    Remember me
-                    </label>
-                    </div> *@
-                    <button type="submit" class="w-100 btn btn-lg btn-primary">Entrar</button>
+                    <label for="name" class="form-label">Os 4 últimos digitos do seu telefone.</label> 
+                    <MudButton Variant="Variant.Filled"
+                               Color="Color.Primary"
+                               Class="ml-auto" 
+                               ButtonType="MudBlazor.ButtonType.Submit">
+                        Entrar
+                    </MudButton> 
                 </EditForm>
             </section>
         </MudPaper>
