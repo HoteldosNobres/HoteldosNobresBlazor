@@ -15,9 +15,9 @@
 
 <PageTitle>Entre no sistema</PageTitle>
 
-<MudGrid Justify="Justify.SpaceAround" Class="mt-8">
+<MudGrid Justify="Justify.SpaceAround">
     <MudItem xs="12" sm="12" md="4">
-        <MudPaper Class="d-flex flex-column align-center justify-center mud-width-full py-8 rounded-xl" Outlined="true">
+        <MudPaper Class="px-8 pt-2 pb-4 mx-4 my-4 py-8 rounded-xl" Outlined="true">
             <section>
                 <EditForm Model="Input" method="post" OnValidSubmit="LoginUser" FormName="login">
                     <DataAnnotationsValidator />
@@ -44,7 +44,7 @@
         </MudPaper>
     </MudItem>
     <MudItem xs="12" sm="12" md="7">
-        <MudPaper Class="d-flex flex-column align-center justify-center mud-width-full py-8  rounded-xl" Outlined="true">
+        <MudPaper Class="px-8 pt-2 pb-4 mx-4 my-4 align-center justify-center py-8 rounded-xl" Outlined="true">
             <ExternalLoginPicker />
         </MudPaper>
     </MudItem>

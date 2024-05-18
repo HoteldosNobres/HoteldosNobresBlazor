@@ -14,15 +14,15 @@
 @inherits LayoutComponentBase
 
 <PageTitle>Meu Perfil</PageTitle>
- 
-<MudPaper Class="px-8 pt-2 pb-4 mx-12 my-8 rounded-xl" Justify="Justify.Center">
+
+<MudPaper Class="px-8 pt-2 pb-4 mx-4 my-4 rounded-xl" Justify="Justify.Center">
     @if (guest is not null)
     {
         <MudText Align="Align.Center" Class="mb-n4" Ena> Suas informações  </MudText>
         <MudText Align="Align.Center" Class="mb-n4"> - </MudText>
         <MudForm>
             <MudList>
-                <MudListItem Avatar="@Icons.Material.Filled.Info"> Trending </MudListItem>
+                <MudListItem Avatar="@Icons.Material.Filled.Info"> Dados </MudListItem>
                 <MudTextField T="string" Label="Nome" Disabled="true" @bind-Value="guest.FirstName" />
                 <MudTextField T="string" Label="E-mail" Disabled="true" @bind-Value="guest.Email" />
                 <MudTextField T="string" Label="Telefone" Disabled="true" @bind-Value="guest.Phone" />
@@ -31,17 +31,16 @@
                 <MudDatePicker Label="Data de Nascimento" PickerVariant="PickerVariant.Dialog" Editable="@(!Disabled)" Elevation="12" Disabled="@Disabled" @bind-Date="guest.Birthdate" DateFormat="dd/MM/yyyy" />
                 <MudDivider />
                 <MudListItem Avatar="@Icons.Material.Filled.House"> Endereço </MudListItem>
-                <MudAutocomplete T="string" Label="CEP" @bind-Value="guest.Zip" SearchFunc="@SearchCEP" Editable="@Disabled"
-                                 Disabled="@Disabled" AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary" />
-                <MudTextField T="string" Label="Endereço" Disabled="DisableEndereco" @bind-Value="guest.GuestAddress" />
-                <MudTextField T="string" Label="Bairro" Disabled="true" @bind-Value="guest.GuestAddress2" />
+                <MudTextField T="string" Label="CEP" @bind-Value="guest.Zip" TextChanged="@SearchCEP" Editable="@Disabled"
+                              Disabled="@Disabled" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary" />
+                <MudTextField T="string" Label="Endereço" Disabled="DisableEndereco" @bind-Value="guest.Address" />
+                <MudTextField T="string" Label="Bairro" Disabled="true" @bind-Value="guest.Address2" />
                 <MudTextField T="string" Label="Cidade" Disabled="true" @bind-Value="guest.City" />
-                <MudTextField T="string" Label="Estado" Disabled="true" @bind-Value="guest.GuestState" />
+                <MudTextField T="string" Label="Estado" Disabled="true" @bind-Value="guest.State" />
                 <MudTextField T="string" Label="Pais" Disabled="true" @bind-Value="guest.GuestCountry" />
             </MudList>
 
-
-            <div class="d-flex mt-4">
+            <div class="mt-4">
                 <MudButton Variant="Variant.Filled"
                            Color="Color.Primary"
                            Class="ml-auto"
@@ -132,6 +131,19 @@
             //     cloudbedsAPI.PutGuestAsync(guest.GuestId.ToString(), "CPF", guest.Birthdate.Value.ToString("yyyy-MM-dd"));
             // }
 
+            if (!string.IsNullOrEmpty(guest.GuestZip))
+                cloudbedsAPI.PutGuestAsync(guest.GuestId.ToString(), "guestZip", guest.GuestZip);
+
+            if (!string.IsNullOrEmpty(guest.GuestAddress))
+                cloudbedsAPI.PutGuestAsync(guest.GuestId.ToString(), "guestAddress", guest.GuestAddress);
+
+            if (!string.IsNullOrEmpty(guest.GuestAddress2))
+                cloudbedsAPI.PutGuestAsync(guest.GuestId.ToString(), "guestAddress2", guest.GuestAddress2);
+
+            if (!string.IsNullOrEmpty(guest.GuestCity))
+                cloudbedsAPI.PutGuestAsync(guest.GuestId.ToString(), "guestCity", guest.GuestCity);
+            
+
             Snackbar.Add("Cadastrado alterado com sucesso!", Severity.Success);
 
             Disabled = !Disabled;
@@ -148,7 +160,7 @@
         }
     }
 
-    private async Task<IEnumerable<string>> SearchCEP(string value)
+    private void SearchCEP(string value)
     {
         if (value.Length >= 8)
         {
@@ -157,25 +169,19 @@
             var endereco = viaCepService.ObterEndereco(cep);
             string Cidade = endereco.Localidade;
             guest.City = Cidade;
-            guest.Address = endereco.Logradouro;
+            if (string.IsNullOrEmpty(guest.Address))
+                guest.Address = endereco.Logradouro;
             guest.State = endereco.UF;
-            // guest.Country = "BRASIL";
+            guest.Country = "BRASIL";
             guest.Address2 = endereco.Bairro;
-            guest.Zip = cep;
-            // if (endereco.UF != null)
-            //     UF = (EUF)Enum.Parse(typeof(EUF), endereco.UF);
-            // Estado = endereco.UF;
-            // CodigoIBGE = endereco.IBGE;
-            // Contry = "BRASIL";
-            string[] retorno = { value };
-
-            if (DisableEndereco)
+            guest.Zip = endereco.Cep;
+            
+            if (!Disabled && DisableEndereco)
                 DisableEndereco = false;
 
-            return retorno;
-        } else 
+        }
+        else
         {
-            return null;
         }
 
     }

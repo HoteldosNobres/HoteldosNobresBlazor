@@ -2,7 +2,7 @@
 @inject AuthenticationStateProvider authStateProvider 
 @inherits LayoutComponentBase 
  
-<MudAppBar Color="Color.Primary" Elevation="1" >
+<MudAppBar Color="Color.Primary" >
     <a href="" Style="color:white; margin-right: 50px">
         <MudImage Width="50" Height="50" Src="images/logo.png" Alt="Mony the dog" Style="margin-right: 10px" Class="rounded-lg"></MudImage> Hotel dos Nobres
     </a>
@@ -17,7 +17,7 @@
 </MudAppBar>
 <AuthorizeView Roles="client">
     <Authorized>
-        <MudDrawer Class="mud-drawer-fixed" ClipMode="DrawerClipMode.Always" @bind-Open="@_isDrawerOpen" PreserveOpenState="true" Elevation="0" Variant="@DrawerVariant.Responsive">
+        <MudDrawer Class="mud-drawer-fixed" ClipMode="DrawerClipMode.Always" @bind-Open="@_isDrawerOpen" PreserveOpenState="true"  Variant="@DrawerVariant.Responsive">
              @* <MudDrawerHeader Style="height:5px;" />   *@
                 <NavMenu /> 
         </MudDrawer>

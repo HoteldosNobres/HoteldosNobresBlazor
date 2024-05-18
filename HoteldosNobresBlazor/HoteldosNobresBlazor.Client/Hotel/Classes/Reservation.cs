@@ -257,8 +257,15 @@ public partial class Guest
         set { CellPhone = value; }
     }
 
+    [JsonProperty("country")]
+    public string? Country { get; set; }
+
     [JsonProperty("guestCountry")]
-    public string? GuestCountry { get; set; }
+    public string? GuestCountry
+    {
+        get { return Country; }
+        set { Country = value; }
+    }
 
     [JsonProperty("address")]
     public string? Address { get; set; }

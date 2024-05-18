@@ -4,7 +4,7 @@
 @inject NavigationManager NavigationManager2
 @attribute [StreamRendering(true)]
 
-<MudPaper Class="px-8 pt-2 pb-4 mx-12 my-8" Justify="Justify.Center">
+<MudPaper Class="px-8 pt-2 pb-4 mx-4 my-4 rounded-xl" Justify="Justify.Center">
     <PageTitle>FNRH</PageTitle>
     <h1>Log FNRH!</h1>
     @if (arrayDeLinhas.Length > 0)
@@ -19,14 +19,13 @@
 
     @if (listLog != null && listLog.Count > 0)
     {
-        <table class="table">
+        <MudSimpleTable Hover="true" Striped="true" Style="overflow-x: auto;">
             <thead>
                 <tr>
                     <th>Data </th>
                     <th>IdReserva</th>
                     <th>Status</th>
                     <th>Log</th>
-                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -37,11 +36,10 @@
                         <td><a href='@logs.LinkReserva' target='_blank'> @logs.IDReserva</a></td>
                         <td>@logs.Status</td>
                         <td>@logs.Log</td>
-                        <td></td>
                     </tr>
                 }
             </tbody>
-        </table>
+        </MudSimpleTable>
     }
     else
     {

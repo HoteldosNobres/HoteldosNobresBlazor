@@ -5,7 +5,7 @@
 @attribute [StreamRendering]
 @inject AppState appState
 
-<MudPaper Class="px-8 pt-2 pb-4 mx-12 my-8" Justify="Justify.Center">
+<MudPaper Class="px-8 pt-2 pb-4 mx-4 my-4 rounded-xl" Justify="Justify.Center">
     <PageTitle>Lista Reserva</PageTitle>
     <MudContainer>
         <MudPaper>
@@ -15,30 +15,27 @@
             }
             else
             {
-                <table class="table">
+                <MudSimpleTable Hover="true" Striped="true" Style="overflow-x: auto;">
                     <thead>
                         <tr>
                             <th>Id</th>
                             <th>Data Check In</th>
                             <th>Nome Hospede</th>
-                            <th>Origem</th>
-                            <th></th>
+                            <th>Origem</th>  
                         </tr>
                     </thead>
                     <tbody>
-                        @if (listReserva.Count() > 0)
-                            @foreach (Reserva reserva1 in listReserva)
-                            {
-                                <tr>
-                                    <td><a href='@reserva1.LinkReserva' target='_blank'> @reserva1.IDReserva </a></td>
-                                    <td>@reserva1.DataCheckIn.GetValueOrDefault().ToString("dd/MM/yyyy")</td>
-                                    <td>@reserva1.NomeHospede.Split(' ')[0].ToString()</td>
-                                    <td>@reserva1.Origem</td>
-                                    <td></td>
-                                </tr>
-                            }
+                        @foreach (Reserva reserva1 in listReserva) 
+                        {
+                            <tr>
+                                <td><a href='@reserva1.LinkReserva' target='_blank'> @reserva1.IDReserva </a></td>
+                                <td>@reserva1.DataCheckIn.GetValueOrDefault().ToString("dd/MM/yyyy")</td>
+                                <td>@reserva1.NomeHospede!.Split(' ')[0].ToString()</td>
+                                <td>@reserva1.Origem</td> 
+                            </tr>
+                        }
                     </tbody>
-                </table>
+                </MudSimpleTable> 
             }
 
         </MudPaper>
@@ -47,7 +44,7 @@
 
 @code {
     public List<Reserva>? listReserva;
-    private Reserva reserva;
+    private Reserva reserva; 
 
     protected override async Task OnInitializedAsync()
     {

@@ -7,7 +7,16 @@
 <MudSnackbarProvider @rendermode="InteractiveServer" />
 
 <MudLayout>
-    <MainAppDrawerBar @rendermode="InteractiveServer" />
+      <AuthorizeView Roles="client">
+        <Authorized >
+            <MainAppDrawerBar @rendermode="InteractiveAuto" />
+        </Authorized>
+        <NotAuthorized>
+            <MudAppBar Color="Color.Primary" >
+                <MudImage Width="50" Height="50" Src="images/logo.png" Alt="Mony the dog" Style="margin-right: 10px" Class="rounded-lg"></MudImage> Hotel dos Nobres
+             </MudAppBar>
+        </NotAuthorized>
+    </AuthorizeView>
     <MudMainContent Class="mud-theme-background, mud-height-full">
         @Body
     </MudMainContent>

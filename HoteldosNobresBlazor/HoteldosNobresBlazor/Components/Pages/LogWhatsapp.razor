@@ -6,7 +6,7 @@
 
 <PageTitle>Log Whatsapp</PageTitle>
 
-<MudPaper Class="px-8 pt-2 pb-4 mx-12 my-8" Justify="Justify.Center">
+<MudPaper Class="px-8 pt-2 pb-4 mx-4 my-4 rounded-xl" Justify="Justify.Center">
 <h1>Log Whatsapp!</h1>
 @if (arrayDeLinhas.Length > 0)
 {
@@ -19,30 +19,28 @@
 <button class="btn btn-primary" @onclick="Clear">Clear</button>
 @if (listLog != null && listLog.Count > 0)
 {
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Data </th>
-                <th>IdReserva</th>
-                <th>Status</th>
-                <th>Log</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (LogSistema logs in listLog)
-            {
+        <MudSimpleTable Hover="true" Striped="true" Style="overflow-x: auto;">
+            <thead>
                 <tr>
-                    <td>@logs.DataLog.ToString("dd/MM/yyyy HH:mm:ss")</td>
-                    <td><a href='@logs.LinkReserva' target='_blank'> @logs.IDReserva</a></td>
-                    <td>@logs.Status</td>
-                    <td>@logs.Log</td>
-                    <td></td>
+                    <th>Data </th>
+                    <th>IdReserva</th>
+                    <th>Status</th>
+                    <th>Log</th>
                 </tr>
-            }
-        </tbody>
-    </table>
-}
+            </thead>
+            <tbody>
+                @foreach (LogSistema logs in listLog)
+                {
+                    <tr>
+                        <td>@logs.DataLog.ToString("dd/MM/yyyy HH:mm:ss")</td>
+                        <td><a href='@logs.LinkReserva' target='_blank'> @logs.IDReserva</a></td>
+                        <td>@logs.Status</td>
+                        <td>@logs.Log</td>
+                    </tr>
+                }
+            </tbody>
+        </MudSimpleTable>
+    }
 else
 {
     <p role="status">Carregando...</p>
