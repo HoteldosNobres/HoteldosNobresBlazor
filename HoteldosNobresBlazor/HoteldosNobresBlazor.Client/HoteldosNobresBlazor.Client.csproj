@@ -31,9 +31,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Update="Pages\ControlRender.razor">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-    </Content>
     <Content Update="Pages\MeuPerfil.razor">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
     </Content>

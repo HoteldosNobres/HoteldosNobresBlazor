@@ -7,60 +7,104 @@
 
 <PageTitle>Reserva</PageTitle>
 
-<MudPaper Class="px-8 pt-2 pb-4 mx-4 my-4 rounded-xl" Justify="Justify.Center">
-    @if (reserva is not null)
-    {
-        @*  <MudToggleIconButton Align="Align.Center" Justify="Justify.Center" Icon="@Icons.Material.Filled.Check" Color="@Color.Success" Title="Off" Disabled="true" ToggledIcon="@Icons.Material.Filled.Cancel" ToggledColor="@Color.Error" ToggledTitle="On" /> *@
-        <MudText Typo="Typo.h6" Align="Align.Center" GutterBottom="true">Agradecemos seu pedido!</MudText>
-        <MudText Align="Align.Center"> O número da reserva é #@reserva.IDReserva  </MudText>
-        <MudText Align="Align.Center"> Enviamos a confirmação do pedido para o e-mail: @reserva.Email  </MudText>
-        <MudGrid Justify="Justify.Center">
-            <MudItem xs="3">
-                Check-in <br />
-                @reserva.DataCheckIn.GetValueOrDefault().ToString("dd/MM/yyyy") <br />
-                @reserva.DataCheckIn.GetValueOrDefault().ToString("dddd", new CultureInfo("pt-BR")) <br />
+
+@if (reserva is not null)
+{
+    <MudContainer Class="px-8 pt-2 mx-4 my-4" MaxWidth="MaxWidth.False">
+        <MudGrid>
+            <MudItem xs="12" sm="6">
+                <MudPaper Elevation="2" Class="pa-4  rounded-xl" Style="height: 100%">
+                    <MudGrid Justify="Justify.Center" Class="align-items-center">
+                        <MudItem>
+                             <MudText Typo="Typo.h3" Align="Align.Center" Color="Color.Success"> <i class="fa fa-check" aria-hidden="true"></i> </MudText>
+                        </MudItem>
+                    </MudGrid>
+                    <MudText Typo="Typo.h6" Align="Align.Center" GutterBottom="true">Agradecemos seu pedido!</MudText>
+                    <MudText Align="Align.Center"> O número da reserva é #@reserva.IDReserva  </MudText>
+                    <MudText Align="Align.Center"> Enviamos a confirmação do pedido para o e-mail: @reserva.Email  </MudText>
+                    <MudGrid Justify="Justify.Center">
+                        <MudItem xs="3">
+                            <MudGrid Class="align-items-center">
+                                <MudItem>
+                                    <MudText Align="Align.Center"> Check-in </MudText>
+                                    <MudText Typo="Typo.h6" Align="Align.Center" Color="Color.Success">  @reserva.DataCheckIn.GetValueOrDefault().ToString("dd/MM/yyyy")</MudText>
+                                    <MudText Align="Align.Center">@reserva.DataCheckIn.GetValueOrDefault().ToString("dddd", new CultureInfo("pt-BR"))</MudText>
+                                </MudItem>
+                            </MudGrid>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudGrid Justify="Justify.Center" Class="align-items-center">
+                                <MudItem>
+                                    <i class="fa fa-arrow-right" aria-hidden="true"></i>
+                                </MudItem>
+                            </MudGrid>
+                        </MudItem>
+                        <MudItem xs="3">
+                            <MudGrid Class="align-items-center">
+                                <MudItem>
+                                    <MudText Align="Align.Center">Check-Out </MudText>
+                                    <MudText Typo="Typo.h6" Align="Align.Center" Color="Color.Success"> @reserva.DataCheckOut.GetValueOrDefault().ToString("dd/MM/yyyy") </MudText>
+                                    <MudText Align="Align.Center">@reserva.DataCheckOut.GetValueOrDefault().ToString("dddd", new CultureInfo("pt-BR")) </MudText>
+                                </MudItem>
+                            </MudGrid>
+                        </MudItem>
+                    </MudGrid>
+                    <MudText Align="Align.Center" >
+                        <i class="fa-solid fa-moon"> </i> @reserva.Noites.GetValueOrDefault(1).ToString() Noite(s)
+                        <i class="fa fa-users" aria-hidden="true"></i> @reserva.Hospedes.GetValueOrDefault(1).ToString() Hospede(s)
+                    </MudText> 
+                    <MudSpacer />
+                    <MudText Align="Align.Center" Class="mb-n4"> - </MudText>
+                    <MudForm Disabled="Disabled">
+                        @* <MudNumericField T="int" Label="Number" Disabled="true" @bind-Value="reserva.IDReserva" /> *@
+                        <MudTextField T="string" Label="Nome do Hospede Principal" Disabled="true" @bind-Value="reserva.NomeHospede" />
+                        <MudTextField T="string" Label="Origem" Disabled="true" @bind-Value="reserva.Origem" />
+                        @if (!string.IsNullOrEmpty(reserva.IDReservaAgencia))
+                        {
+                            <MudTextField T="string" Label="Número da reserva via agência" Disabled="true" @bind-Value="reserva.IDReservaAgencia" />
+                        }
+                    </MudForm>
+                    <MudSpacer />
+                    <br />
+                    @if (reserva is not null && reserva.ListaQuartos is not null && reserva.ListaQuartos.Count > 0)
+                    {
+                        <MudPaper Class="rounded-xl">
+                            <MudExpansionPanel Text="Acomodações" Style="background-color: #F5F4F4; rounded-xl" MaxHeight="150" Elevation="2">
+                                <MudPaper>
+                                    @reserva.ListaQuartos[0]!.Descricao
+                                </MudPaper>
+                            </MudExpansionPanel>
+                        </MudPaper>
+                    }
+                </MudPaper>
             </MudItem>
-            <MudItem xs="1">
-                <i class="fa fa-arrow-right" aria-hidden="true"></i>
-            </MudItem>
-            <MudItem xs="3">
-                Check-Out <br />
-                @reserva.DataCheckOut.GetValueOrDefault().ToString("dd/MM/yyyy")  <br />
-                @reserva.DataCheckOut.GetValueOrDefault().ToString("dddd", new CultureInfo("pt-BR"))  <br />
+            <MudItem xs="12" sm="3">
+                <MudGrid>
+                    <MudItem xs="12">
+                        <MudPaper Elevation="2" Class="pa-4 rounded-xl" Style="height: 100%">
+                            <MudGrid Justify="Justify.Center" Class="align-items-center">
+                                <MudItem>
+                                    Cobrança - Em Breve
+                                </MudItem>
+                            </MudGrid>
+                        </MudPaper>
+                    </MudItem>
+                </MudGrid>
             </MudItem>
         </MudGrid>
-        <MudText Align="Align.Center">
-            <i class="fa-solid fa-moon"> </i> @reserva.Noites.GetValueOrDefault(1).ToString() Noite(s)
-            <i class="fa fa-users" aria-hidden="true"></i> @reserva.Hospedes.GetValueOrDefault(1).ToString() Hospede(s)
-        </MudText>
-        
-        <MudSpacer />
-        <MudText Align="Align.Center" Class="mb-n4"> - </MudText>
-        <MudForm Disabled="Disabled">
-            @* <MudNumericField T="int" Label="Number" Disabled="true" @bind-Value="reserva.IDReserva" /> *@
-            <MudTextField T="string" Label="Nome do Hospede Principal" Disabled="true" @bind-Value="reserva.NomeHospede" />
-            <MudTextField T="string" Label="Origem" Disabled="true" @bind-Value="reserva.Origem" />
-            @if (!string.IsNullOrEmpty(reserva.IDReservaAgencia))
-            {
-                <MudTextField T="string" Label="Número da reserva via agência" Disabled="true" @bind-Value="reserva.IDReservaAgencia" />
-            }
-        </MudForm>
-        <MudSpacer />
-        <br />
-        <MudPaper Class="rounded-xl">
-            <MudExpansionPanel Text="Acomodações" Style="background-color: #F5F4F4; rounded-xl" MaxHeight="150" Elevation="2">
-                <MudPaper>
-                    @reserva.ListaQuartos[0]!.Descricao
-                </MudPaper>
-            </MudExpansionPanel>
-        </MudPaper>
+    </MudContainer>
+}
+else
+{
+    <MudPaper Class="px-8 pt-2 pb-4 mx-4 my-4 rounded-xl" Align="Align.Center" Justify="Justify.Center">
+        <MudGrid Justify="Justify.Center" Class="align-items-center">
+            <MudItem>
+                <MudProgressCircular Indeterminate="true"></MudProgressCircular>
+            </MudItem>
+        </MudGrid>
+    </MudPaper>
+}
 
-    }
-    else
-    {
-        <MudProgressCircular Indeterminate="true" Align="Align.Center" Justify="Justify.Center" />
-    }
-</MudPaper>
 
 
 @code {

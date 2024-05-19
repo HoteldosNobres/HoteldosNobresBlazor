@@ -4,7 +4,7 @@
 @using HoteldosNobresBlazor.Client.Pages.Component
 @using System.Text.RegularExpressions
 @using MosaicoSolutions.ViaCep
-@using MosaicoSolutions.ViaCep.Modelos 
+@using MosaicoSolutions.ViaCep.Modelos
 @using Newtonsoft.Json
 @inject APICloudbeds cloudbedsAPI
 @inject AuthenticationStateProvider AuthenticationStateProvider
@@ -40,7 +40,6 @@
                 <MudTextField T="string" Label="Estado" Disabled="true" @bind-Value="guest.State" />
                 <MudTextField T="string" Label="Pais" Disabled="true" @bind-Value="guest.GuestCountry" />
             </MudList>
-
             <div class="mt-4">
                 <MudButton Variant="Variant.Filled"
                            Color="Color.Primary"
@@ -61,8 +60,11 @@
     }
     else
     {
-        <MudProgressCircular Indeterminate="true"></MudProgressCircular>
-
+        <MudGrid Justify="Justify.Center" Class="align-items-center">
+            <MudItem>
+                <MudProgressCircular Indeterminate="true"></MudProgressCircular>
+            </MudItem>
+        </MudGrid>
     }
 </MudPaper>
 
@@ -103,7 +105,7 @@
                     {
                         DisabledCPF = true;
                         CPF = "***.***." + cpfstring.Substring(cpfstring.Length - 4);
-                    } 
+                    }
                 }
 
             }
@@ -132,9 +134,9 @@
                 cloudbedsAPI.PutGuestAsync(guest.GuestId.ToString(), "guestCustomFields", "[" + text.ToString() + "]");
             }
 
-           
+
             if (!DisabledCPF && !string.IsNullOrEmpty(CPF))
-            { 
+            {
                 CustomField? customField = guest.CustomFields.Where(x => x.CustomFieldName.Equals("CPF")).FirstOrDefault();
                 customField!.CustomFieldValue = CPF;
                 var text = JsonConvert.SerializeObject(customField);
@@ -152,7 +154,7 @@
 
             if (!string.IsNullOrEmpty(guest.GuestCity))
                 cloudbedsAPI.PutGuestAsync(guest.GuestId.ToString(), "guestCity", guest.GuestCity);
-            
+
 
             Snackbar.Add("Cadastrado alterado com sucesso!", Severity.Success);
 
@@ -185,7 +187,7 @@
             guest.Country = "BRASIL";
             guest.Address2 = endereco.Bairro;
             guest.Zip = endereco.Cep;
-            
+
             if (!Disabled && DisableEndereco)
                 DisableEndereco = false;
 
