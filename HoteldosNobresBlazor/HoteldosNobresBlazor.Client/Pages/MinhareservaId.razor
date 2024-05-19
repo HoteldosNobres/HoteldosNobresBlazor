@@ -1,4 +1,5 @@
 ﻿@page "/minhareserva/{ReservationId}"
+@using System.Globalization
 @inject NavigationManager navigationManager
 @inject APICloudbeds cloudbedsAPI
 
@@ -8,72 +9,58 @@
 
 <MudPaper Class="px-8 pt-2 pb-4 mx-4 my-4 rounded-xl" Justify="Justify.Center">
     @if (reserva is not null)
-    { 
-        <MudText Align="Align.Center" Class="mb-n4" Ena> Sua reserva está @reserva.ProxyStatus  </MudText>
+    {
+        @*  <MudToggleIconButton Align="Align.Center" Justify="Justify.Center" Icon="@Icons.Material.Filled.Check" Color="@Color.Success" Title="Off" Disabled="true" ToggledIcon="@Icons.Material.Filled.Cancel" ToggledColor="@Color.Error" ToggledTitle="On" /> *@
+        <MudText Typo="Typo.h6" Align="Align.Center" GutterBottom="true">Agradecemos seu pedido!</MudText>
+        <MudText Align="Align.Center"> O número da reserva é #@reserva.IDReserva  </MudText>
+        <MudText Align="Align.Center"> Enviamos a confirmação do pedido para o e-mail: @reserva.Email  </MudText>
+        <MudGrid Justify="Justify.Center">
+            <MudItem xs="3">
+                Check-in <br />
+                @reserva.DataCheckIn.GetValueOrDefault().ToString("dd/MM/yyyy") <br />
+                @reserva.DataCheckIn.GetValueOrDefault().ToString("dddd", new CultureInfo("pt-BR")) <br />
+            </MudItem>
+            <MudItem xs="1">
+                <i class="fa fa-arrow-right" aria-hidden="true"></i>
+            </MudItem>
+            <MudItem xs="3">
+                Check-Out <br />
+                @reserva.DataCheckOut.GetValueOrDefault().ToString("dd/MM/yyyy")  <br />
+                @reserva.DataCheckOut.GetValueOrDefault().ToString("dddd", new CultureInfo("pt-BR"))  <br />
+            </MudItem>
+        </MudGrid>
+        <MudText Align="Align.Center">
+            <i class="fa-solid fa-moon"> </i> @reserva.Noites.GetValueOrDefault(1).ToString() Noite(s)
+            <i class="fa fa-users" aria-hidden="true"></i> @reserva.Hospedes.GetValueOrDefault(1).ToString() Hospede(s)
+        </MudText>
+        
+        <MudSpacer />
         <MudText Align="Align.Center" Class="mb-n4"> - </MudText>
         <MudForm Disabled="Disabled">
             @* <MudNumericField T="int" Label="Number" Disabled="true" @bind-Value="reserva.IDReserva" /> *@
-            <MudTextField T="string" Label="Número" Disabled="true" @bind-Value="reserva.IDReserva" />
             <MudTextField T="string" Label="Nome do Hospede Principal" Disabled="true" @bind-Value="reserva.NomeHospede" />
-            <MudDatePicker Label="Check-In" Disabled="true" @bind-Date="reserva.DataCheckIn" Mask="@(new DateMask("dd/MM/yyyy"))" DateFormat="dd/MM/yyyy" Placeholder="pt-BR Date" />
-            <MudDatePicker Label="Check-Out" Disabled="true" @bind-Date="reserva.DataCheckOut" Mask="@(new DateMask("dd/MM/yyyy"))" DateFormat="dd/MM/yyyy" Placeholder="pt-BR Date" />
-            @* <MudNumericField T="int" Label="Number" Disabled="true" @bind-Value="reserva.Noites.GetValueOrDefault()" /> *@
             <MudTextField T="string" Label="Origem" Disabled="true" @bind-Value="reserva.Origem" />
             @if (!string.IsNullOrEmpty(reserva.IDReservaAgencia))
             {
                 <MudTextField T="string" Label="Número da reserva via agência" Disabled="true" @bind-Value="reserva.IDReservaAgencia" />
             }
-            <MudTextField T="int?" Label="Número de Hospedes: " Disabled="true" @bind-Value="reserva.Hospedes" />
-
-
-            @* <MudSwitch T="bool" Label="Switch" />
-        <MudCheckBox T="bool" Label="CheckBox" />
-        <MudRadioGroup T="string">
-        <MudRadio Option="@("1")">1</MudRadio>
-        <MudRadio Option="@("2")">2</MudRadio>
-        </MudRadioGroup>
-        <MudForm Disabled="NestedDisabled">
-        <MudText Align="Align.Center" Class="mb-n4 mt-2">Nested Form</MudText>
-        <MudTextField T="string" Label="Nested Text" />
-        <MudNumericField T="int" Label="Nested Number" />
-        </MudForm> *@
         </MudForm>
+        <MudSpacer />
+        <br />
+        <MudPaper Class="rounded-xl">
+            <MudExpansionPanel Text="Acomodações" Style="background-color: #F5F4F4; rounded-xl" MaxHeight="150" Elevation="2">
+                <MudPaper>
+                    @reserva.ListaQuartos[0]!.Descricao
+                </MudPaper>
+            </MudExpansionPanel>
+        </MudPaper>
 
-        @* <MudCardActions>
-    <MudCheckBox @bind-Checked="Disabled">Disabled</MudCheckBox>
-    <MudCheckBox @bind-Checked="NestedDisabled">Nested Disabled</MudCheckBox>
-    </MudCardActions> *@
     }
     else
     {
-        <MudProgressCircular Indeterminate="true"></MudProgressCircular>
-
+        <MudProgressCircular Indeterminate="true" Align="Align.Center" Justify="Justify.Center" />
     }
 </MudPaper>
-
-
-@* <div class="d-flex align-center justify-space-between mt-4">
-    <MudButton Variant="Variant.Filled"
-               Color="Color.Primary"
-               Disabled="@(!success)"
-               Class="ml-auto"
-               @onclick="Editar">
-        Salvar
-    </MudButton>
-    <MudButton Variant="Variant.Filled"
-               Color="Color.Warning"
-               Class="ml-3"
-               @onclick="Deletar">
-        Excluir
-    </MudButton>
-    <MudButton Variant="Variant.Filled"
-               Color="Color.Info"
-               Class="ml-3"
-               @onclick="VoltarParaListagem">
-        Voltar
-    </MudButton>
-</div> *@
-
 
 
 @code {

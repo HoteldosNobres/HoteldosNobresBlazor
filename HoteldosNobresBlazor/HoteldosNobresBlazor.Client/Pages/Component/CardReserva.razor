@@ -1,33 +1,20 @@
-﻿@* <MudCard>
-    @* <MudCardMedia Image=@Imagem></MudCardMedia> 
-    <MudCardHeader>
-        <CardHeaderContent>
-            <MudText Typo="Typo.h6">@Reserva!.NomeHospede</MudText>
-        </CardHeaderContent>
-    </MudCardHeader>
-    <MudCardContent>
-        <MudText Typo="Typo.body2">@LimitaCaracteres(Reserva!.Obs, 150)</MudText>
-    </MudCardContent>
-    <MudCardActions>
-        <MudButton Color="Color.Warning"
-                   Variant="Variant.Outlined"
-                   Href=@($"/EditarArtista/{Reserva!.NomeHospede}")>Detalhes</MudButton>
-    </MudCardActions>
-</MudCard> *@
-
-
-<MudCard> 
+﻿<MudCard Style="background-color: #F5F4F4; rounded-xl" >
     <MudCardHeader>
         <CardHeaderContent>
             <MudText Typo="Typo.h6"> Numero @Reserva!.IDReserva </MudText>
         </CardHeaderContent>
     </MudCardHeader>
     <MudCardContent>
-        <MudText Typo="Typo.body2">teste</MudText>
+        <MudText Typo="Typo.body2">
+            Data de Check-in: @Reserva!.DataCheckIn!.GetValueOrDefault().ToString("dd/MM/yyyy") <br>
+            Data de Check-out: @Reserva!.DataCheckOut!.GetValueOrDefault().ToString("dd/MM/yyyy") <br>
+            Origem: @Reserva!.Origem
+        </MudText>
     </MudCardContent>
     <MudCardActions>
-        <MudButton Color="Color.Warning"
-                   Variant="Variant.Outlined"
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   Class="ml-auto rounded-xl"
                    Href=@($"/minhareserva/{Reserva!.IDReserva}")>Detalhes</MudButton>
 
     </MudCardActions>

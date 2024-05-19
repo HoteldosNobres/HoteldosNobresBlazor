@@ -26,8 +26,8 @@
                 <MudListItem Avatar="@Icons.Material.Filled.Info"> Dados </MudListItem>
                 <MudTextField T="string" Label="Nome" Disabled="true" @bind-Value="guest.FirstName" />
                 <MudTextField T="string" Label="E-mail" Disabled="true" @bind-Value="guest.Email" />
-                <MudTextField T="string" Label="Telefone" Disabled="true" @bind-Value="guest.Phone" />
-                <MudTextField T="string" Label="Telefone" Disabled="true" @bind-Value="guest.CellPhone" />
+                <MudTextField T="string" Label="Celular ou Telefone Principal" Disabled="true" @bind-Value="guest.Phone" />
+                <MudTextField T="string" Label="Celular ou Telefone Secundario" Disabled="true" @bind-Value="guest.CellPhone" />
                 <MudTextField T="string" Label="CPF" Disabled="@DisabledCPF" @bind-Value="CPF" />
                 <MudDatePicker Label="Data de Nascimento" PickerVariant="PickerVariant.Dialog" Editable="@(!Disabled)" Elevation="12" Disabled="@Disabled" @bind-Date="guest.Birthdate" DateFormat="dd/MM/yyyy" />
                 <MudDivider />
@@ -44,14 +44,14 @@
             <div class="mt-4">
                 <MudButton Variant="Variant.Filled"
                            Color="Color.Primary"
-                           Class="ml-auto"
+                           Class="ml-auto rounded-xl"
                            Disabled="@(!Disabled)"
                            @onclick="Editar">
                     Editar
                 </MudButton>
                 <MudButton Variant="Variant.Filled"
                            Color="Color.Primary"
-                           Class="ml-auto"
+                           Class="ml-auto rounded-xl"
                            Disabled="@DisabledSave"
                            @onclick="Salvar">
                     Salvar
@@ -93,6 +93,7 @@
 
         if (guest is not null)
         {
+            DisabledCPF = false;
             foreach (var item in guest.CustomFields)
             {
                 if (item.CustomFieldName.Equals("CPF"))
@@ -102,8 +103,7 @@
                     {
                         DisabledCPF = true;
                         CPF = "***.***." + cpfstring.Substring(cpfstring.Length - 4);
-                    }
-
+                    } 
                 }
 
             }
