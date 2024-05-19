@@ -1,5 +1,6 @@
 ﻿using HoteldosNobresBlazor.Classes;
 using HoteldosNobresBlazor.Services;
+using Newtonsoft.Json;
 using System.Globalization;
 
 namespace HoteldosNobresBlazor.Funcoes
@@ -60,7 +61,7 @@ namespace HoteldosNobresBlazor.Funcoes
                 {
                     string jasonresposta = mensagem.Entry[0].Changes[0].Value.Messages[0].Interactive.NfmReply.ResponseJson;
                     Response_Json respostajson = FunctionAPICLOUDBEDs.LerRespostaComoObjetoAsync<Response_Json>(jasonresposta).Result;
-                    cpf = respostajson.Datadenascimento;
+                    cpf = respostajson.Cpf;
                     datadenascimento = respostajson.Datadenascimento;
 
                     hotelrating = respostajson.Hotelrating;
@@ -81,7 +82,23 @@ namespace HoteldosNobresBlazor.Funcoes
                     resultado += FunctionWhatsApp.postMensagemTemplete(from, "inf_inicial").Result;
                     Reserva reserva = AppState.ListReservas.Where(x => x.ProxyCelular == from).FirstOrDefault();
                     if (reserva != null)
-                    {
+                    { 
+                        DateTime birthdate = DateTime.Parse(datadenascimento);
+
+                        FunctionAPICLOUDBEDs.putGuest(reserva.GuestID!, "guestBirthDate", birthdate.ToString("yyyy-MM-dd"));
+
+                        CustomField? customFieldData = new CustomField();
+                        customFieldData.CustomFieldName = "Data_de_Nascimento";
+                        customFieldData.CustomFieldValue = birthdate.ToString("dd/MM/yyyy");
+                        var jsoncustomFieldData = JsonConvert.SerializeObject(customFieldData);
+                        FunctionAPICLOUDBEDs.putGuest(reserva.GuestID!, "guestCustomFields", "[" + jsoncustomFieldData.ToString() + "]");
+
+                        CustomField? customField = new CustomField();
+                        customField.CustomFieldName = "CPF";
+                        customField.CustomFieldValue = cpf;
+                        var jsoncustomField = JsonConvert.SerializeObject(customField);
+                        FunctionAPICLOUDBEDs.putGuest(reserva.GuestID!, "guestCustomFields", "[" + jsoncustomField.ToString() + "]");
+                          
                         reserva = FunctionAPICLOUDBEDs.postReservationNote(reserva, texto).Result;
                     }
                 }

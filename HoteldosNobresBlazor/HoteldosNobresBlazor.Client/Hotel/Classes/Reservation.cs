@@ -381,6 +381,33 @@ public partial class Guest
 
     [JsonProperty("rooms")]
     public Room[]? Rooms { get; set; }
+
+    [JsonIgnore]
+    public string CPF
+    {
+        get
+        {
+            string retorno = string.Empty;
+            foreach (var item in CustomFields)
+            {
+                if (item.CustomFieldName.Equals("CPF"))
+                {
+                    retorno = item.CustomFieldValue;
+                }
+            }
+            return retorno;
+        }
+        set
+        {
+            foreach (var item in CustomFields)
+            {
+                if (item.CustomFieldName.Equals("CPF"))
+                {
+                    item.CustomFieldValue = value;
+                }
+            }
+        }
+    }
 }
 
 public partial class CustomField

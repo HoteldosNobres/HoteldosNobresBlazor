@@ -38,11 +38,8 @@ public class AuthAPI
         }
         else if (email == "hoteldosnobres@hotmail.com" && senha == "123")
         {
-            autenticado = true;
-
-            Reserva reserva = listaReserva.Where(a => (a.Email != null && a.Email.Equals(email))).FirstOrDefault();
-             
-            GetAuthenticationClienteAsync(reserva.GuestID!, email);
+            autenticado = true; 
+            GetAuthenticationClienteAsync("104362414", email);
         }
         else
         {
@@ -76,7 +73,7 @@ public class AuthAPI
         //var response = await _httpClient.GetAsync("auth/manage/info"); 
         UserInfo userInfo = new();
         userInfo.Email = email;
-        userInfo.UserId = "1";
+        userInfo.UserId = "104362414";
 
         Claim[] claims = [
         new Claim(ClaimTypes.NameIdentifier, userInfo.UserId),
