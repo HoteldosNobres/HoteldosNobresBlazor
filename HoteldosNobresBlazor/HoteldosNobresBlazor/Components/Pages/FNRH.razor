@@ -4,47 +4,56 @@
 @inject NavigationManager NavigationManager2
 @attribute [StreamRendering(true)]
 
-<MudPaper Class="px-8 pt-2 pb-4 mx-4 my-4 rounded-xl" Justify="Justify.Center">
-    <PageTitle>FNRH</PageTitle>
-    <h1>Log FNRH!</h1>
-    @if (arrayDeLinhas.Length > 0)
-    {
-        @foreach (var linha in arrayDeLinhas)
-        {
-            @linha
-            <br />
-        }
-    }
-    <button class="btn btn-primary" @onclick="Clear">Clear</button>
+<PageTitle>Log FNRH</PageTitle>
 
-    @if (listLog != null && listLog.Count > 0)
-    {
-        <MudSimpleTable Hover="true" Striped="true" Style="overflow-x: auto;">
-            <thead>
-                <tr>
-                    <th>Data </th>
-                    <th>IdReserva</th>
-                    <th>Status</th>
-                    <th>Log</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (LogSistema logs in listLog)
-                {
+<MudPaper Class="px-8 pt-2 pb-4 mx-4 my-4 rounded-xl" Justify="Justify.Center">
+    <MudContainer>
+        <h1>Log FNRH</h1>
+        @if (arrayDeLinhas.Length > 0)
+        {
+            @foreach (var linha in arrayDeLinhas)
+            {
+                @linha
+                <br />
+            }
+        }
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   class="btn btn-lg rounded-xl"
+                   @onclick="Clear">
+            Limpar
+        </MudButton>
+        <br /><br /> 
+        @if (listLog != null && listLog.Count > 0)
+        {
+            <MudSpacer />
+            <MudSimpleTable Hover="true" Striped="true" Style="overflow-x: auto;">
+                <thead>
                     <tr>
-                        <td>@logs.DataLog.ToString("dd/MM/yyyy HH:mm:ss")</td>
-                        <td><a href='@logs.LinkReserva' target='_blank'> @logs.IDReserva</a></td>
-                        <td>@logs.Status</td>
-                        <td>@logs.Log</td>
+                        <th>Data </th>
+                        <th>IdReserva</th>
+                        <th>Status</th>
+                        <th>Log</th>
                     </tr>
-                }
-            </tbody>
-        </MudSimpleTable>
-    }
-    else
-    {
-        <p role="status">Carregando...</p>
-    }
+                </thead>
+                <tbody>
+                    @foreach (LogSistema logs in listLog)
+                    {
+                        <tr>
+                            <td>@logs.DataLog.ToString("dd/MM/yyyy HH:mm:ss")</td>
+                            <td><a href='@logs.LinkReserva' target='_blank'> @logs.IDReserva</a></td>
+                            <td>@logs.Status</td>
+                            <td>@logs.Log</td>
+                        </tr>
+                    }
+                </tbody>
+            </MudSimpleTable>
+        }
+        else
+        {
+            <p role="status">Carregando...</p>
+        }
+    </MudContainer>
 </MudPaper>
 
 @code

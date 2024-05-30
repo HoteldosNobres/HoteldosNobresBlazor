@@ -7,18 +7,25 @@
 <PageTitle>Log Whatsapp</PageTitle>
 
 <MudPaper Class="px-8 pt-2 pb-4 mx-4 my-4 rounded-xl" Justify="Justify.Center">
-<h1>Log Whatsapp!</h1>
-@if (arrayDeLinhas.Length > 0)
-{
-    @foreach (var linha in arrayDeLinhas)
+    <MudContainer>
+    <h1>Log Whatsapp!</h1>
+    @if (arrayDeLinhas.Length > 0)
     {
-        @linha
-        <br />
+        @foreach (var linha in arrayDeLinhas)
+        {
+            @linha
+            <br />
+        }
     }
-}
-<button class="btn btn-primary" @onclick="Clear">Clear</button>
-@if (listLog != null && listLog.Count > 0)
-{
+     <MudButton Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   class="btn btn-lg rounded-xl"
+                   @onclick="Clear">
+            Limpar
+        </MudButton>
+        <br /><br />
+        @if (listLog != null && listLog.Count > 0)
+    {
         <MudSimpleTable Hover="true" Striped="true" Style="overflow-x: auto;">
             <thead>
                 <tr>
@@ -41,15 +48,16 @@
             </tbody>
         </MudSimpleTable>
     }
-else
-{
-    <p role="status">Carregando...</p>
-}
+    else
+    {
+        <p role="status">Carregando...</p>
+    }
+    </MudContainer>
 </MudPaper>
 
 @code
 {
-    string[] arrayDeLinhas ;
+    string[] arrayDeLinhas;
     public List<LogSistema>? listLog;
     protected override async Task OnInitializedAsync()
     {

@@ -1,4 +1,5 @@
-﻿using HoteldosNobresBlazor.Classes;
+﻿using Google.Apis.PeopleService.v1.Data;
+using HoteldosNobresBlazor.Classes;
 using HoteldosNobresBlazor.Components.Pages;
 using HoteldosNobresBlazor.Services;
 using Newtonsoft.Json;
@@ -56,6 +57,8 @@ namespace HoteldosNobresBlazor.Funcoes
                 string hotelrating = "";
                 string resultado = "";
 
+
+                // Identificar Texto
                 if (mensagem.Entry[0].Changes[0].Value.Messages != null && mensagem.Entry[0].Changes[0].Value.Messages[0].Text != null)
                     texto = mensagem.Entry[0].Changes[0].Value.Messages[0].Text.Body;
                 else if (mensagem.Entry[0].Changes[0].Value.Messages != null && mensagem.Entry[0].Changes[0].Value.Messages[0].Interactive != null)
@@ -77,6 +80,8 @@ namespace HoteldosNobresBlazor.Funcoes
                 else if (mensagem.Entry[0].Changes[0].Value.Statuses != null && mensagem.Entry[0].Changes[0].Value.Statuses[0].StatusStatus != null)
                     texto = " STATUS DA MENSAGEM " + mensagem.Entry[0].Changes[0].Value.Statuses[0].StatusStatus;
 
+
+                // Distribuir Texto
                 if (!string.IsNullOrEmpty(cpf))
                 {
                     resultado += FunctionWhatsApp.postMensagem("5535984151764", texto).Result;
@@ -87,23 +92,17 @@ namespace HoteldosNobresBlazor.Funcoes
                         if (!string.IsNullOrEmpty(datadenascimento))
                         {
                             DateTime birthdate = DateTime.Parse(datadenascimento);
-
-                            FunctionAPICLOUDBEDs.putGuest(reserva.GuestID!, "guestBirthDate", birthdate.ToString("yyyy-MM-dd"));
-
-                            CustomField? customFieldData = new CustomField();
-                            customFieldData.CustomFieldName = "Data_de_Nascimento";
-                            customFieldData.CustomFieldValue = birthdate.ToString("dd/MM/yyyy");
-                            var jsoncustomFieldData = JsonConvert.SerializeObject(customFieldData);
-                            FunctionAPICLOUDBEDs.putGuest(reserva.GuestID!, "guestCustomFields", "[" + jsoncustomFieldData.ToString() + "]");
+                            reserva.DataNascimento = birthdate;
+                            AjustarDataNascimento(reserva); 
                         }
-                         
-                        CustomField? customField = new CustomField();
-                        customField.CustomFieldName = "CPF";
-                        customField.CustomFieldValue = cpf;
-                        var jsoncustomField = JsonConvert.SerializeObject(customField);
-                        FunctionAPICLOUDBEDs.putGuest(reserva.GuestID!, "guestCustomFields", "[" + jsoncustomField.ToString() + "]");
 
-                        reserva = FunctionAPICLOUDBEDs.postReservationNote(reserva, texto).Result;
+                        if (!string.IsNullOrEmpty(cpf))
+                        {
+                            reserva.Cpf = cpf;
+                            AjustarCPF(reserva);
+                        }
+
+                          
                     }
                 }
                 else if (!string.IsNullOrEmpty(hotelrating))
@@ -128,6 +127,8 @@ namespace HoteldosNobresBlazor.Funcoes
                     DataLog = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone),
                     Log = "Numero " + from.Substring(from.Length - 4) + " Texto:" + texto + " "
                 };
+
+                //Salvar Texto
 
                 if (from != "553584151764" && from != "553537150180")
                 {
@@ -160,8 +161,7 @@ namespace HoteldosNobresBlazor.Funcoes
                             else
                                 reserva = FunctionAPICLOUDBEDs.postReservationNote(reserva, "WHATSAPP CHAT - Falou "
                                 + TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone).ToString("dd/MM/yyyy HH:mm") + " - " + texto).Result;
-                        }
-
+                        } 
 
                     }
 
@@ -238,8 +238,7 @@ namespace HoteldosNobresBlazor.Funcoes
                 novareserva = FunctionAPICLOUDBEDs.getReservationAsync(novareserva).Result;
 
                 logSistema.Log = SaveOrUpdateFNRH(novareserva);
-
-
+                 
 
                 if (logSistema.Log.Contains("SNRHos-MS0001") && !novareserva.ProxyCelular!.Equals("553537150180"))
                 {
@@ -248,11 +247,11 @@ namespace HoteldosNobresBlazor.Funcoes
                 else
                   if (logSistema.Log.Contains("CPF inválido"))
                 {
-                    if (novareserva.Cpf != null && !ValidarCPF(novareserva.Cpf))
+                    if (novareserva.Cpf != null && !ValidarCPF(novareserva.Cpf) && !novareserva.ProxyCelular!.Equals("553537150180"))
                         logSistema.Log += FunctionWhatsApp.postMensageFlowCPF(novareserva.ProxyCelular!).Result;
                 }
 
-                if (novareserva is not null && string.IsNullOrEmpty(novareserva.Cpf))
+                if (novareserva is not null && string.IsNullOrEmpty(novareserva.Cpf)  && !novareserva.ProxyCelular!.Equals("553537150180"))
                 {
                     logSistema.Log += FunctionWhatsApp.postMensagemTemplete(novareserva.ProxyCelular!, "inf_mtur").Result;
                     logSistema.Log += FunctionWhatsApp.postMensageFlowCPF(novareserva.ProxyCelular!).Result;
@@ -432,7 +431,7 @@ namespace HoteldosNobresBlazor.Funcoes
                     if (reserva != null && reserva.Origem != null
                         && (reserva.Origem.ToUpper().Contains("AIRBNB") || reserva.Origem.ToUpper().Contains("BOOKING.COM")))
                     {
-                        if (string.IsNullOrEmpty(reserva.Cpf))
+                        if (string.IsNullOrEmpty(reserva.Cpf) && !reserva.ProxyCelular!.Equals("553537150180"))
                         {
                             voltar = true;
                             logSistema.Log += FunctionWhatsApp.postMensagem("553537150180", "Por favor informe seu CPF na reserva do " + reserva.NomeHospede).Result;
@@ -441,7 +440,7 @@ namespace HoteldosNobresBlazor.Funcoes
                             logSistema.Log += FunctionWhatsApp.postMensageFlowCPF(reserva.ProxyCelular!).Result;
                         }
 
-                        if (reserva.Cpf != null && !ValidarCPF(reserva.Cpf))
+                        if (reserva.Cpf != null && !ValidarCPF(reserva.Cpf) && !reserva.ProxyCelular!.Equals("553537150180"))
                         {
                             voltar = true;
                             logSistema.Log += FunctionWhatsApp.postMensagem("553537150180", "Por favor informe seu CPF VALIDO - " + reserva.NomeHospede).Result;
@@ -894,11 +893,43 @@ namespace HoteldosNobresBlazor.Funcoes
             {
                 string retorno = "";
                 string ufdescrition = reserva.UF!.GetEnumDescription();
-                retorno = FunctionAPICLOUDBEDs.putGuest(reserva.GuestID!, "guestState", ufdescrition).Result;
-
+                 
                 retorno = FunctionAPICLOUDBEDs.putGuest(reserva.GuestID!, "guestBirthDate", reserva.DataNascimento.ToString("yyyy-MM-dd")).Result;
 
                 retorno = FunctionAPICLOUDBEDs.putGuest(reserva.GuestID!, "guestGender", "M").Result;
+
+                CustomField? customFieldData = new CustomField();
+                customFieldData.CustomFieldName = "Data_de_Nascimento";
+                customFieldData.CustomFieldValue = reserva.DataNascimento.ToString("dd/MM/yyyy");
+                var jsoncustomFieldData = JsonConvert.SerializeObject(customFieldData);
+                FunctionAPICLOUDBEDs.putGuest(reserva.GuestID!, "guestCustomFields", "[" + jsoncustomFieldData.ToString() + "]");
+
+                return retorno;
+            }
+            catch (Exception e)
+            {
+                return e.Message + "\n";
+            }
+        }
+
+        private static string AjustarCPF(Reserva reserva)
+        {
+            try
+            {
+                string retorno = "";
+                string ufdescrition = reserva.UF!.GetEnumDescription();
+
+                CustomField? customField = new CustomField();
+                customField.CustomFieldName = "CPF";
+                customField.CustomFieldValue = reserva.ProxyCPF;
+                var jsoncustomField = JsonConvert.SerializeObject(customField);
+                FunctionAPICLOUDBEDs.putGuest(reserva.GuestID!, "guestCustomFields", "[" + jsoncustomField.ToString() + "]");
+
+                retorno = FunctionAPICLOUDBEDs.putGuest(reserva.GuestID!, "guestDocumentType", "dni").Result;
+
+                retorno = FunctionAPICLOUDBEDs.putGuest(reserva.GuestID!, "guestDocumentNumber", reserva.ProxyCPF).Result;
+
+                
 
                 return retorno;
             }

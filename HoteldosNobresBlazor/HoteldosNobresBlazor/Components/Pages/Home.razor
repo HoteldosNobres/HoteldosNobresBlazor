@@ -12,13 +12,14 @@
 <MudContainer Class="px-8 pt-2 mx-4 my-4" MaxWidth="MaxWidth.False">
     <MudGrid>
         <MudItem xs="12" sm="6">
-            <MudPaper Elevation="2" Class="pa-4  rounded-xl" Style="height: 100%"> 
-                    <h1>Hello, world!</h1>
-                    Welcome to your new app.
-                    @foreach (var linha in arrayDeLinhas)
-                    {
-                        @linha <br /> 
-                    }  
+            <MudPaper Elevation="2" Class="pa-4  rounded-xl" Style="height: 100%">
+                <h1>Hello, world!</h1>
+                Welcome to your new app.
+                @foreach (var linha in arrayDeLinhas)
+                {
+                    @linha <br />
+                }
+                <br />
             </MudPaper>
         </MudItem>
         <MudItem xs="12" sm="6">
