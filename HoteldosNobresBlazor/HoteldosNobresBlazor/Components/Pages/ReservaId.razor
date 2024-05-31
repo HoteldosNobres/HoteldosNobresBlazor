@@ -1,47 +1,327 @@
 ﻿@page "/reserva/{ReservationId}"
+@using System.Globalization
 @using HoteldosNobresBlazor.Classes
+@using HoteldosNobresBlazor.Client.API
 @using HoteldosNobresBlazor.Funcoes
-@rendermode InteractiveServer
-@inject AppState appState 
+@using MosaicoSolutions.ViaCep
+@using MosaicoSolutions.ViaCep.Modelos
+@using Newtonsoft.Json
+@using System.Text.RegularExpressions
+@inject NavigationManager navigationManager
+@inject APICloudbeds cloudbedsAPI
+@inject ISnackbar Snackbar
+
+@rendermode InteractiveAuto
 
 <PageTitle>Reserva</PageTitle>
 
-<h1>Reserva</h1>
 
-<p role="status">
-    Reserva: @novaReservationId; 
-</p>
-
-@foreach (var linha in arrayDeLinhas)
+@if (reserva is not null)
 {
-    @linha
-    <br />
+    <MudContainer Class="px-8 pt-2 mx-4 my-4" MaxWidth="MaxWidth.False">
+        <MudGrid>
+            <MudItem xs="12" sm="6">
+                <MudPaper Elevation="2" Class="pa-4  rounded-xl" Style="height: 100%">
+                    <MudGrid Justify="Justify.Center" Class="align-items-center">
+                        <MudItem>
+                             <MudText Typo="Typo.h3" Align="Align.Center" Color="Color.Success"> <i class="fa fa-check" aria-hidden="true"></i> </MudText>
+                        </MudItem>
+                    </MudGrid>
+                    <MudText Typo="Typo.h6" Align="Align.Center" GutterBottom="true">Agradecemos seu pedido!</MudText>
+                    <MudText Align="Align.Center"> O número da reserva é #@reserva.IDReserva  </MudText>
+                    <MudText Align="Align.Center"> Enviamos a confirmação do pedido para o e-mail: @reserva.Email  </MudText>
+                    <MudGrid Justify="Justify.Center">
+                        <MudItem xs="3">
+                            <MudGrid Class="align-items-center">
+                                <MudItem>
+                                    <MudText Align="Align.Center"> Check-in </MudText>
+                                    <MudText Typo="Typo.h6" Align="Align.Center" Color="Color.Success">  @reserva.DataCheckIn.GetValueOrDefault().ToString("dd/MM/yyyy")</MudText>
+                                    <MudText Align="Align.Center">@reserva.DataCheckIn.GetValueOrDefault().ToString("dddd", new CultureInfo("pt-BR"))</MudText>
+                                </MudItem>
+                            </MudGrid>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudGrid Justify="Justify.Center" Class="d-flex flex-1 align-items-center">
+                                <MudItem>
+                                    <i class="fa fa-arrow-right" aria-hidden="true"></i>
+                                </MudItem>
+                            </MudGrid>
+                        </MudItem>
+                        <MudItem xs="3">
+                            <MudGrid Class="align-items-center">
+                                <MudItem>
+                                    <MudText Align="Align.Center">Check-Out </MudText>
+                                    <MudText Typo="Typo.h6" Align="Align.Center" Color="Color.Success"> @reserva.DataCheckOut.GetValueOrDefault().ToString("dd/MM/yyyy") </MudText>
+                                    <MudText Align="Align.Center">@reserva.DataCheckOut.GetValueOrDefault().ToString("dddd", new CultureInfo("pt-BR")) </MudText>
+                                </MudItem>
+                            </MudGrid>
+                        </MudItem>
+                    </MudGrid>
+                    <MudText Align="Align.Center" >
+                        <i class="fa-solid fa-moon"> </i> @reserva.Noites.GetValueOrDefault(1).ToString() Noite(s)
+                        <i class="fa fa-users" aria-hidden="true"></i> @reserva.Hospedes.GetValueOrDefault(1).ToString() Hospede(s)
+                    </MudText> 
+                    <MudSpacer />
+                    <MudText Align="Align.Center" Class="mb-n4"> - </MudText>
+                    <MudForm Disabled="Disabled">
+                        @* <MudNumericField T="int" Label="Number" Disabled="true" @bind-Value="reserva.IDReserva" /> *@
+                        <MudTextField T="string" Label="Nome do Hospede Principal" Disabled="true" @bind-Value="reserva.NomeHospede" />
+                        <MudTextField T="string" Label="Origem" Disabled="true" @bind-Value="reserva.Origem" />
+                        @if (!string.IsNullOrEmpty(reserva.IDReservaAgencia))
+                        {
+                            <MudTextField T="string" Label="Número da reserva via agência" Disabled="true" @bind-Value="reserva.IDReservaAgencia" />
+                        }
+                    </MudForm>
+                    <MudSpacer />
+                    <br />
+                    @if (reserva is not null && reserva.ListaQuartos is not null && reserva.ListaQuartos.Count > 0)
+                    {
+                        <MudPaper Class="rounded-xl">
+                            <MudExpansionPanel Text="Acomodações" Style="background-color: #F5F4F4; rounded-xl" MaxHeight="150" Elevation="2">
+                                <MudPaper>
+                                    @reserva.ListaQuartos[0]!.Descricao
+                                </MudPaper>
+                            </MudExpansionPanel>
+                        </MudPaper>
+                    }
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="12" sm="3">
+                <MudGrid>
+                    <MudItem xs="12">
+                        <MudPaper Elevation="2" Class="pa-4 rounded-xl" Style="height: 100%">
+                            <MudGrid Justify="Justify.Center" Class="align-items-center">
+                                <MudItem>
+                                    Cobrança - Em Breve
+                                </MudItem>
+                            </MudGrid>
+                        </MudPaper>
+                    </MudItem>
+                </MudGrid>
+            </MudItem>
+        </MudGrid>
+    </MudContainer>
 }
-<br />
+else
+{
+    <MudPaper Class="px-8 pt-2 pb-4 mx-4 my-4 rounded-xl" Align="Align.Center" Justify="Justify.Center">
+        <MudGrid Justify="Justify.Center" Class="align-items-center">
+            <MudItem>
+                <MudProgressCircular Indeterminate="true"></MudProgressCircular>
+            </MudItem>
+        </MudGrid>
+    </MudPaper>
+}
+
+<MudPaper Class="px-8 pt-2 pb-4 mx-4 my-4 rounded-xl" Justify="Justify.Center">
+    @if (guest is not null)
+    {
+        <MudText Align="Align.Center" Class="mb-n4" Ena> Suas informações  </MudText>
+        <MudText Align="Align.Center" Class="mb-n4"> - </MudText>
+        <MudForm>
+            <MudList>
+                <MudListItem Avatar="@Icons.Material.Filled.Info"> Dados </MudListItem>
+                <MudTextField T="string" Label="Nome" Disabled="true" @bind-Value="guest.FirstName" />
+                <MudTextField T="string" Label="E-mail" Disabled="true" @bind-Value="guest.Email" />
+                <MudTextField T="string" Label="Celular ou Telefone Principal" Disabled="true" @bind-Value="guest.Phone" />
+                <MudTextField T="string" Label="Celular ou Telefone Secundario" Disabled="true" @bind-Value="guest.CellPhone" />
+                <MudTextField T="string" Label="CPF" Disabled="@DisabledCPF" @bind-Value="CPF" />
+                <MudDatePicker Label="Data de Nascimento" PickerVariant="PickerVariant.Dialog" Editable="@(!Disabled)" Elevation="12" Disabled="@Disabled" @bind-Date="guest.Birthdate" DateFormat="dd/MM/yyyy" />
+                <MudDivider />
+                <MudListItem Avatar="@Icons.Material.Filled.House"> Endereço </MudListItem>
+                <MudTextField T="string" Label="CEP" @bind-Value="guest.Zip" TextChanged="@SearchCEP" Editable="@Disabled"
+                              Disabled="@Disabled" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary" />
+                <MudTextField T="string" Label="Endereço" Disabled="DisableEndereco" @bind-Value="guest.Address" />
+                <MudTextField T="string" Label="Bairro" Disabled="true" @bind-Value="guest.Address2" />
+                <MudTextField T="string" Label="Cidade" Disabled="true" @bind-Value="guest.City" />
+                <MudTextField T="string" Label="Estado" Disabled="true" @bind-Value="guest.State" />
+                <MudTextField T="string" Label="Pais" Disabled="true" @bind-Value="guest.GuestCountry" />
+            </MudList>
+            <div class="mt-4">
+                <MudButton Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           Class="ml-auto rounded-xl"
+                           Disabled="@(!Disabled)"
+                           @onclick="Editar">
+                    Editar
+                </MudButton>
+                <MudButton Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           Class="ml-auto rounded-xl"
+                           Disabled="@DisabledSave"
+                           @onclick="Salvar">
+                    Salvar
+                </MudButton>
+                <MudButton Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           Class="ml-auto rounded-xl"
+                           Disabled="@(!Disabled)"
+                           @onclick="SendCPF">
+                    Envia CPF
+                </MudButton>
+            </div>
+        </MudForm>
+    }
+    else
+    {
+        <MudGrid Justify="Justify.Center" Class="align-items-center">
+            <MudItem>
+                <MudProgressCircular Indeterminate="true"></MudProgressCircular>
+            </MudItem>
+        </MudGrid>
+    }
+</MudPaper>
+
+
+
 @code {
     [Parameter]
     public string ReservationId { get; set; }
-    string[] arrayDeLinhas;
 
-    string novaReservationId;
+    public Guest guest { get; set; }
+    private UserInfo user = default!;
+    public string CPF { get; set; }
+
+    public Reserva reserva { get; set; }
+
+    bool ReadOnly = true;
+    bool NestedReadOnly;
+    bool Disabled = true;
+    bool NestedDisabled;
+    bool DisabledSave = true;
+    bool DisabledCPF = true;
+    bool DisableEndereco = true;
 
     protected override async Task OnInitializedAsync()
     {
-        novaReservationId = ReservationId; 
-        Reserva novareserva = new Reserva();
-        novareserva.IDReserva = ReservationId;
+        reserva = await cloudbedsAPI.GetReservaAsync(ReservationId);
+        guest = await cloudbedsAPI.GetGuestAsync(reserva.GuestID);
+        if (guest is not null)
+        {
+            DisabledCPF = false;
+            foreach (var item in guest.CustomFields)
+            {
+                if (item.CustomFieldName.Equals("CPF"))
+                {
+                    string cpfstring = Regex.Replace(item.CustomFieldValue, @"[^\d]", "");
+                    if (!string.IsNullOrEmpty(cpfstring) && cpfstring.Length > 4)
+                    {
+                        DisabledCPF = true;
+                        CPF = "***.***." + cpfstring.Substring(cpfstring.Length - 4);
+                    }
+                }
 
-        novareserva = FunctionAPICLOUDBEDs.getReservationAsync(novareserva).Result;
-        // String log = FuncoesFNRH.Atualizar(novareserva);
-        string log = "teste";
-
-        arrayDeLinhas = log.Split('\n');
-
-        // DateTime inicio = DateTime.Now;
-        // novareserva = await cloudbedsAPI.GetReservaAsync(novaReservationId);
-        // // novareserva = FunctionAPICLOUDBEDs.getReservationAsync(novareserva).Result;
-        // DateTime final = DateTime.Now;
-        // TimeSpan diferenca =  final - inicio;
-        // Console.WriteLine(diferenca);
+            }
+        }
     }
-}
+
+
+    protected async Task Editar()
+    {
+        Disabled = !Disabled;
+        ReadOnly = !ReadOnly;
+        DisabledSave = !DisabledSave;
+
+    }
+
+    protected async Task Salvar()
+    {
+        try
+        {
+            if (guest.Birthdate is not null)
+            {
+                cloudbedsAPI.PutGuestAsync(guest.GuestId.ToString(), "guestBirthDate", guest.Birthdate.Value.ToString("yyyy-MM-dd"));
+                CustomField? customField = new CustomField();
+                customField!.CustomFieldName = "Data_de_Nascimento";
+                customField!.CustomFieldValue = guest.Birthdate.Value.ToString("dd/MM/yyyy");
+                var text = JsonConvert.SerializeObject(customField);
+                cloudbedsAPI.PutGuestAsync(guest.GuestId.ToString(), "guestCustomFields", "[" + text.ToString() + "]");
+            }
+
+
+            if (!DisabledCPF && !string.IsNullOrEmpty(CPF))
+            {
+                CustomField? customField = guest.CustomFields.Where(x => x.CustomFieldName.Equals("CPF")).FirstOrDefault();
+                if (customField is null)
+                    customField = new CustomField();
+                customField!.CustomFieldName = "CPF";
+                customField!.CustomFieldValue = CPF;
+                var text = JsonConvert.SerializeObject(customField);
+                cloudbedsAPI.PutGuestAsync(guest.GuestId.ToString(), "guestCustomFields", "[" + text.ToString() + "]");
+                cloudbedsAPI.PutGuestAsync(reserva.GuestID!, "guestDocumentType", "dni");
+                cloudbedsAPI.PutGuestAsync(reserva.GuestID!, "guestDocumentNumber", CPF);
+               
+            }
+
+            if (!string.IsNullOrEmpty(guest.GuestZip))
+                cloudbedsAPI.PutGuestAsync(guest.GuestId.ToString(), "guestZip", guest.GuestZip);
+
+            if (!string.IsNullOrEmpty(guest.GuestAddress))
+                cloudbedsAPI.PutGuestAsync(guest.GuestId.ToString(), "guestAddress", guest.GuestAddress);
+
+            if (!string.IsNullOrEmpty(guest.GuestAddress2))
+                cloudbedsAPI.PutGuestAsync(guest.GuestId.ToString(), "guestAddress2", guest.GuestAddress2);
+
+            if (!string.IsNullOrEmpty(guest.GuestCity))
+                cloudbedsAPI.PutGuestAsync(guest.GuestId.ToString(), "guestCity", guest.GuestCity);
+
+
+            Snackbar.Add("Cadastrado alterado com sucesso!", Severity.Success);
+
+            Disabled = !Disabled;
+            ReadOnly = !ReadOnly;
+            DisabledSave = !DisabledSave;
+            DisabledCPF = true;
+
+            if (!DisableEndereco)
+                DisableEndereco = true;
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("Erro ao alterar o cadastro!", Severity.Error);
+        }
+    }
+
+    private void SearchCEP(string value)
+    {
+        if (value.Length >= 8)
+        {
+            Cep cep = value;
+            var viaCepService = ViaCepService.Default();
+            var endereco = viaCepService.ObterEndereco(cep);
+            string Cidade = endereco.Localidade;
+            guest.City = Cidade;
+            if (string.IsNullOrEmpty(guest.Address))
+                guest.Address = endereco.Logradouro;
+            guest.State = endereco.UF;
+            guest.Country = "BRASIL";
+            guest.Address2 = endereco.Bairro;
+            guest.Zip = endereco.Cep;
+
+            if (!Disabled && DisableEndereco)
+                DisableEndereco = false;
+
+        }
+        else
+        {
+        }
+
+    }
+
+
+    protected async Task SendCPF()
+    {
+        try
+        {
+            var retorno = await FunctionWhatsApp.postMensageFlowCPF(reserva.ProxyCelular!);
+            Snackbar.Add("Encaminhado com sucesso", Severity.Success);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("Erro ao enviar CPF", Severity.Error);
+            Console.WriteLine(ex.Message);  
+        } 
+    }
+
+    
+} 

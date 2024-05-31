@@ -120,7 +120,31 @@ public class Reserva
             return "https://hotels.cloudbeds.com/connect/235132#/reservations/r" + IDReserva;
         }
     }
-    
+
+    public string LinkReservaID
+    {
+        get
+        {
+            if (string.IsNullOrEmpty(IDReserva))
+                return "";
+            return "/reserva/" + IDReserva;
+        }
+    }
+
+    public string LinkReservaOrigem
+    {
+        get
+        {
+            if (string.IsNullOrEmpty(IDReserva))
+                return "";
+
+            if (!string.IsNullOrEmpty(Origem) && Origem.ToUpper().Equals("BOOKING.COM"))
+                return "https://admin.booking.com/hotel/hoteladmin/extranet_ng/manage/booking.html?hotel_id=6135187&lang=xb&res_id=" + IDReservaAgencia;
+            else
+                return "";
+        }
+    }
+
 
     public string ProxyPais
     {

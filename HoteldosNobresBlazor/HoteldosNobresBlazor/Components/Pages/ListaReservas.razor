@@ -31,8 +31,8 @@
                             <tr>
                                 <td><a href='@reserva1.LinkReserva' target='_blank'> @reserva1.IDReserva </a></td>
                                 <td>@reserva1.DataCheckIn.GetValueOrDefault().ToString("dd/MM/yyyy")</td>
-                                <td>@reserva1.NomeHospede!.Split(' ')[0].ToString()</td>
-                                <td>@reserva1.Origem</td> 
+                                <td> <a href='@reserva1.LinkReservaID' >@reserva1.NomeHospede!.Split(' ')[0].ToString()</a></td>
+                                <td><a href='@reserva1.LinkReservaOrigem' target='_blank'>@reserva1.Origem</a></td> 
                             </tr>
                         }
                     </tbody>
