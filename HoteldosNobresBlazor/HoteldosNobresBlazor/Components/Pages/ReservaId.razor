@@ -24,7 +24,7 @@
                 <MudPaper Elevation="2" Class="pa-4  rounded-xl" Style="height: 100%">
                     <MudGrid Justify="Justify.Center" Class="align-items-center">
                         <MudItem>
-                             <MudText Typo="Typo.h3" Align="Align.Center" Color="Color.Success"> <i class="fa fa-check" aria-hidden="true"></i> </MudText>
+                            <MudText Typo="Typo.h3" Align="Align.Center" Color="Color.Success"> <i class="fa fa-check" aria-hidden="true"></i> </MudText>
                         </MudItem>
                     </MudGrid>
                     <MudText Typo="Typo.h6" Align="Align.Center" GutterBottom="true">Agradecemos seu pedido!</MudText>
@@ -57,10 +57,10 @@
                             </MudGrid>
                         </MudItem>
                     </MudGrid>
-                    <MudText Align="Align.Center" >
+                    <MudText Align="Align.Center">
                         <i class="fa-solid fa-moon"> </i> @reserva.Noites.GetValueOrDefault(1).ToString() Noite(s)
                         <i class="fa fa-users" aria-hidden="true"></i> @reserva.Hospedes.GetValueOrDefault(1).ToString() Hospede(s)
-                    </MudText> 
+                    </MudText>
                     <MudSpacer />
                     <MudText Align="Align.Center" Class="mb-n4"> - </MudText>
                     <MudForm Disabled="Disabled">
@@ -89,12 +89,49 @@
             <MudItem xs="12" sm="3">
                 <MudGrid>
                     <MudItem xs="12">
-                        <MudPaper Elevation="2" Class="pa-4 rounded-xl" Style="height: 100%">
-                            <MudGrid Justify="Justify.Center" Class="align-items-center">
-                                <MudItem>
-                                    Cobrança - Em Breve
-                                </MudItem>
-                            </MudGrid>
+                        <MudPaper Elevation="2" Class="pa-4 align-items-center rounded-xl" Style="height: 100%">
+                            <MudText Typo="Typo.h5" Align="Align.Center">Cobrança</MudText>
+                            <MudList Clickable="false" Dense="true">
+                                <MudDivider />
+                                <MudListItem>
+                                    <div class="d-flex">
+                                        <MudText Typo="Typo.caption">Acomodações</MudText>
+                                        <MudText Typo="Typo.caption" GutterBottom="true" Class="ml-auto">R$ @reserva.BalanceDetailed!.SubTotal.ToString("N2")</MudText>
+                                    </div>
+                                </MudListItem>
+                                <MudListItem>
+                                    <div class="d-flex">
+                                        <MudText Typo="Typo.caption">Itens adicionais e extras</MudText>
+                                        <MudText Typo="Typo.caption" GutterBottom="true" Class="ml-auto">R$ @reserva.BalanceDetailed!.AdditionalItems.ToString("N2")</MudText>
+                                    </div>
+                                </MudListItem>
+                                <MudListItem>
+                                    <div class="d-flex">
+                                        <MudText Typo="Typo.caption">Imposto e taxas</MudText>
+                                        <MudText Typo="Typo.caption" GutterBottom="true" Class="ml-auto">R$ @reserva.BalanceDetailed!.TaxesFees.ToString("N2")</MudText>
+                                    </div>
+                                </MudListItem>
+                                <MudDivider />
+                                <MudListItem>
+                                    <div class="d-flex">
+                                        <MudText Typo="Typo.caption" GutterBottom="true"><b>Total</b></MudText>
+                                        <MudText Typo="Typo.caption" GutterBottom="true" Class="ml-auto"><b>R$ @reserva.BalanceDetailed!.GrandTotal.ToString("N2")</b></MudText>
+                                    </div>
+                                </MudListItem>
+                                <MudListItem>
+                                    <div class="d-flex">
+                                        <MudText Typo="Typo.caption" GutterBottom="true"><b>Valor pago</b></MudText>
+                                        <MudText Typo="Typo.caption" GutterBottom="true" Class="ml-auto"><b>R$ @reserva.BalanceDetailed!.Paid.ToString("N2")</b></MudText>
+                                    </div>
+                                </MudListItem>
+                            </MudList>
+                            <div class="mt-auto">
+                                <MudDivider />
+                                <div class="d-flex pa-4">
+                                    <MudText><b>Saldo a pagar</b></MudText>
+                                    <MudText Class="ml-auto"><b>R$ @((reserva.BalanceDetailed!.GrandTotal - reserva.BalanceDetailed!.Paid).ToString("N2"))</b></MudText>
+                                </div>
+                            </div>
                         </MudPaper>
                     </MudItem>
                 </MudGrid>
@@ -246,9 +283,10 @@ else
                     customField = new CustomField();
                 customField!.CustomFieldName = "CPF";
                 customField!.CustomFieldValue = CPF;
-                var text = JsonConvert.SerializeObject(customField); 
-                cloudbedsAPI.PutGuestDNIAsync(reserva.GuestID!,  CPF);
-               
+                var text = JsonConvert.SerializeObject(customField);
+                cloudbedsAPI.PutGuestAsync(guest.GuestId.ToString(), "guestCustomFields", "[" + text.ToString() + "]");
+                cloudbedsAPI.PutGuestDNIAsync(reserva.GuestID!, CPF);
+
             }
 
             if (!string.IsNullOrEmpty(guest.GuestZip))
@@ -317,9 +355,9 @@ else
         catch (Exception ex)
         {
             Snackbar.Add("Erro ao enviar CPF", Severity.Error);
-            Console.WriteLine(ex.Message);  
-        } 
+            Console.WriteLine(ex.Message);
+        }
     }
 
-    
+
 } 

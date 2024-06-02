@@ -32,6 +32,8 @@ public class Reserva
 
     public List<Quarto>? ListaQuartosCancelados { get; set; }
 
+    public BalanceDetailed? BalanceDetailed { get; set; }
+
     /// Hospede
     public string? GuestID { get; set; }
 
@@ -223,13 +225,16 @@ public class Reserva
         IDReserva = reservation.Data.ReservationId;
         IDReservaAgencia = reservation.Data.ThirdPartyIdentifier;
         FonteReserva = reservation.Data.Source;
+
+        //Pagamento Cobrança
         Valor = reservation.Data.Total.ToString();
         Balance = reservation.Data.Balance;
         Status = reservation.Data.Status;
+        BalanceDetailed = reservation.Data.BalanceDetailed;
+
         //SnNum = reservation.Data.Assigned.Length.ToString(); //numero da fnhr
         Snuhnum = reservation.Data.Assigned.Length.ToString();
-
-        
+         
         NomeHospede = reservation.Data.GuestName;
 
         Guest guest = reservation.Data.GuestLista.First();

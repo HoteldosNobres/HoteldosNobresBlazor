@@ -96,7 +96,7 @@ namespace HoteldosNobresBlazor.Funcoes
                     log.Status = mensagem.Entry[0].Changes[0].Value.Statuses[0].StatusStatus;
                 }
 
-                if (from != "553584151764" && from != "553537150180" && !texto.ToUpper().Contains("STATUS DA MENSAGEM"))
+                if (from != "553584151764" && from != "553537150180" && !texto.ToUpper().Contains("WHATSAPP STATUS"))
                     resultado += FunctionWhatsApp.postMensagem("553537150180", "Numero " + from.Substring(from.Length - 4) + " Texto:" + texto).Result;
 
                 List<Reserva> listaReserva = FunctionAPICLOUDBEDs.getReservationsAsyncGuestDetails().Result;

@@ -184,16 +184,16 @@ public partial class BalanceDetailed
     public double SubTotal { get; set; }
 
     [JsonProperty("additionalItems")]
-    public long AdditionalItems { get; set; }
+    public double AdditionalItems { get; set; }
 
     [JsonProperty("taxesFees")]
     public double TaxesFees { get; set; }
 
     [JsonProperty("grandTotal")]
-    public long GrandTotal { get; set; }
+    public double GrandTotal { get; set; }
 
     [JsonProperty("paid")]
-    public long Paid { get; set; }
+    public double Paid { get; set; }
 
 
 }
