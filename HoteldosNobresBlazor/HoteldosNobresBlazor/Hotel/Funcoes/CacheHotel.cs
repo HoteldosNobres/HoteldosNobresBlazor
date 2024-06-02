@@ -936,7 +936,7 @@ namespace HoteldosNobresBlazor.Funcoes
 
                 retorno = FunctionAPICLOUDBEDs.putGuest(reserva.GuestID!, "guestDocumentType", "dni").Result;
 
-                retorno = FunctionAPICLOUDBEDs.putGuest(reserva.GuestID!, "guestDocumentNumber", reserva.ProxyCPF).Result;
+                retorno = FunctionAPICLOUDBEDs.PutGuestDNI(reserva.GuestID!, reserva.ProxyCPF).Result;
 
                 
                  

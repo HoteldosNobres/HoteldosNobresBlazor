@@ -35,6 +35,37 @@ public class FunctionAPICLOUDBEDs
         }
 
     }
+
+    public static async Task<string> PutGuestDNI(string guestID, string valor)
+    {
+        try
+        {
+            var client = new HttpClient();
+            var request = new HttpRequestMessage(HttpMethod.Put, urlapi + "/putGuest");
+            request.Headers.Add("Accept", "application/json");
+            request.Headers.Add("Authorization", "Bearer " + KEYs.TOKEN_CLOUDBEDS);
+            var collection = new List<KeyValuePair<string, string>>();
+            collection.Add(new("guestID", guestID));
+            collection.Add(new("guestDocumentType", "dni"));
+            collection.Add(new("guestDocumentNumber", valor));
+            collection.Add(new("guestDocumentIssueDate", "null"));
+            collection.Add(new("guestDocumentIssuingCountry", "BR"));
+            collection.Add(new("guestDocumentExpirationDate", "null"));
+            var content = new FormUrlEncodedContent(collection);
+            request.Content = content;
+            var response = await client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+            //Console.WriteLine(await response.Content.ReadAsStringAsync());
+
+            return "";
+        }
+        catch (FileNotFoundException e)
+        {
+            Console.WriteLine(e.Message);
+            return e.Message;
+        }
+
+    }
     #endregion Guest
 
 

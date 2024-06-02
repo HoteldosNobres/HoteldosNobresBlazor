@@ -246,10 +246,8 @@ else
                     customField = new CustomField();
                 customField!.CustomFieldName = "CPF";
                 customField!.CustomFieldValue = CPF;
-                var text = JsonConvert.SerializeObject(customField);
-                cloudbedsAPI.PutGuestAsync(guest.GuestId.ToString(), "guestCustomFields", "[" + text.ToString() + "]");
-                cloudbedsAPI.PutGuestAsync(reserva.GuestID!, "guestDocumentType", "dni");
-                cloudbedsAPI.PutGuestAsync(reserva.GuestID!, "guestDocumentNumber", CPF);
+                var text = JsonConvert.SerializeObject(customField); 
+                cloudbedsAPI.PutGuestDNIAsync(reserva.GuestID!,  CPF);
                
             }
 

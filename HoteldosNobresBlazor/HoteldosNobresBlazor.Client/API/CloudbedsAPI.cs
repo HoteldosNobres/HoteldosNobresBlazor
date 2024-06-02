@@ -126,6 +126,27 @@ public class APICloudbeds
         }
     }
 
+    public async void PutGuestDNIAsync(string Id, string valor)
+    {
+        try
+        {
+            var collection = new List<KeyValuePair<string, string>>();
+            collection.Add(new("guestID", Id));
+            collection.Add(new("guestDocumentType", "dni"));
+            collection.Add(new("guestDocumentNumber", valor));
+            collection.Add(new("guestDocumentIssueDate", "null"));
+            collection.Add(new("guestDocumentIssuingCountry", "BR"));
+            collection.Add(new("guestDocumentExpirationDate", "null"));
+            var content = new FormUrlEncodedContent(collection);
+            await _httpClient.PutAsync(_httpClient.BaseAddress + "/putGuest", content);
+
+        }
+        catch (FileNotFoundException e)
+        {
+
+        }
+    }
+
     #endregion
 
 }
