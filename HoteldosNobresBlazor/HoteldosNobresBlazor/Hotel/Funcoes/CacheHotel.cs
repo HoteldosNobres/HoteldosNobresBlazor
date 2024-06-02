@@ -91,10 +91,13 @@ namespace HoteldosNobresBlazor.Funcoes
                 }
                 else if (mensagem.Entry[0].Changes[0].Value.Statuses != null && mensagem.Entry[0].Changes[0].Value.Statuses[0].StatusStatus != null)
                 {
-                    texto = " STATUS DA MENSAGEM " + mensagem.Entry[0].Changes[0].Value.Statuses[0].StatusStatus;
+                    texto = " WHATSAPP STATUS " + mensagem.Entry[0].Changes[0].Value.Statuses[0].StatusStatus;
                     log.Log = texto;
                     log.Status = mensagem.Entry[0].Changes[0].Value.Statuses[0].StatusStatus;
                 }
+
+                if (from != "553584151764" && from != "553537150180" && !texto.ToUpper().Contains("STATUS DA MENSAGEM"))
+                    resultado += FunctionWhatsApp.postMensagem("553537150180", "Numero " + from.Substring(from.Length - 4) + " Texto:" + texto).Result;
 
                 List<Reserva> listaReserva = FunctionAPICLOUDBEDs.getReservationsAsyncGuestDetails().Result;
                 Reserva reserva = listaReserva.Where(x => x.ProxyCelular.Contains(from)).FirstOrDefault();
@@ -118,9 +121,7 @@ namespace HoteldosNobresBlazor.Funcoes
                         {
                             reserva.Cpf = cpf;
                             AjustarCPF(reserva);
-                        }
-
-                          
+                        } 
                     }
                 }
                 else if (!string.IsNullOrEmpty(hotelrating))
@@ -134,8 +135,7 @@ namespace HoteldosNobresBlazor.Funcoes
                     resultado += FunctionWhatsApp.postMensagemTemplete(from, "inf_converse").Result;
 
 
-                if (from != "553584151764" && from != "553537150180" && !texto.ToUpper().Contains("STATUS DA MENSAGEM"))
-                    resultado += FunctionWhatsApp.postMensagem("553537150180", "Numero " + from.Substring(from.Length - 4) + " Texto:" + texto).Result;
+              
 
 
                 //Salvar Texto 
@@ -161,7 +161,7 @@ namespace HoteldosNobresBlazor.Funcoes
                         else
                         {
                             if (texto.Contains("WHATSAPP STATUS"))
-                                reserva = FunctionAPICLOUDBEDs.postReservationNote(reserva, "WHATSAPP STATUS DA MENSAGEM - "
+                                reserva = FunctionAPICLOUDBEDs.postReservationNote(reserva, "WHATSAPP STATUS - "
                                     + TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone).ToString("dd/MM/yyyy HH:mm") + " - " + texto).Result;
                             else
                                 reserva = FunctionAPICLOUDBEDs.postReservationNote(reserva, "WHATSAPP CHAT - Falou: "
@@ -258,7 +258,6 @@ namespace HoteldosNobresBlazor.Funcoes
 
                 if (novareserva is not null && string.IsNullOrEmpty(novareserva.Cpf)  && !novareserva.ProxyCelular!.Equals("553537150180"))
                 {
-                    logSistema.Log += FunctionWhatsApp.postMensagemTemplete(novareserva.ProxyCelular!, "inf_mtur").Result;
                     logSistema.Log += FunctionWhatsApp.postMensageFlowCPF(novareserva.ProxyCelular!).Result;
                 }
 
@@ -441,8 +440,8 @@ namespace HoteldosNobresBlazor.Funcoes
                             voltar = true;
                             logSistema.Log += FunctionWhatsApp.postMensagem("553537150180", "Por favor informe seu CPF na reserva do " + reserva.NomeHospede).Result;
 
-                            logSistema.Log += FunctionWhatsApp.postMensagemTemplete(reserva.ProxyCelular!, "inf_mtur").Result;
                             logSistema.Log += FunctionWhatsApp.postMensageFlowCPF(reserva.ProxyCelular!).Result;
+                            logSistema.Log += FunctionWhatsApp.postMensagemTemplete(reserva.ProxyCelular!, "inf_mtur").Result;
                         }
 
                         if (reserva.Cpf != null && !ValidarCPF(reserva.Cpf) && !reserva.ProxyCelular!.Equals("553537150180"))
@@ -450,8 +449,8 @@ namespace HoteldosNobresBlazor.Funcoes
                             voltar = true;
                             logSistema.Log += FunctionWhatsApp.postMensagem("553537150180", "Por favor informe seu CPF VALIDO - " + reserva.NomeHospede).Result;
 
-                            logSistema.Log += FunctionWhatsApp.postMensagemTemplete(reserva.ProxyCelular!, "inf_mtur").Result;
                             logSistema.Log += FunctionWhatsApp.postMensageFlowCPF(reserva.ProxyCelular!).Result;
+                            logSistema.Log += FunctionWhatsApp.postMensagemTemplete(reserva.ProxyCelular!, "inf_mtur").Result;
                         }
                     }
 

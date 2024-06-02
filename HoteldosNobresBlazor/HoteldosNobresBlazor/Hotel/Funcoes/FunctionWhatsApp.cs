@@ -67,42 +67,6 @@ namespace HoteldosNobresBlazor.Funcoes
         {
             try
             { 
-                //{
-                //                  "messaging_product": "whatsapp",
-                //"to": "5516981000673", 
-                //"type": "INTERACTIVE", 
-                //"interactive": {
-                //                      "type": "flow", 
-                //  "header": {
-                //                          "type": "text", 
-                //    "text": "Preeche os dados Faltando"
-                //  }, 
-                //  "body": {
-                //                          "text": "Falta o CPF e Data de nascimento"
-                //  }, 
-                //  "footer": {
-                //                          "text": "Enviado pelo sistema."
-                //  }, 
-                //  "action": {
-                //                          "name": "flow", 
-                //    "parameters": {
-                //                              "flow_message_version": "3", 
-                //      "flow_token": "any_string_for_this_example", 
-                //      "flow_id": "7196830407096265", 
-                //      "flow_cta": "Abrir prenchimento", 
-                //      "flow_action": "navigate", 
-                //      "flow_action_payload": {
-                //                                  "screen": "SIGN_UP", 
-                //        "data": {
-                //                                      "type": "dynamic_object"
-                //                }
-                //                              }
-                //                          }
-                //                      }
-                //                  }
-                //              }
-
-
                 var client = new HttpClient();
                 var request = new HttpRequestMessage(HttpMethod.Post, urlapi);
                 request.Headers.Add("Authorization", "Bearer " + KEYs.TOKEN_WHATSAPP);
@@ -110,8 +74,8 @@ namespace HoteldosNobresBlazor.Funcoes
                     "\n  \"to\": \"" + numero + "\", \n  \"type\": \"INTERACTIVE\", \n" +
                     "  \"interactive\": { \n    \"type\": \"flow\", \n    \"header\": { \n" +
                     "      \"type\": \"text\", \n      \"text\": \"Preeche os dados Faltando\" \n" +
-                    "    }, \n    \"body\": { \n      \"text\": \"Falta o CPF e Data de nascimento\" \n" +
-                    "    }, \n    \"footer\": { \n      \"text\": \"Enviado pelo sistema.\" \n    }, \n  " +
+                    "    }, \n    \"body\": { \n      \"text\": \"Recebemos sua reserva, porem de acordo com Ministério do Turismo(MTur) precisamos do CPF e Data de nascimento. Abre o preenchimento para envio automático para o sistema do Hotel dos Nobres.\" \n" +
+                    "    }, \n    \"footer\": { \n      \"text\": \"Enviado pelo sistema do Hotel dos Nobres\" \n    }, \n  " +
                     "  \"action\": { \n      \"name\": \"flow\", \n      \"parameters\": { \n   " +
                     "     \"flow_message_version\": \"3\", \n        \"flow_token\": \"any_string_for_this_example\", \n    " +
                     "    \"flow_id\": \"302483089525226\", \n        \"flow_cta\": \"Abrir prenchimento\", \n   " +
