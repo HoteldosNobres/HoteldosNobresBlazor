@@ -55,15 +55,13 @@
                     </MudText> 
                     <MudSpacer />
                     <MudText Align="Align.Center" Class="mb-n4"> - </MudText>
-                    <MudForm Disabled="Disabled">
-                        @* <MudNumericField T="int" Label="Number" Disabled="true" @bind-Value="reserva.IDReserva" /> *@
-                        <MudTextField T="string" Label="Nome do Hospede Principal" Disabled="true" @bind-Value="reserva.NomeHospede" />
-                        <MudTextField T="string" Label="Origem" Disabled="true" @bind-Value="reserva.Origem" />
-                        @if (!string.IsNullOrEmpty(reserva.IDReservaAgencia))
-                        {
-                            <MudTextField T="string" Label="Número da reserva via agência" Disabled="true" @bind-Value="reserva.IDReservaAgencia" />
-                        }
-                    </MudForm>
+                    <MudText Align="Align.Center"> Nome do Hospede Principal: @reserva.NomeHospede  </MudText>
+                    <MudText Align="Align.Center"> Origem: @reserva.Origem  </MudText>
+                    @if (!string.IsNullOrEmpty(reserva.IDReservaAgencia))
+                    {
+                        <MudText Align="Align.Center"> Número da reserva via agência: @reserva.IDReservaAgencia  </MudText> 
+                    }
+                     
                     <MudSpacer />
                     <br />
                     @if (reserva is not null && reserva.ListaQuartos is not null && reserva.ListaQuartos.Count > 0)

@@ -63,24 +63,25 @@
                     </MudText>
                     <MudSpacer />
                     <MudText Align="Align.Center" Class="mb-n4"> - </MudText>
-                    <MudForm Disabled="Disabled">
-                        @* <MudNumericField T="int" Label="Number" Disabled="true" @bind-Value="reserva.IDReserva" /> *@
-                        <MudTextField T="string" Label="Nome do Hospede Principal" Disabled="true" @bind-Value="reserva.NomeHospede" />
-                        <MudTextField T="string" Label="Origem" Disabled="true" @bind-Value="reserva.Origem" />
-                        @if (!string.IsNullOrEmpty(reserva.IDReservaAgencia))
-                        {
-                            <MudTextField T="string" Label="Número da reserva via agência" Disabled="true" @bind-Value="reserva.IDReservaAgencia" />
-                        }
-                    </MudForm>
+                    <MudText Align="Align.Center"> Nome do Hospede Principal: @reserva.NomeHospede  </MudText>
+                    <MudText Align="Align.Center"> Origem: @reserva.Origem  </MudText>
+                    @if (!string.IsNullOrEmpty(reserva.IDReservaAgencia))
+                    {
+                        <MudText Align="Align.Center"> Número da reserva via agência: @reserva.IDReservaAgencia  </MudText>
+                    } 
                     <MudSpacer />
                     <br />
                     @if (reserva is not null && reserva.ListaQuartos is not null && reserva.ListaQuartos.Count > 0)
                     {
                         <MudPaper Class="rounded-xl">
                             <MudExpansionPanel Text="Acomodações" Style="background-color: #F5F4F4; rounded-xl" MaxHeight="150" Elevation="2">
-                                <MudPaper>
-                                    @reserva.ListaQuartos[0]!.Descricao
-                                </MudPaper>
+                                @foreach (var item in reserva.ListaQuartos)
+                                {
+                                    <MudPaper>
+                                        @item.Descricao
+                                    </MudPaper>
+                                    <MudDivider />
+                                }
                             </MudExpansionPanel>
                         </MudPaper>
                     }
@@ -96,32 +97,32 @@
                                 <MudListItem>
                                     <div class="d-flex">
                                         <MudText Typo="Typo.caption">Acomodações</MudText>
-                                        <MudText Typo="Typo.caption" GutterBottom="true" Class="ml-auto">R$ @reserva.BalanceDetailed!.SubTotal.ToString("N2")</MudText>
+                                        <MudText Typo="Typo.caption" GutterBottom="true" Class="ml-auto">R$ @reserva.BalanceDetailed!.SubTotal.ToString("N2", new CultureInfo("pt-BR"))</MudText>
                                     </div>
                                 </MudListItem>
                                 <MudListItem>
                                     <div class="d-flex">
                                         <MudText Typo="Typo.caption">Itens adicionais e extras</MudText>
-                                        <MudText Typo="Typo.caption" GutterBottom="true" Class="ml-auto">R$ @reserva.BalanceDetailed!.AdditionalItems.ToString("N2")</MudText>
+                                        <MudText Typo="Typo.caption" GutterBottom="true" Class="ml-auto">R$ @reserva.BalanceDetailed!.AdditionalItems.ToString("N2", new CultureInfo("pt-BR"))</MudText>
                                     </div>
                                 </MudListItem>
                                 <MudListItem>
                                     <div class="d-flex">
                                         <MudText Typo="Typo.caption">Imposto e taxas</MudText>
-                                        <MudText Typo="Typo.caption" GutterBottom="true" Class="ml-auto">R$ @reserva.BalanceDetailed!.TaxesFees.ToString("N2")</MudText>
+                                        <MudText Typo="Typo.caption" GutterBottom="true" Class="ml-auto">R$ @reserva.BalanceDetailed!.TaxesFees.ToString("N2", new CultureInfo("pt-BR"))</MudText>
                                     </div>
                                 </MudListItem>
                                 <MudDivider />
                                 <MudListItem>
                                     <div class="d-flex">
                                         <MudText Typo="Typo.caption" GutterBottom="true"><b>Total</b></MudText>
-                                        <MudText Typo="Typo.caption" GutterBottom="true" Class="ml-auto"><b>R$ @reserva.BalanceDetailed!.GrandTotal.ToString("N2")</b></MudText>
+                                        <MudText Typo="Typo.caption" GutterBottom="true" Class="ml-auto"><b>R$ @reserva.BalanceDetailed!.GrandTotal.ToString("N2", new CultureInfo("pt-BR"))</b></MudText>
                                     </div>
                                 </MudListItem>
                                 <MudListItem>
                                     <div class="d-flex">
                                         <MudText Typo="Typo.caption" GutterBottom="true"><b>Valor pago</b></MudText>
-                                        <MudText Typo="Typo.caption" GutterBottom="true" Class="ml-auto"><b>R$ @reserva.BalanceDetailed!.Paid.ToString("N2")</b></MudText>
+                                        <MudText Typo="Typo.caption" GutterBottom="true" Class="ml-auto"><b>R$ @reserva.BalanceDetailed!.Paid.ToString("N2", new CultureInfo("pt-BR"))</b></MudText>
                                     </div>
                                 </MudListItem>
                             </MudList>
@@ -129,7 +130,7 @@
                                 <MudDivider />
                                 <div class="d-flex pa-4">
                                     <MudText><b>Saldo a pagar</b></MudText>
-                                    <MudText Class="ml-auto"><b>R$ @((reserva.BalanceDetailed!.GrandTotal - reserva.BalanceDetailed!.Paid).ToString("N2"))</b></MudText>
+                                    <MudText Class="ml-auto"><b>R$ @((reserva.BalanceDetailed!.GrandTotal - reserva.BalanceDetailed!.Paid).ToString("N2", new CultureInfo("pt-BR")))</b></MudText>
                                 </div>
                             </div>
                         </MudPaper>
