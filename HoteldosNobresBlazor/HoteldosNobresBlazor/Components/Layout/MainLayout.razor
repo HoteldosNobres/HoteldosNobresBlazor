@@ -1,19 +1,23 @@
 ﻿@using HoteldosNobresBlazor.Layout
-
 @inherits LayoutComponentBase
 
 <MudThemeProvider Theme="MyCustomTheme" @ref="@_mudThemeProvider" @bind-IsDarkMode="@_isDarkMode" />
 <MudDialogProvider @rendermode="InteractiveServer" />
 <MudSnackbarProvider @rendermode="InteractiveServer" />
+<MudDialogProvider />
 
-<MudLayout>
-      <AuthorizeView Roles="client">
+<MudLayout  > 
+     <AuthorizeView Roles="client">
         <Authorized >
-            <MainAppDrawerBar @rendermode="InteractiveAuto" />
+            <MainAppDrawerBar @rendermode="InteractiveAuto" DarkMode=_isDarkMode />
         </Authorized>
-        <NotAuthorized>
-            <MudAppBar Color="Color.Primary" >
-                <MudImage Width="50" Height="50" Src="images/logo.png" Alt="Mony the dog" Style="margin-right: 10px" Class="rounded-lg"></MudImage> Hotel dos Nobres
+        <NotAuthorized >
+            <MudAppBar Color="Color.Primary">
+              @*   <a href="" Style="color:white; margin-right: 50px"> *@
+                <MudImage Width="50" Height="50" Src="images/logo.png" Alt="Mony the dog" Style="margin-right: 10px" Class="rounded-lg"> </MudImage> Hotel dos Nobres
+                
+                @*    </a> *@
+
              </MudAppBar>
         </NotAuthorized>
     </AuthorizeView>
@@ -31,7 +35,7 @@
 
 @code {
 
-    private bool _isDarkMode;
+    private bool _isDarkMode { get; set; }
     private MudThemeProvider _mudThemeProvider;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -75,6 +79,11 @@
             //     DrawerWidthRight = "300px"
             // }
         };
+
+    public void HandleClick(MouseEventArgs e)
+    { 
+        _isDarkMode = !_isDarkMode;
+    }
 
 }
 
