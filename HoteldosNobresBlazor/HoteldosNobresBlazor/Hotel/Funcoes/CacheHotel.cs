@@ -103,11 +103,11 @@ namespace HoteldosNobresBlazor.Funcoes
                 Reserva reserva = listaReserva.Where(x => x.ProxyCelular.Contains(from)).FirstOrDefault();
                 if (reserva is not null)
                     reserva = FunctionAPICLOUDBEDs.getReservationAsync(reserva).Result;
+                log.IDReserva = reserva.IDReserva;
 
                 // Distribuir Texto
                 if (!string.IsNullOrEmpty(cpf))
-                { 
-                    resultado += FunctionWhatsApp.postMensagemTemplete(from, "inf_inicial").Result; 
+                {  
                     if (reserva is not null)
                     {
                         if (!string.IsNullOrEmpty(datadenascimento))
@@ -123,6 +123,7 @@ namespace HoteldosNobresBlazor.Funcoes
                             AjustarCPF(reserva);
                         } 
                     }
+                    resultado += FunctionWhatsApp.postMensagemTemplete(from, "inf_inicial").Result;
                 }
                 else if (!string.IsNullOrEmpty(hotelrating))
                 { 
@@ -131,21 +132,15 @@ namespace HoteldosNobresBlazor.Funcoes
                         reserva = FunctionAPICLOUDBEDs.postReservationNote(reserva, texto).Result;
                     }
                 }
-                else if (!string.IsNullOrEmpty(from) && !texto.ToUpper().Contains("STATUS DA MENSAGEM"))
+                else if (!string.IsNullOrEmpty(from) && !texto.ToUpper().Contains("WHATSAPP STATUS"))
                     resultado += FunctionWhatsApp.postMensagemTemplete(from, "inf_converse").Result;
 
-
-              
-
-
+                 
                 //Salvar Texto 
                 if (from != "553584151764" && from != "553537150180")
-                { 
-
+                {  
                     if (reserva != null && !string.IsNullOrEmpty(reserva.IDReserva))
-                    { 
-                        log.IDReserva = reserva.IDReserva;
-                        log.Status = reserva.Status;
+                    {  
                         if (reserva.Notas.Where(x => x.Texto.Contains("WHATSAPP STATUS")).Count() > 0)
                         {
                             Nota nota = reserva.Notas.Where(x => x.Texto.Contains("WHATSAPP STATUS")).FirstOrDefault();

@@ -2,10 +2,10 @@
 @inherits LayoutComponentBase
 
 <MudThemeProvider Theme="MyCustomTheme" @ref="@_mudThemeProvider" @bind-IsDarkMode="@_isDarkMode" />
+<MudPopoverProvider />
 <MudDialogProvider @rendermode="InteractiveServer" />
 <MudSnackbarProvider @rendermode="InteractiveServer" />
-<MudDialogProvider />
-
+  
 <MudLayout  > 
      <AuthorizeView Roles="client">
         <Authorized >
@@ -14,7 +14,7 @@
         <NotAuthorized >
             <MudAppBar Color="Color.Primary">
               @*   <a href="" Style="color:white; margin-right: 50px"> *@
-                <MudImage Width="50" Height="50" Src="images/logo.png" Alt="Mony the dog" Style="margin-right: 10px" Class="rounded-lg"> </MudImage> Hotel dos Nobres
+                <MudImage @onclick="HandleClick" Width="50" Height="50" Src="images/logo.png" Alt="Mony the dog" Style="margin-right: 10px" Class="rounded-lg"> </MudImage> Hotel dos Nobres
                 
                 @*    </a> *@
 

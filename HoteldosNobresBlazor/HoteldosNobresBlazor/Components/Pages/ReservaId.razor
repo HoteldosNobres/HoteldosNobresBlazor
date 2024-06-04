@@ -68,7 +68,7 @@
                     @if (!string.IsNullOrEmpty(reserva.IDReservaAgencia))
                     {
                         <MudText Align="Align.Center"> Número da reserva via agência: @reserva.IDReservaAgencia  </MudText>
-                    } 
+                    }
                     <MudSpacer />
                     <br />
                     @if (reserva is not null && reserva.ListaQuartos is not null && reserva.ListaQuartos.Count > 0)
@@ -85,6 +85,26 @@
                             </MudExpansionPanel>
                         </MudPaper>
                     }
+                    <br />
+                    <MudSpacer />
+                    <MudPaper Class="rounded-xl">
+                        <MudList  Clickable="false" Dense="true">
+                            <MudListItem Style="background-color: #F5F4F4; rounded-xl">
+                                <MudText>Instruções para a transferência bancária</MudText> 
+                            </MudListItem>
+                            <MudDivider />
+                            <MudListItem>
+                                <MudText Typo="Typo.caption">NÃO E POSSÍVEL PAGAR NO CHECK-IN !!!</MudText>
+                                <MudText Typo="Typo.caption" GutterBottom="true" Class="ml-auto">
+                                    Reservas não paga no período de  20 minutos sera cancelada, como nossos Termos e Politicas.
+                                    Pix nossa chave CNPJ 35.337.342/0001-86
+                                    Nome JOSE CARLOS NOBRE
+                                    Banco SICOOB
+                                    Reservas também sem CPF serão canceladas.
+                                </MudText>
+                            </MudListItem>
+                        </MudList>
+                    </MudPaper>
                 </MudPaper>
             </MudItem>
             <MudItem xs="12" sm="3">
