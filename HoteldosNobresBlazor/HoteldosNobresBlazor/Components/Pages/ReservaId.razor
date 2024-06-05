@@ -16,7 +16,17 @@
 <PageTitle>Reserva</PageTitle>
 
 
-@if (reserva is not null)
+@if (reserva is null)
+{
+    <MudPaper Class="px-8 pt-2 mx-4 my-4 rounded-xl" Align="Align.Center" Justify="Justify.Center">
+        <MudGrid Justify="Justify.Center" Class="align-items-center">
+            <MudItem>
+                <MudProgressCircular Indeterminate="true"></MudProgressCircular>
+            </MudItem>
+        </MudGrid>
+    </MudPaper>
+}
+else
 {
     <MudContainer Class="px-8 pt-2 mx-4 my-4" MaxWidth="MaxWidth.False">
         <MudGrid>
@@ -58,8 +68,10 @@
                         </MudItem>
                     </MudGrid>
                     <MudText Align="Align.Center">
-                        <i class="fa-solid fa-moon"> </i> @reserva.Noites.GetValueOrDefault(1).ToString() Noite(s)
-                        <i class="fa fa-users" aria-hidden="true"></i> @reserva.Hospedes.GetValueOrDefault(1).ToString() Hospede(s)
+                        <MudChip Color="Color.Tertiary">
+                            <i class="fa-solid fa-moon"> </i> @reserva.Noites.GetValueOrDefault(1).ToString() Noite(s) 
+                            <i class="fa fa-users" aria-hidden="true"></i> @reserva.Hospedes.GetValueOrDefault(1).ToString() Hospede(s)
+                        </MudChip>
                     </MudText>
                     <MudSpacer />
                     <MudText Align="Align.Center" Class="mb-n4"> - </MudText>
@@ -74,37 +86,38 @@
                     @if (reserva is not null && reserva.ListaQuartos is not null && reserva.ListaQuartos.Count > 0)
                     {
                         <MudPaper Class="rounded-xl">
-                            <MudExpansionPanel Text="Acomodações" Style="background-color: #F5F4F4; rounded-xl" MaxHeight="150" Elevation="2">
-                                @foreach (var item in reserva.ListaQuartos)
-                                {
-                                    <MudPaper>
-                                        @item.Descricao
-                                    </MudPaper>
-                                    <MudDivider />
-                                }
+                            <MudExpansionPanel Dense="true" DisableGutters="true" Text="Acomodações" style="background-color: #F5F4F4;">
+                                <MudDivider />
+                                <MudPaper class="rounded-b-xl">
+                                    @foreach (var item in reserva.ListaQuartos)
+                                    {
+                                        <MudListItem>
+                                            <MudText Typo="Typo.caption">@item.Descricao</MudText>
+                                        </MudListItem>
+                                    } 
+                                </MudPaper>
                             </MudExpansionPanel>
-                        </MudPaper>
+                        </MudPaper> 
                     }
                     <br />
                     <MudSpacer />
                     <MudPaper Class="rounded-xl">
-                        <MudList  Clickable="false" Dense="true">
-                            <MudListItem Style="background-color: #F5F4F4; rounded-xl">
-                                <MudText>Instruções para a transferência bancária</MudText> 
-                            </MudListItem>
-                            <MudDivider />
-                            <MudListItem>
-                                <MudText Typo="Typo.caption">NÃO E POSSÍVEL PAGAR NO CHECK-IN !!!</MudText>
-                                <MudText Typo="Typo.caption" GutterBottom="true" Class="ml-auto">
-                                    Reservas não paga no período de  20 minutos sera cancelada, como nossos Termos e Politicas.
-                                    Pix nossa chave CNPJ 35.337.342/0001-86
-                                    Nome JOSE CARLOS NOBRE
-                                    Banco SICOOB
-                                    Reservas também sem CPF serão canceladas.
-                                </MudText>
-                            </MudListItem>
-                        </MudList>
+                        <MudListItem style="background-color: #F5F4F4;" class="rounded-t-xl">
+                            <MudText>Instruções para a transferência bancária</MudText>
+                        </MudListItem>
+                        <MudDivider />
+                        <MudListItem>
+                            <MudText Typo="Typo.caption">NÃO E POSSÍVEL PAGAR NO CHECK-IN !!!</MudText><br />
+                            <MudText Typo="Typo.caption" GutterBottom="true" Class="ml-auto">
+                                Reservas não paga no período de  20 minutos sera cancelada, como nossos Termos e Politicas.<br />
+                                Pix nossa chave CNPJ 35.337.342/0001-86<br />
+                                Nome JOSE CARLOS NOBRE<br />
+                                Banco SICOOB<br />
+                                Reservas também sem CPF serão canceladas.
+                            </MudText>
+                        </MudListItem> 
                     </MudPaper>
+                    
                 </MudPaper>
             </MudItem>
             <MudItem xs="12" sm="3">
@@ -159,16 +172,6 @@
             </MudItem>
         </MudGrid>
     </MudContainer>
-}
-else
-{
-    <MudPaper Class="px-8 pt-2 pb-4 mx-4 my-4 rounded-xl" Align="Align.Center" Justify="Justify.Center">
-        <MudGrid Justify="Justify.Center" Class="align-items-center">
-            <MudItem>
-                <MudProgressCircular Indeterminate="true"></MudProgressCircular>
-            </MudItem>
-        </MudGrid>
-    </MudPaper>
 }
 
 <MudPaper Class="px-8 pt-2 pb-4 mx-4 my-4 rounded-xl" Justify="Justify.Center">

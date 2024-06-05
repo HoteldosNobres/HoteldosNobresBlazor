@@ -8,15 +8,25 @@
 <PageTitle>Reserva</PageTitle>
 
 
-@if (reserva is not null)
+@if (reserva is null)
+{
+    <MudPaper Class="px-8 pt-2 mx-4 my-4 rounded-xl" Align="Align.Center" Justify="Justify.Center">
+        <MudGrid Justify="Justify.Center" Class="align-items-center">
+            <MudItem>
+                <MudProgressCircular Indeterminate="true"></MudProgressCircular>
+            </MudItem>
+        </MudGrid>
+    </MudPaper>
+}
+else
 {
     <MudContainer Class="px-8 pt-2 mx-4 my-4" MaxWidth="MaxWidth.False">
         <MudGrid>
             <MudItem xs="12" sm="6">
-                <MudPaper Elevation="2" Class="rounded-xl" Style="height: 100%">
+                <MudPaper Elevation="2" Class="pa-4  rounded-xl" Style="height: 100%">
                     <MudGrid Justify="Justify.Center" Class="align-items-center">
                         <MudItem>
-                             <MudText Typo="Typo.h3" Align="Align.Center" Color="Color.Success"> <i class="fa fa-check" aria-hidden="true"></i> </MudText>
+                            <MudText Typo="Typo.h3" Align="Align.Center" Color="Color.Success"> <i class="fa fa-check" aria-hidden="true"></i> </MudText>
                         </MudItem>
                     </MudGrid>
                     <MudText Typo="Typo.h6" Align="Align.Center" GutterBottom="true">Agradecemos seu pedido!</MudText>
@@ -49,30 +59,54 @@
                             </MudGrid>
                         </MudItem>
                     </MudGrid>
-                    <MudText Align="Align.Center" >
+                    <MudText Align="Align.Center">
                         <i class="fa-solid fa-moon"> </i> @reserva.Noites.GetValueOrDefault(1).ToString() Noite(s)
                         <i class="fa fa-users" aria-hidden="true"></i> @reserva.Hospedes.GetValueOrDefault(1).ToString() Hospede(s)
-                    </MudText> 
+                    </MudText>
                     <MudSpacer />
                     <MudText Align="Align.Center" Class="mb-n4"> - </MudText>
                     <MudText Align="Align.Center"> Nome do Hospede Principal: @reserva.NomeHospede  </MudText>
                     <MudText Align="Align.Center"> Origem: @reserva.Origem  </MudText>
                     @if (!string.IsNullOrEmpty(reserva.IDReservaAgencia))
                     {
-                        <MudText Align="Align.Center"> Número da reserva via agência: @reserva.IDReservaAgencia  </MudText> 
-                    }                     
+                        <MudText Align="Align.Center"> Número da reserva via agência: @reserva.IDReservaAgencia  </MudText>
+                    }
                     <MudSpacer />
                     <br />
                     @if (reserva is not null && reserva.ListaQuartos is not null && reserva.ListaQuartos.Count > 0)
                     {
                         <MudPaper Class="rounded-xl">
                             <MudExpansionPanel Text="Acomodações" Style="background-color: #F5F4F4; rounded-xl" MaxHeight="150" Elevation="2">
-                                <MudPaper>
-                                    @reserva.ListaQuartos[0]!.Descricao
-                                </MudPaper>
+                                @foreach (var item in reserva.ListaQuartos)
+                                {
+                                    <MudPaper>
+                                        @item.Descricao
+                                    </MudPaper>
+                                    <MudDivider />
+                                }
                             </MudExpansionPanel>
                         </MudPaper>
                     }
+                    <br />
+                    <MudSpacer />
+                    <MudPaper Class="rounded-xl">
+                        <MudList Clickable="false" Dense="true">
+                            <MudListItem Style="background-color: #F5F4F4; rounded-xl">
+                                <MudText>Instruções para a transferência bancária</MudText>
+                            </MudListItem>
+                            <MudDivider />
+                            <MudListItem>
+                                <MudText Typo="Typo.caption">NÃO E POSSÍVEL PAGAR NO CHECK-IN !!!</MudText>
+                                <MudText Typo="Typo.caption" GutterBottom="true" Class="ml-auto">
+                                    Reservas não paga no período de  20 minutos sera cancelada, como nossos Termos e Politicas.
+                                    Pix nossa chave CNPJ 35.337.342/0001-86
+                                    Nome JOSE CARLOS NOBRE
+                                    Banco SICOOB
+                                    Reservas também sem CPF serão canceladas.
+                                </MudText>
+                            </MudListItem>
+                        </MudList>
+                    </MudPaper>
                 </MudPaper>
             </MudItem>
             <MudItem xs="12" sm="3">
@@ -127,16 +161,6 @@
             </MudItem>
         </MudGrid>
     </MudContainer>
-}
-else
-{
-    <MudPaper Class="px-8 pt-2 pb-4 mx-4 my-4 rounded-xl" Align="Align.Center" Justify="Justify.Center">
-        <MudGrid Justify="Justify.Center" Class="align-items-center">
-            <MudItem>
-                <MudProgressCircular Indeterminate="true"></MudProgressCircular>
-            </MudItem>
-        </MudGrid>
-    </MudPaper>
 }
 
 
