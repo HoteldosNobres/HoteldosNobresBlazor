@@ -845,9 +845,13 @@ namespace HoteldosNobresBlazor.Funcoes
             int resto;
             cpf = cpf.Trim();
             cpf = cpf.Replace(".", "").Replace("-", "");
-
+             
             if (cpf.Length != 11)
                 return false;
+
+            if (cpf.Equals("12345678911"))
+                return false;
+
             tempCpf = cpf.Substring(0, 9);
             soma = 0;
 
@@ -931,9 +935,9 @@ namespace HoteldosNobresBlazor.Funcoes
                 retorno = FunctionAPICLOUDBEDs.putGuest(reserva.GuestID!, "guestDocumentType", "dni").Result;
 
                 retorno = FunctionAPICLOUDBEDs.PutGuestDNI(reserva.GuestID!, reserva.ProxyCPF).Result;
+  
+                retorno = FunctionAPICLOUDBEDs.putGuest(reserva.GuestID!, "taxID", reserva.ProxyCPF).Result;
 
-                
-                 
                 return retorno;
             }
             catch (Exception e)

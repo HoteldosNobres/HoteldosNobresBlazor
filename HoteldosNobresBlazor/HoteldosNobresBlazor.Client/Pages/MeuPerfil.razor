@@ -138,9 +138,15 @@
             if (!DisabledCPF && !string.IsNullOrEmpty(CPF))
             {
                 CustomField? customField = guest.CustomFields.Where(x => x.CustomFieldName.Equals("CPF")).FirstOrDefault();
+                if (customField is null)
+                    customField = new CustomField();
+                customField!.CustomFieldName = "CPF";
                 customField!.CustomFieldValue = CPF;
                 var text = JsonConvert.SerializeObject(customField);
                 cloudbedsAPI.PutGuestAsync(guest.GuestId.ToString(), "guestCustomFields", "[" + text.ToString() + "]");
+                cloudbedsAPI.PutGuestDNIAsync(guest.GuestId.ToString(), CPF);
+                cloudbedsAPI.PutGuestAsync(guest.GuestId.ToString(), "taxID", CPF);
+
             }
 
             if (!string.IsNullOrEmpty(guest.GuestZip))

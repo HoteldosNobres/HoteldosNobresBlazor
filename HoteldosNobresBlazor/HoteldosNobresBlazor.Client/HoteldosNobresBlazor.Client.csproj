@@ -27,6 +27,8 @@
     <PackageReference Include="MosaicoSolutions.ViaCep" Version="5.0.0" />
     <PackageReference Include="MudBlazor" Version="6.20.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="pix-payload-generator.net" Version="1.0.21" />
+    <PackageReference Include="QRCoder" Version="1.5.1" />
     <PackageReference Include="System.Net.NetworkInformation" Version="4.3.0" />
   </ItemGroup>
 
