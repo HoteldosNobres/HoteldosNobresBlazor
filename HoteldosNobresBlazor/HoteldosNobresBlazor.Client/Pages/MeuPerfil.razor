@@ -145,7 +145,7 @@
                 var text = JsonConvert.SerializeObject(customField);
                 cloudbedsAPI.PutGuestAsync(guest.GuestId.ToString(), "guestCustomFields", "[" + text.ToString() + "]");
                 cloudbedsAPI.PutGuestDNIAsync(guest.GuestId.ToString(), CPF);
-                cloudbedsAPI.PutGuestAsync(guest.GuestId.ToString(), "taxID", CPF);
+                cloudbedsAPI.PutGuestAsync(guest.GuestId.ToString(), "guestTaxID", CPF);
 
             }
 

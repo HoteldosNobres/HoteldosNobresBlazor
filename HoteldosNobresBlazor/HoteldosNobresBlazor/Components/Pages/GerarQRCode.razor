@@ -20,10 +20,8 @@
 
 <MudContainer Class="px-8 pt-2 mx-4 my-4" MaxWidth="MaxWidth.False">
     <MudGrid>
-        <MudItem xs="12" sm="6">
+        <MudItem xs="12" sm="7">
             <MudPaper Elevation="2" Class="pa-4  rounded-xl" Style="height: 100%">
-                <MudImage Align="Align.Center" src="@($"data:image/png;base64,{qrCode}")" Alt="QRCode" Elevation="25" Width="250" Height="250" />
-                <br />
                 <br />
                 <MudPaper Class="rounded-xl">
                     <MudListItem style="background-color: #F5F4F4;" class="rounded-t-xl">
@@ -38,18 +36,33 @@
                         <MudText Typo="Typo.caption">NÃO E POSSÍVEL PAGAR NO CHECK-IN !!!</MudText><br />
                         <br />
                         <MudText Typo="Typo.caption" GutterBottom="true" Class="ml-auto">
-                            Reservas não paga no período de  30 minutos sera cancelada, como nossos Termos e Politicas.<br />
-                            Pix nossa <b> CHAVE CNPJ 35.337.342/0001-86</b><br />
-                            Nome <b>JOSE CARLOS NOBRE</b><br />
-                            Banco SICOOB<br />
+                            Reservas não paga no período de  30 minutos sera cancelada, como em nossos Termos e Politicas.<br />
+                            Pix nossa <b>CHAVE CNPJ 35.337.342/0001-86</b><br />
+                            Nome <b>JOSE CARLOS NOBRE</b> ou <b>HOTEL DOS NOBRES LTDA</b><br />
+                            Banco <b>CC AGROCREDI LTDA - SICOOB</b><br />
+                            @if (valordecimal > 0)
+                            {
+                                <MudText Typo="Typo.caption">Valor<b> R$ @Valor;</b><br /> </MudText>
+                            }
                         </MudText>
+                        <br />
+                        <MudGrid>
+                             <MudItem xs="12">
+                                <MudGrid Justify="Justify.SpaceBetween">
+                                    <MudItem xs="12" sm="6">
+                                        <MudImage Align="Align.Center" src="@($"data:image/png;base64,{qrCode}")" Alt="QRCode" Elevation="25" Width="250" Height="250" />
+                                    </MudItem>
+                                    <MudItem xs="12" sm="6">
+                                        <MudTextField T="string" Label="Copia e Cola" Variant="Variant.Text" Text="@stringToQrCode" AutoGrow HelperText="Use no APP pagar PIX Copia e Cola" />
+                                    </MudItem>
+                                </MudGrid> 
+                            </MudItem>
+                        </MudGrid>
                     </MudListItem>
                 </MudPaper>
                 <br />
                 <br />
-                <MudTextField T="string" Label="Copia e Cola" @bind-Value="stringToQrCode" />
-                <br />
-                <br />
+
                 <MudForm>
                     <MudList>
                         <MudListItem Avatar="@Icons.Material.Filled.Info"> Dados </MudListItem>
@@ -86,6 +99,7 @@
     public Guest guest { get; set; }
     private UserInfo user = default!;
 
+    public decimal valordecimal { get; set; }
     public string Valor { get; set; }
     public string qrCode { get; set; }
     public string stringToQrCode { get; set; }
@@ -98,37 +112,32 @@
 
     protected override async Task OnInitializedAsync()
     {
-        qrCode = GenerateQRCode("Some data");
+        if (ReservationId is null)
+            ReservationId = "Sua reserva";
+
+        if (!ReservationId.Equals("nova"))
+            reserva = await cloudbedsAPI.GetReservaAsync(ReservationId);
+
+        if (reserva is not null && reserva.BalanceDetailed is not null)
+            Valor = reserva!.BalanceDetailed!.GrandTotal.ToString("N2", new CultureInfo("pt-BR"));
+
+        GerarQrcode();
     }
 
     protected async Task Editar()
     {
         Disabled = !Disabled;
         ReadOnly = !ReadOnly;
-
     }
+
+
+
 
     protected async Task Salvar()
     {
         try
         {
-            Cobranca cobranca = new Cobranca(_chave: "35337342000186")
-                {
-                    Valor = new Valor
-                    {
-                        Original = Valor // "0.01"
-                    }
-                };
-
-            if (ReservationId is null)
-                ReservationId = "Sua reserva";
-
-            var payload = cobranca.ToPayload(ReservationId, new Merchant("HOTEL DOS NOBRES LTDA", "Pocos de Caldas"));
-
-            stringToQrCode = payload.GenerateStringToQrCode();
-
-            qrCode = GenerateQRCode(stringToQrCode);
-
+            GerarQrcode();
 
             Snackbar.Add("Sucesso!", Severity.Success);
 
@@ -140,6 +149,32 @@
         {
             Snackbar.Add("Erro!", Severity.Error);
         }
+    }
+
+    public void GerarQrcode()
+    {
+        if (Valor is null)
+            Valor = "0";
+
+        valordecimal = decimal.Parse(Valor);
+        Valor = valordecimal.ToString("N2", new CultureInfo("pt-BR"));
+
+        Cobranca cobranca = new Cobranca(_chave: "35337342000186")
+            {
+                Valor = new Valor
+                {
+                    Original = valordecimal.ToString("N2", CultureInfo.InvariantCulture) // "0.01"
+                }
+            };
+
+        if (ReservationId is null)
+            ReservationId = "Sua reserva";
+
+        var payload = cobranca.ToPayload(ReservationId, new Merchant("HOTEL DOS NOBRES LTDA", "Pocos de Caldas"));
+
+        stringToQrCode = payload.GenerateStringToQrCode();
+
+        qrCode = GenerateQRCode(stringToQrCode);
     }
 
     public string GenerateQRCode(string data)

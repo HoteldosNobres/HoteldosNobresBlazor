@@ -7,6 +7,7 @@
 @using MosaicoSolutions.ViaCep.Modelos
 @using Newtonsoft.Json
 @using System.Text.RegularExpressions
+
 @inject NavigationManager navigationManager
 @inject APICloudbeds cloudbedsAPI
 @inject ISnackbar Snackbar
@@ -317,6 +318,7 @@ else
                 customField!.CustomFieldValue = CPF;
                 var text = JsonConvert.SerializeObject(customField);
                 cloudbedsAPI.PutGuestAsync(guest.GuestId.ToString(), "guestCustomFields", "[" + text.ToString() + "]");
+                cloudbedsAPI.PutGuestAsync(guest.GuestId.ToString(), "guestTaxId", CPF);
                 cloudbedsAPI.PutGuestDNIAsync(reserva.GuestID!, CPF);
                 cloudbedsAPI.PutGuestAsync(guest.GuestId.ToString(), "taxID", CPF);
 
@@ -332,7 +334,10 @@ else
                 cloudbedsAPI.PutGuestAsync(guest.GuestId.ToString(), "guestAddress2", guest.GuestAddress2);
 
             if (!string.IsNullOrEmpty(guest.GuestCity))
-                cloudbedsAPI.PutGuestAsync(guest.GuestId.ToString(), "guestCity", guest.GuestCity);
+                cloudbedsAPI.PutGuestAsync(guest.GuestId.ToString(), "guestCity", guest.GuestCity
+
+             if (!string.IsNullOrEmpty(guest.GuestState))
+                cloudbedsAPI.PutGuestAsync(guest.GuestId.ToString(), "guestState", guest.GuestState);
 
 
             Snackbar.Add("Cadastrado alterado com sucesso!", Severity.Success);
