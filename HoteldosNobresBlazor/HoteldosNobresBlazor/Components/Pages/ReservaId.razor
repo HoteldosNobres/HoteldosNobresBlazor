@@ -13,7 +13,7 @@
 @inject ISnackbar Snackbar
 
 @rendermode InteractiveAuto
-
+ 
 <PageTitle>Reserva</PageTitle>
 
 
@@ -197,12 +197,18 @@ else
                 <MudTextField T="string" Label="E-mail" Disabled="true" @bind-Value="guest.Email" />
                 <MudTextField T="string" Label="Celular ou Telefone Principal" Disabled="true" @bind-Value="guest.Phone" />
                 <MudTextField T="string" Label="Celular ou Telefone Secundario" Disabled="true" @bind-Value="guest.CellPhone" />
-                <MudTextField T="string" Label="Genero" Disabled="Disabled" @bind-Value="guest.Gender" />
-                <MudSelect T="string" Label="Genero"  Disabled="Disabled" @bind-Value="guest.Gender">
+                <select class="form-select" aria-label="Genero" disabled="@Disabled" @bind="guest.Gender">
+                    <option value="N/A"> </option>
+                    <option value="M">Masculino</option>
+                    <option value="F">Feminino</option>
+                </select>
+                <MudSelect T="string" Label="Genero" Variant="Variant.Text" @bind-Value="guest.Gender" >
                     <MudSelectItem Value="@("M")">Masculino</MudSelectItem>
                     <MudSelectItem Value="@("F")">Feminino</MudSelectItem>
-                    <MudSelectItem Value="@("N/A")"> </MudSelectItem>
+                    <MudSelectItem Value="@("N/A")">Nada</MudSelectItem>
                 </MudSelect>
+
+
                 <MudTextField T="string" Label="CPF" Disabled="@DisabledCPF" @bind-Value="CPF" />
                 <MudDatePicker Label="Data de Nascimento" PickerVariant="PickerVariant.Dialog" Editable="@(!Disabled)" Elevation="12" Disabled="@Disabled" @bind-Date="guest.Birthdate" DateFormat="dd/MM/yyyy" />
                 <MudDivider />
@@ -319,7 +325,7 @@ else
 
             if (!DisabledCPF && !string.IsNullOrEmpty(CPF))
             {
-                reserva.CPF = CPF;
+                reserva.Cpf = CPF;
                 CustomField? customField = guest.CustomFields.Where(x => x.CustomFieldName.Equals("CPF")).FirstOrDefault();
                 if (customField is null)
                     customField = new CustomField();
