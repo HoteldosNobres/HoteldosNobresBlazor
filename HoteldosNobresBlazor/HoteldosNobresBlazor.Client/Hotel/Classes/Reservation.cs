@@ -224,8 +224,15 @@ public partial class Guest
         set { LastName = value; }
     }
 
+    [JsonProperty("gender")]
+    public string? Gender { get; set; }
+
     [JsonProperty("guestGender")]
-    public string? GuestGender { get; set; }
+    public string? GuestGender
+    {
+        get { return Gender; }
+        set { Gender = value; }
+    }
 
     [JsonProperty("email")]
     public string? Email { get; set; }

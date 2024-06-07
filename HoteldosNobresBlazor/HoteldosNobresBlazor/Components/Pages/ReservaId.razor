@@ -195,6 +195,11 @@ else
                 <MudTextField T="string" Label="E-mail" Disabled="true" @bind-Value="guest.Email" />
                 <MudTextField T="string" Label="Celular ou Telefone Principal" Disabled="true" @bind-Value="guest.Phone" />
                 <MudTextField T="string" Label="Celular ou Telefone Secundario" Disabled="true" @bind-Value="guest.CellPhone" />
+                <MudSelect @bind-Value="guest.Gender" Label="Genero" HelperText="String" Placeholder="Please Select" Disabled="DisableEndereco">
+                    <MudSelectItem Value="@("M")">Masculino</MudSelectItem>
+                    <MudSelectItem Value="@("F")">Feminino</MudSelectItem>
+                    <MudSelectItem Value="@("N/A")"> </MudSelectItem>
+                </MudSelect>
                 <MudTextField T="string" Label="CPF" Disabled="@DisabledCPF" @bind-Value="CPF" />
                 <MudDatePicker Label="Data de Nascimento" PickerVariant="PickerVariant.Dialog" Editable="@(!Disabled)" Elevation="12" Disabled="@Disabled" @bind-Date="guest.Birthdate" DateFormat="dd/MM/yyyy" />
                 <MudDivider />
@@ -334,10 +339,14 @@ else
                 cloudbedsAPI.PutGuestAsync(guest.GuestId.ToString(), "guestAddress2", guest.GuestAddress2);
 
             if (!string.IsNullOrEmpty(guest.GuestCity))
-                cloudbedsAPI.PutGuestAsync(guest.GuestId.ToString(), "guestCity", guest.GuestCity
+                cloudbedsAPI.PutGuestAsync(guest.GuestId.ToString(), "guestCity", guest.GuestCity);
 
              if (!string.IsNullOrEmpty(guest.GuestState))
                 cloudbedsAPI.PutGuestAsync(guest.GuestId.ToString(), "guestState", guest.GuestState);
+
+            if (!string.IsNullOrEmpty(guest.Gender))
+                cloudbedsAPI.PutGuestAsync(guest.GuestId.ToString(), "guestGender", guest.Gender);
+
 
 
             Snackbar.Add("Cadastrado alterado com sucesso!", Severity.Success);
