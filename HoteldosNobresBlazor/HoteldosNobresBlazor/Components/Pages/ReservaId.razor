@@ -188,6 +188,8 @@ else
     {
         <MudText Align="Align.Center" Class="mb-n4" Ena> Suas informações  </MudText>
         <MudText Align="Align.Center" Class="mb-n4"> - </MudText>
+
+    
         <MudForm>
             <MudList>
                 <MudListItem Avatar="@Icons.Material.Filled.Info"> Dados </MudListItem>
@@ -195,7 +197,8 @@ else
                 <MudTextField T="string" Label="E-mail" Disabled="true" @bind-Value="guest.Email" />
                 <MudTextField T="string" Label="Celular ou Telefone Principal" Disabled="true" @bind-Value="guest.Phone" />
                 <MudTextField T="string" Label="Celular ou Telefone Secundario" Disabled="true" @bind-Value="guest.CellPhone" />
-                <MudSelect @bind-Value="guest.Gender" Label="Genero" HelperText="String" Placeholder="Please Select" Disabled="DisableEndereco">
+                <MudTextField T="string" Label="Genero" Disabled="Disabled" @bind-Value="guest.Gender" />
+                <MudSelect T="string" Label="Genero"  Disabled="Disabled" @bind-Value="guest.Gender">
                     <MudSelectItem Value="@("M")">Masculino</MudSelectItem>
                     <MudSelectItem Value="@("F")">Feminino</MudSelectItem>
                     <MudSelectItem Value="@("N/A")"> </MudSelectItem>
@@ -316,16 +319,16 @@ else
 
             if (!DisabledCPF && !string.IsNullOrEmpty(CPF))
             {
+                reserva.CPF = CPF;
                 CustomField? customField = guest.CustomFields.Where(x => x.CustomFieldName.Equals("CPF")).FirstOrDefault();
                 if (customField is null)
                     customField = new CustomField();
                 customField!.CustomFieldName = "CPF";
-                customField!.CustomFieldValue = CPF;
+                customField!.CustomFieldValue = reserva.ProxyCPF;
                 var text = JsonConvert.SerializeObject(customField);
                 cloudbedsAPI.PutGuestAsync(guest.GuestId.ToString(), "guestCustomFields", "[" + text.ToString() + "]");
-                cloudbedsAPI.PutGuestAsync(guest.GuestId.ToString(), "guestTaxId", CPF);
-                cloudbedsAPI.PutGuestDNIAsync(reserva.GuestID!, CPF);
-                cloudbedsAPI.PutGuestAsync(guest.GuestId.ToString(), "taxID", CPF);
+                cloudbedsAPI.PutGuestAsync(guest.GuestId.ToString(), "guestTaxId", reserva.ProxyCPF);
+                cloudbedsAPI.PutGuestDNIAsync(reserva.GuestID!, reserva.ProxyCPF);
 
             }
 

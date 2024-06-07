@@ -9,7 +9,7 @@
 <MudLayout  > 
      <AuthorizeView Roles="client">
         <Authorized >
-            <MainAppDrawerBar @rendermode="InteractiveAuto" DarkMode=_isDarkMode />
+            <MainAppDrawerBar @rendermode="InteractiveServer" />
         </Authorized>
         <NotAuthorized >
             <MudAppBar Color="Color.Primary">
