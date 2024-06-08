@@ -181,19 +181,19 @@ public partial class BalanceDetailed
     public string SuggestedDeposit { get; set; }
 
     [JsonProperty("subTotal")]
-    public double SubTotal { get; set; }
+    public decimal SubTotal { get; set; }
 
     [JsonProperty("additionalItems")]
-    public double AdditionalItems { get; set; }
+    public decimal AdditionalItems { get; set; }
 
     [JsonProperty("taxesFees")]
-    public double TaxesFees { get; set; }
+    public decimal TaxesFees { get; set; }
 
     [JsonProperty("grandTotal")]
-    public double GrandTotal { get; set; }
+    public decimal GrandTotal { get; set; }
 
     [JsonProperty("paid")]
-    public double Paid { get; set; }
+    public decimal Paid { get; set; }
 
 
 }
@@ -476,8 +476,7 @@ internal class ParseStringConverter : JsonConverter
 
     public static readonly ParseStringConverter Singleton = new ParseStringConverter();
 }
-
-
+ 
 public partial class GuestData
 {
     [JsonProperty("success")]

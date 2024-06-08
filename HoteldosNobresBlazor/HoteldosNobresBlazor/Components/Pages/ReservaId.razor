@@ -188,8 +188,7 @@ else
     {
         <MudText Align="Align.Center" Class="mb-n4" Ena> Suas informações  </MudText>
         <MudText Align="Align.Center" Class="mb-n4"> - </MudText>
-
-    
+          
         <MudForm>
             <MudList>
                 <MudListItem Avatar="@Icons.Material.Filled.Info"> Dados </MudListItem>
@@ -338,6 +337,9 @@ else
 
             }
 
+            if (!string.IsNullOrEmpty(guest.GuestGender))
+                cloudbedsAPI.PutGuestAsync(guest.GuestId.ToString(), "guestGender", guest.GuestGender);
+
             if (!string.IsNullOrEmpty(guest.GuestZip))
                 cloudbedsAPI.PutGuestAsync(guest.GuestId.ToString(), "guestZip", guest.GuestZip);
 
@@ -353,8 +355,7 @@ else
              if (!string.IsNullOrEmpty(guest.GuestState))
                 cloudbedsAPI.PutGuestAsync(guest.GuestId.ToString(), "guestState", guest.GuestState);
 
-            if (!string.IsNullOrEmpty(guest.Gender))
-                cloudbedsAPI.PutGuestAsync(guest.GuestId.ToString(), "guestGender", guest.Gender);
+           
 
 
 

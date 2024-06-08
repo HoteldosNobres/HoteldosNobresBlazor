@@ -46,8 +46,7 @@ builder.Services.AddHttpClient("CloudbedsAPI", client =>
     client.DefaultRequestHeaders.Add("Authorization", "Bearer " + KEYs.TOKEN_CLOUDBEDS);
 });
 
-builder.Services.AddHttpClient();
-builder.Services.AddBlazorBootstrap();
+builder.Services.AddHttpClient(); 
 
 builder.Services.AddScoped<CookieHandler>();
 builder.Services.AddScoped<AppState>();  
