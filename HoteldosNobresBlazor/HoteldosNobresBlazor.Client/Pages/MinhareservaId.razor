@@ -1,5 +1,6 @@
 ﻿@page "/minhareserva/{ReservationId}"
 @using System.Globalization
+@using HoteldosNobresBlazor.Client.Pages.Component
 @inject NavigationManager navigationManager
 @inject APICloudbeds cloudbedsAPI
 
@@ -60,8 +61,10 @@ else
                         </MudItem>
                     </MudGrid>
                     <MudText Align="Align.Center">
-                        <i class="fa-solid fa-moon"> </i> @reserva.Noites.GetValueOrDefault(1).ToString() Noite(s)
-                        <i class="fa fa-users" aria-hidden="true"></i> @reserva.Hospedes.GetValueOrDefault(1).ToString() Hospede(s)
+                        <MudChip Color="Color.Tertiary">
+                            <i class="fa-solid fa-moon"> </i> @reserva.Noites.GetValueOrDefault(1).ToString() Noite(s)
+                            <i class="fa fa-users" aria-hidden="true"></i> @reserva.Hospedes.GetValueOrDefault(1).ToString() Hospede(s)
+                        </MudChip>
                     </MudText>
                     <MudSpacer />
                     <MudText Align="Align.Center" Class="mb-n4"> - </MudText>
@@ -75,44 +78,13 @@ else
                     <br />
                     @if (reserva is not null && reserva.ListaQuartos is not null && reserva.ListaQuartos.Count > 0)
                     {
-                        <MudPaper Class="rounded-xl">
-                            <MudExpansionPanel Dense="true" DisableGutters="true" Text="Acomodações" style="background-color: #F5F4F4;">
-                                <MudDivider />
-                                <MudPaper class="rounded-b-xl">
-                                    @foreach (var item in reserva.ListaQuartos)
-                                    {
-                                        <MudListItem>
-                                            <MudText Typo="Typo.caption">@item.Descricao</MudText>
-                                        </MudListItem>
-                                    }
-                                </MudPaper>
-                            </MudExpansionPanel>
-                        </MudPaper>
+                        <CardAcomodacoes Reserva=reserva />
                     }
                     <br />
                     <MudSpacer />
                     @if (reserva is not null && (reserva.BalanceDetailed!.GrandTotal - reserva.BalanceDetailed!.Paid) > 0)
                     {
-                        <MudPaper Class="rounded-xl">
-                            <MudListItem style="background-color: #F5F4F4;" class="rounded-t-xl">
-                                <MudStack Row="true">
-                                    <MudText><b>Instruções para a transferência bancária - PIX</b></MudText>
-                                    <MudSpacer />
-                                    <MudIcon Icon="fa-solid fa-building-columns" Title="Favorite" />
-                                </MudStack>
-                            </MudListItem>
-                            <MudDivider />
-                            <MudListItem>
-                                <MudText Typo="Typo.caption">NÃO E POSSÍVEL PAGAR NO CHECK-IN !!!</MudText><br />
-                                <MudText Typo="Typo.caption" GutterBottom="true" Class="ml-auto">
-                                    Reservas não paga no período de  20 minutos sera cancelada, como nossos Termos e Politicas.<br />
-                                    Pix nossa chave CNPJ 35.337.342/0001-86<br />
-                                    Nome JOSE CARLOS NOBRE<br />
-                                    Banco SICOOB<br />
-                                    Reservas também sem CPF serão canceladas.
-                                </MudText>
-                            </MudListItem>
-                        </MudPaper>
+                          <CardPix Reserva=reserva />
                     }
                 </MudPaper>
             </MudItem>

@@ -10,4 +10,9 @@ public class Quarto
     public string? ID { get; set; }
     public string? Descricao { get; set; }
 
+    public long? Adults { get; set; }
+    public long? Children { get; set; }
+
+    public decimal? Total { get; set; }
+
 }

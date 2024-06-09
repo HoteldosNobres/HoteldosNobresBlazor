@@ -305,6 +305,9 @@ public class Reserva
             Quarto quarto = new Quarto();
             quarto.ID = item.RoomTypeId.ToString();
             quarto.Descricao = item.RoomTypeName;
+            quarto.Adults = item.Adults;
+            quarto.Children = item.Children;
+            quarto.Total = item.RoomTotal;
             ListaQuartos.Add(quarto);
         }
 

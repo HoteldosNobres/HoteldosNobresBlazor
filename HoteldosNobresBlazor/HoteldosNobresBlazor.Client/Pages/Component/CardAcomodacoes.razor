@@ -1,0 +1,48 @@
+﻿@using System.Globalization
+<br />
+<MudPaper Class="rounded-xl">
+    <MudExpansionPanel Dense="true" DisableGutters="true" Text="Acomodações" style="background-color: #F5F4F4;">
+        <MudDivider />
+        <MudPaper class="rounded-b-xl">
+            @if (Reserva is not null && Reserva.ListaQuartos is not null)
+            @foreach (var item in Reserva.ListaQuartos)
+            {
+                <MudListItem>
+                    <MudGrid Justify="Justify.SpaceBetween">
+                        <MudItem xs="12" sm="3">
+                            @*  <MudImage Fluid="true" Align="Align.Center" src="@($"data:image/png;base64,{qrCode}")" Alt="QRCode" Elevation="25" Width="250" Height="250" Class="rounded-lg" /> *@
+                        </MudItem>
+                        <MudItem xs="9" sm="6">
+                            <MudText Typo="Typo.caption">@item.Descricao</MudText>
+                            <MudChip Color="Color.Tertiary">
+                                <i class="fa fa-user" aria-hidden="true"></i> @item.Adults.GetValueOrDefault(1).ToString()
+                            </MudChip>
+                            @if (item.Children.GetValueOrDefault(0) > 0)
+                            {
+                                <MudChip Color="Color.Tertiary">
+                                    <i class="fa fa-users" aria-hidden="true"></i> @item.Children.GetValueOrDefault(1).ToString()
+                                </MudChip>
+                            }
+                        </MudItem>
+                        <MudItem xs="3" sm="3">
+                            <MudText Typo="Typo.caption">R$ @item.Total.GetValueOrDefault(0).ToString("N2", new CultureInfo("pt-BR"))</MudText>
+                        </MudItem>
+                    </MudGrid>
+                </MudListItem>
+            }
+        </MudPaper>
+    </MudExpansionPanel>
+</MudPaper>
+<br />
+
+
+@code {
+    [Parameter]
+    public Reserva? Reserva { get; set; }
+     
+    protected override void OnInitialized()
+    { 
+       
+    }
+ 
+}

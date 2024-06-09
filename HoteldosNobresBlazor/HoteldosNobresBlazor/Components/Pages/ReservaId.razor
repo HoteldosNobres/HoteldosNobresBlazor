@@ -13,7 +13,7 @@
 @inject ISnackbar Snackbar
 
 @rendermode InteractiveAuto
- 
+
 <PageTitle>Reserva</PageTitle>
 
 
@@ -70,7 +70,7 @@ else
                     </MudGrid>
                     <MudText Align="Align.Center">
                         <MudChip Color="Color.Tertiary">
-                            <i class="fa-solid fa-moon"> </i> @reserva.Noites.GetValueOrDefault(1).ToString() Noite(s) 
+                            <i class="fa-solid fa-moon"> </i> @reserva.Noites.GetValueOrDefault(1).ToString() Noite(s)
                             <i class="fa fa-users" aria-hidden="true"></i> @reserva.Hospedes.GetValueOrDefault(1).ToString() Hospede(s)
                         </MudChip>
                     </MudText>
@@ -93,12 +93,31 @@ else
                                     @foreach (var item in reserva.ListaQuartos)
                                     {
                                         <MudListItem>
-                                            <MudText Typo="Typo.caption">@item.Descricao</MudText>
+                                            <MudGrid Justify="Justify.SpaceBetween">
+                                                <MudItem xs="12" sm="3">
+                                                    @*  <MudImage Fluid="true" Align="Align.Center" src="@($"data:image/png;base64,{qrCode}")" Alt="QRCode" Elevation="25" Width="250" Height="250" Class="rounded-lg" /> *@
+                                                </MudItem>
+                                                <MudItem xs="9" sm="6">
+                                                    <MudText Typo="Typo.caption">@item.Descricao</MudText>
+                                                    <MudChip Color="Color.Tertiary">
+                                                        <i class="fa fa-user" aria-hidden="true"></i> @item.Adults.GetValueOrDefault(1).ToString()
+                                                    </MudChip>
+                                                    @if (item.Children.GetValueOrDefault(0) > 0)
+                                                    {
+                                                        <MudChip Color="Color.Tertiary">
+                                                            <i class="fa fa-users" aria-hidden="true"></i> @item.Children.GetValueOrDefault(1).ToString()
+                                                        </MudChip>
+                                                    }
+                                                </MudItem>
+                                                <MudItem xs="3" sm="3">
+                                                    <MudText Typo="Typo.caption">R$ @item.Total.GetValueOrDefault(0).ToString("N2", new CultureInfo("pt-BR"))</MudText>
+                                                </MudItem>
+                                            </MudGrid>
                                         </MudListItem>
-                                    } 
+                                    }
                                 </MudPaper>
                             </MudExpansionPanel>
-                        </MudPaper> 
+                        </MudPaper>
                     }
                     <br />
                     <MudSpacer />
@@ -120,9 +139,9 @@ else
                                 Banco SICOOB<br />
                                 Reservas também sem CPF serão canceladas.
                             </MudText>
-                        </MudListItem> 
+                        </MudListItem>
                     </MudPaper>
-                    
+
                 </MudPaper>
             </MudItem>
             <MudItem xs="12" sm="4">
@@ -174,7 +193,7 @@ else
                                         <MudText Class="ml-auto"><b>R$ @((reserva.BalanceDetailed!.GrandTotal - reserva.BalanceDetailed!.Paid).ToString("N2", new CultureInfo("pt-BR")))</b></MudText>
                                     </div>
                                 </div>
-                             </MudContainer>
+                            </MudContainer>
                         </MudPaper>
                     </MudItem>
                 </MudGrid>
@@ -188,7 +207,7 @@ else
     {
         <MudText Align="Align.Center" Class="mb-n4" Ena> Suas informações  </MudText>
         <MudText Align="Align.Center" Class="mb-n4"> - </MudText>
-          
+
         <MudForm>
             <MudList>
                 <MudListItem Avatar="@Icons.Material.Filled.Info"> Dados </MudListItem>
@@ -201,7 +220,7 @@ else
                     <option value="M">Masculino</option>
                     <option value="F">Feminino</option>
                 </select>
-                <MudSelect T="string" Label="Genero" Variant="Variant.Text" @bind-Value="guest.Gender" >
+                <MudSelect T="string" Label="Genero" Variant="Variant.Text" @bind-Value="guest.Gender">
                     <MudSelectItem Value="@("M")">Masculino</MudSelectItem>
                     <MudSelectItem Value="@("F")">Feminino</MudSelectItem>
                     <MudSelectItem Value="@("N/A")">Nada</MudSelectItem>
@@ -352,10 +371,10 @@ else
             if (!string.IsNullOrEmpty(guest.GuestCity))
                 cloudbedsAPI.PutGuestAsync(guest.GuestId.ToString(), "guestCity", guest.GuestCity);
 
-             if (!string.IsNullOrEmpty(guest.GuestState))
+            if (!string.IsNullOrEmpty(guest.GuestState))
                 cloudbedsAPI.PutGuestAsync(guest.GuestId.ToString(), "guestState", guest.GuestState);
 
-           
+
 
 
 

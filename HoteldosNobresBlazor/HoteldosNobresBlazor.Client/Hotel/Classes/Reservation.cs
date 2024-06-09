@@ -119,7 +119,7 @@ public partial class Assigned
     public DailyRate[] DailyRates { get; set; }
 
     [JsonProperty("roomTotal")]
-    public string RoomTotal { get; set; }
+    public decimal? RoomTotal { get; set; }
 
     [JsonProperty("roomName")]
     [JsonConverter(typeof(ParseStringConverter))]

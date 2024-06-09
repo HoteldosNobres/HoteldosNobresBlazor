@@ -1,0 +1,115 @@
+﻿@using System.Globalization
+@using QRCoder
+@using pix_payload_generator.net.Models.CobrancaModels
+@using pix_payload_generator.net.Models.PayloadModels
+
+<br />
+<MudPaper Class="rounded-xl">
+    <MudListItem style="background-color: #F5F4F4;" class="rounded-t-xl">
+        <MudStack Row="true">
+            <MudText><b>Instruções para a transferência bancária - PIX</b></MudText>
+            <MudSpacer />
+            <MudIcon Icon="fa-solid fa-building-columns" Title="Favorite" />
+        </MudStack>
+    </MudListItem>
+    <MudDivider />
+    <MudListItem>
+        <MudText Typo="Typo.caption">NÃO E POSSÍVEL PAGAR NO CHECK-IN !!!</MudText><br />
+        <br />
+        <MudText Typo="Typo.caption" GutterBottom="true" Class="ml-auto">
+            Reservas não paga no período de  30 minutos sera cancelada, como em nossos Termos e Politicas.<br />
+            Pix nossa <b>CHAVE CNPJ 35.337.342/0001-86</b><br />
+            Nome <b>JOSE CARLOS NOBRE</b> ou <b>HOTEL DOS NOBRES LTDA</b><br />
+            Banco <b>CC AGROCREDI LTDA - SICOOB</b><br />
+            @if (valordecimal > 0)
+            {
+                <MudText Typo="Typo.caption">Valor<b> R$ @Valor </b><br /> </MudText>
+            }
+            @if (Reserva is not null && Reserva.IDReserva is not null && Reserva.IDReserva != "nova")
+            {
+                <MudText Typo="Typo.caption">Identificador/Reserva <b> @Reserva.IDReserva </b><br /> </MudText>
+            }
+
+        </MudText>
+        <br />
+        <MudGrid>
+            <MudItem xs="12">
+                <MudGrid Justify="Justify.SpaceBetween">
+                    <MudItem xs="12" sm="6">
+                        <MudImage Fluid="true" Align="Align.Center" src="@($"data:image/png;base64,{qrCode}")" Alt="QRCode" Elevation="25" Width="250" Height="250" Class="rounded-lg" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudTextField T="string" Label="Copia e Cola" Variant="Variant.Text" Text="@stringToQrCode" AutoGrow HelperText="Use no APP pagar PIX Copia e Cola" />
+                    </MudItem>
+                </MudGrid>
+            </MudItem>
+        </MudGrid>
+    </MudListItem>
+</MudPaper>
+<br />
+
+
+@code {
+    [Parameter]
+    public Reserva? Reserva { get; set; }
+
+    public string? Imagem { get; set; }
+    public string Valor { get; set; }
+    public decimal valordecimal { get; set; }
+    public string qrCode { get; set; }
+    public string stringToQrCode { get; set; }
+
+    protected override void OnInitialized()
+    { 
+        if (Reserva is not null && Reserva.BalanceDetailed is not null)
+        {
+            valordecimal = Reserva!.BalanceDetailed!.GrandTotal - Reserva!.BalanceDetailed!.Paid;
+            Valor = valordecimal.ToString("N2", new CultureInfo("pt-BR"));
+        }
+         
+        GerarQrcode();
+    }
+
+    public void GerarQrcode()
+    {
+        if (Valor is null)
+            Valor = "0";
+
+        valordecimal = decimal.Parse(Valor, new CultureInfo("pt-BR"));
+        Valor = valordecimal.ToString("N2", new CultureInfo("pt-BR"));
+
+        Cobranca cobranca = new Cobranca(_chave: "35337342000186")
+            {
+                SolicitacaoPagador = "Pagamento do Reserva " + Reserva!.IDReserva,
+                Valor = new Valor
+                {
+                    Original = valordecimal.ToString("N2", CultureInfo.InvariantCulture) // "0.01"
+                }
+            };
+
+        if (Reserva.IDReserva is null)
+            Reserva.IDReserva = "Sua reserva";
+
+        var payload = cobranca.ToPayload(Reserva.IDReserva, new Merchant("HOTEL DOS NOBRES LTDA", "Pocos de Caldas"));
+
+        stringToQrCode = payload.GenerateStringToQrCode();
+
+        qrCode = GenerateQRCode(stringToQrCode);
+    }
+
+    public string GenerateQRCode(string data)
+    {
+        QRCodeGenerator qrGenerator = new QRCodeGenerator();
+        QRCodeData qrCodeData = qrGenerator.CreateQrCode(data, QRCodeGenerator.ECCLevel.M);
+        PngByteQRCode qrCode = new PngByteQRCode(qrCodeData);
+        byte[] qrCodeImage = qrCode.GetGraphic(20);
+        string qrCodeAsBase64 = Convert.ToBase64String(qrCodeImage);
+        return qrCodeAsBase64;
+    }
+
+    private string LimitaCaracteres(string texto, int tamanhoMaximo)
+    {
+        tamanhoMaximo -= 3;
+        return (texto.Length >= tamanhoMaximo) ? $"{texto.Substring(0, tamanhoMaximo)}..." : texto;
+    }
+}
