@@ -147,6 +147,29 @@ public class APICloudbeds
         }
     }
 
+    public async void PutGuestMaisAsync(string Id, List<string> listaparametros)
+    {
+        try
+        {  
+            var collection = new List<KeyValuePair<string, string>>();
+            collection.Add(new("guestID", Id));  
+
+            for(int i = 0; i < listaparametros.Count(); i = i +2)
+            {
+                string campo = listaparametros[i].ToString();
+                string valor = listaparametros[i + 1].ToString();
+                collection.Add(new(campo!, valor!)); 
+            }
+             
+            var content = new FormUrlEncodedContent(collection);
+            await _httpClient.PutAsync(_httpClient.BaseAddress + "/putGuest", content);
+
+        }
+        catch (FileNotFoundException e)
+        {
+
+        }
+    }
     #endregion
 
 }

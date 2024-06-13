@@ -328,8 +328,10 @@ else
 
     protected async Task Salvar()
     {
-        try
+        try 
         {
+            List<string> listaparametros = new List<string>();
+
             if (guest.Birthdate is not null)
             {
                 cloudbedsAPI.PutGuestAsync(guest.GuestId.ToString(), "guestBirthDate", guest.Birthdate.Value.ToString("yyyy-MM-dd"));
@@ -337,9 +339,51 @@ else
                 customField!.CustomFieldName = "Data_de_Nascimento";
                 customField!.CustomFieldValue = guest.Birthdate.Value.ToString("dd/MM/yyyy");
                 var text = JsonConvert.SerializeObject(customField);
-                cloudbedsAPI.PutGuestAsync(guest.GuestId.ToString(), "guestCustomFields", "[" + text.ToString() + "]");
+
+                listaparametros.Add("guestBirthdate");
+                listaparametros.Add("'" + guest.Birthdate.Value.ToString("yyyy-MM-dd") + "'");
+
+                cloudbedsAPI.PutGuestAsync(guest.GuestId.ToString(), "guestCustomFields", "[" + text.ToString() + "]"); 
+
+            }  
+
+            if (!string.IsNullOrEmpty(guest.GuestGender))
+            {
+                listaparametros.Add("guestGender");
+                listaparametros.Add(guest.GuestGender);
             }
 
+            if (!string.IsNullOrEmpty(guest.GuestZip))
+            {
+                listaparametros.Add("guestZip");
+                listaparametros.Add(guest.GuestZip);
+            }
+
+
+            if (!string.IsNullOrEmpty(guest.GuestAddress))
+            {
+                listaparametros.Add("guestAddress");
+                listaparametros.Add(guest.GuestAddress);
+            }
+
+            if (!string.IsNullOrEmpty(guest.GuestAddress2))
+            {
+                listaparametros.Add("guestAddress2");
+                listaparametros.Add(guest.GuestAddress2!);
+            }
+             
+
+            if (!string.IsNullOrEmpty(guest.GuestCity))
+            {
+                listaparametros.Add("guestCity");
+                listaparametros.Add(guest.GuestCity!);
+            } 
+
+            if (!string.IsNullOrEmpty(guest.GuestState))
+            {
+                listaparametros.Add("guestState");
+                listaparametros.Add(guest.GuestState!);
+            }
 
             if (!DisabledCPF && !string.IsNullOrEmpty(CPF))
             {
@@ -349,34 +393,18 @@ else
                     customField = new CustomField();
                 customField!.CustomFieldName = "CPF";
                 customField!.CustomFieldValue = reserva.ProxyCPF;
-                var text = JsonConvert.SerializeObject(customField);
-                cloudbedsAPI.PutGuestAsync(guest.GuestId.ToString(), "guestCustomFields", "[" + text.ToString() + "]");
-                cloudbedsAPI.PutGuestAsync(guest.GuestId.ToString(), "guestTaxId", reserva.ProxyCPF);
+                var text = JsonConvert.SerializeObject(customField); 
                 cloudbedsAPI.PutGuestDNIAsync(reserva.GuestID!, reserva.ProxyCPF);
 
+                listaparametros.Add("guestCustomFields");
+                listaparametros.Add("[" + text.ToString() + "]");
+
+                listaparametros.Add("guestTaxId");
+                listaparametros.Add(@"""" + reserva.ProxyCPF + @"""");
             }
 
-            if (!string.IsNullOrEmpty(guest.GuestGender))
-                cloudbedsAPI.PutGuestAsync(guest.GuestId.ToString(), "guestGender", guest.GuestGender);
-
-            if (!string.IsNullOrEmpty(guest.GuestZip))
-                cloudbedsAPI.PutGuestAsync(guest.GuestId.ToString(), "guestZip", guest.GuestZip);
-
-            if (!string.IsNullOrEmpty(guest.GuestAddress))
-                cloudbedsAPI.PutGuestAsync(guest.GuestId.ToString(), "guestAddress", guest.GuestAddress);
-
-            if (!string.IsNullOrEmpty(guest.GuestAddress2))
-                cloudbedsAPI.PutGuestAsync(guest.GuestId.ToString(), "guestAddress2", guest.GuestAddress2);
-
-            if (!string.IsNullOrEmpty(guest.GuestCity))
-                cloudbedsAPI.PutGuestAsync(guest.GuestId.ToString(), "guestCity", guest.GuestCity);
-
-            if (!string.IsNullOrEmpty(guest.GuestState))
-                cloudbedsAPI.PutGuestAsync(guest.GuestId.ToString(), "guestState", guest.GuestState);
-
-
-
-
+            if (listaparametros.Count > 2)
+                cloudbedsAPI.PutGuestMaisAsync(guest.GuestId.ToString(), listaparametros);
 
             Snackbar.Add("Cadastrado alterado com sucesso!", Severity.Success);
 
