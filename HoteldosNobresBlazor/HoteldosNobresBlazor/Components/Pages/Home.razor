@@ -1,4 +1,6 @@
 ﻿@page "/"
+@using HoteldosNobresBlazor.Classes
+@using HoteldosNobresBlazor.Funcoes
 @inject AppState appState
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 @inject NavigationManager NavigationManagerHome
@@ -6,6 +8,7 @@
 @inject IJSRuntime JS
 
 @inject IdentityRedirectManager RedirectManager
+@rendermode InteractiveServer
 
 <PageTitle>Home</PageTitle>
 
@@ -13,11 +16,35 @@
     <MudGrid>
         <MudItem xs="12" sm="6">
             <MudPaper Elevation="2" Class="pa-4  rounded-xl" Style="height: 100%">
-                <h1>Hello, world!</h1>
-                Welcome to your new app.
-                @foreach (var linha in arrayDeLinhas)
+                <h1>Check-in today!</h1>
+                @*  Check-in Today *@
+                @if (listReservacheckin == null)
                 {
-                    @linha <br />
+                    <p><em>Carregando...</em></p>
+                }
+                else if (listReservacheckin.Count() == 0)
+                {
+                    <p><em>Sem check-in.</em></p>
+                }
+                else
+                {
+                    <MudSimpleTable Dense="true" Hover="true" Striped="true" Style="overflow-x: auto;">
+                        <thead>
+                            <tr>
+                                <th>Id</th>
+                                <th>Nome Hospede</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (Reserva reserva1 in listReservacheckin)
+                            {
+                                <tr>
+                                    <td><a href='@reserva1.LinkReserva' target='_blank'> @reserva1.IDReserva </a></td>
+                                    <td> <a href='@reserva1.LinkReservaID'>@reserva1.NomeHospede!.Split(' ')[0].ToString()</a></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </MudSimpleTable>
                 }
                 <br />
             </MudPaper>
@@ -25,22 +52,95 @@
         <MudItem xs="12" sm="6">
             <MudGrid>
                 <MudItem xs="12">
-                    <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
+                    <MudPaper Elevation="2" Class="pa-4 rounded-xl" Style="height: 200px;">
+                        <h1>Hello, world!</h1>
+                        Welcome to your new app.
+                        @foreach (var linha in arrayDeLinhas)
+                        {
+                            @linha <br />
+                        }
+                        <br />
+                    </MudPaper>
                 </MudItem>
                 <MudItem xs="12">
-                    <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
+                    <MudPaper Elevation="2" Class="pa-4 rounded-xl" Style="height: 200px;">
+                        <h1>Check-out today!</h1>
+                        @*  Check-in Today *@
+                        @if (listReservacheckout == null)
+                        {
+                            <p><em>Carregando...</em></p>
+                        }
+                        else if (listReservacheckout.Count() == 0)
+                        {
+                            <p><em>Sem check-out.</em></p>
+                        }
+                        else
+                        {
+                            <MudSimpleTable Dense="true" Hover="true" Striped="true" Style="overflow-x: auto;">
+                                <thead>
+                                    <tr>
+                                        <th>Id</th>
+                                        <th>Nome Hospede</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (Reserva reserva1 in listReservacheckout)
+                                    {
+                                        <tr>
+                                            <td><a href='@reserva1.LinkReserva' target='_blank'> @reserva1.IDReserva </a></td>
+                                            <td> <a href='@reserva1.LinkReservaID'>@reserva1.NomeHospede!.Split(' ')[0].ToString()</a></td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </MudSimpleTable>
+                        }
+                        <br />
+                    </MudPaper>
                 </MudItem>
             </MudGrid>
         </MudItem>
 
         <MudItem xs="12" sm="6" md="4">
-            <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
+            <MudPaper Elevation="2" Class="pa-4  rounded-xl" Style="height: 200px;">
+                <MudTextField T="string" Label="Consulta" @bind-Value="consulta" TextChanged="@Consulta" OnDebounceIntervalElapsed="Consulta"
+                              Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary" />  
+                @if (listReservaconsulta == null)
+                {
+                    <p><em>Carregando...</em></p>
+                }
+                else if (listReservaconsulta.Count() == 0)
+                {
+                    <p><em></em></p>
+                }
+                else
+                {
+                    <MudSimpleTable Dense="true" Hover="true" Striped="true" Style="overflow-x: auto;">
+                        <thead>
+                            <tr>
+                                <th>Id</th>
+                                <th>Nome Hospede</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (Reserva reserva1 in listReservaconsulta)
+                            {
+                                <tr>
+                                    <td><a href='@reserva1.LinkReserva' target='_blank'> @reserva1.IDReserva </a></td>
+                                    <td> <a href='@reserva1.LinkReservaID'>@reserva1.NomeHospede!.Split(' ')[0].ToString()</a></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </MudSimpleTable>
+                }
+            </MudPaper>
         </MudItem>
         <MudItem xs="12" sm="6" md="4">
-            <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
+            <MudPaper Elevation="2" Class="pa-4 rounded-xl" Style="height: 200px;"></MudPaper>
         </MudItem>
         <MudItem xs="12" sm="12" md="4">
-            <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
+            <MudPaper Elevation="2" Class="pa-4 rounded-xl" Style="height: 200px;"> 
+                    <MudChart ChartType="ChartType.Bar" @bind-SelectedIndex="Index" XAxisLabels="@XAxisLabels" Height="90px"></MudChart> 
+            </MudPaper>
         </MudItem>
     </MudGrid>
 </MudContainer>
@@ -49,28 +149,56 @@
 
 @code
 {
-    string[] arrayDeLinhas;
+    public string[] arrayDeLinhas;
+    public List<Reserva>? listReservacheckin;
+    public List<Reserva>? listReservacheckout;
+    public List<Reserva>? listReservaconsulta;
+    private Reserva reserva;
+    public string consulta = "";
+
+    private int Index = 0; //default value cannot be 0 -> first selectedindex is 0.
+
+    public List<ChartSeries> Series;
+    public string[] XAxisLabels = new string[] { };
 
     protected override async Task OnInitializedAsync()
     {
         arrayDeLinhas = appState.MyMessage.Split('\n');
 
-        // var cookieContent = await localStorage.GetItemAsync<string>("cookietheme");
+        string datanow = DateTime.Now.ToString("yyyy-MM-dd");
+        listReservacheckin = await FunctionAPICLOUDBEDs.getReservationsCheckinAsync(datanow);
+        listReservacheckout = await FunctionAPICLOUDBEDs.getReservationsCheckOutAsync(datanow);
 
-        // if (cookieContent == null)
-        // {
-        //     await JS.InvokeVoidAsync("toggleTheme");
-        // }
-        // else
-        // {
-        //     await JS.InvokeVoidAsync("toggleTheme", cookieContent);
-        // }
+        XAxisLabels = new string[] { datanow };
+
+        Series = new List<ChartSeries>()
+        {
+            new ChartSeries() { Name = "Check-in", Data = new double[] { listReservacheckin.Count() } },
+            new ChartSeries() { Name = "Check-Out", Data = new double[] { listReservacheckout.Count() } },
+        };
+
 
     }
 
     private async Task HandleSubmit()
     {
         // await localStorage.SetItemAsync("cookietheme", "dark");
+    }
+
+    private async Task Consulta()
+    {
+        listReservaconsulta = null;
+        if (!string.IsNullOrEmpty(consulta))
+        {
+            listReservaconsulta = new List<Reserva>();
+            List<Reserva>? listReservacache = appState.ListReservas;
+            listReservaconsulta.AddRange(listReservacache.Where(x => x.IDReserva!.Contains(consulta)));
+            listReservaconsulta.AddRange(listReservacache.Where(x => x.NomeHospede!.Contains(consulta)));
+
+             listReservaconsulta.AddRange(await FunctionAPICLOUDBEDs.getReservationsIDsAsync(consulta));
+        } 
+        else
+            listReservaconsulta = new List<Reserva>();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

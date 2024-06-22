@@ -243,6 +243,108 @@ public class FunctionAPICLOUDBEDs
 
     }
 
+    public static async Task<List<Reserva>> getReservationsCheckinAsync(string checkInFrom)
+    {
+        try
+        {
+            string url = urlapi + "/getReservations";
+
+            if (!string.IsNullOrEmpty(checkInFrom))
+                url += "?checkInFrom=" + checkInFrom;
+
+            url += "&checkInTo=" + checkInFrom;
+            url += "&status=confirmed";
+
+
+            HttpResponseMessage response = GetApi(url).Result;
+
+            Reservations resevations = await LerRespostaComoObjetoAsync<Reservations>(response);
+
+            List<Reserva> listareserva = new List<Reserva>();
+            if (resevations.Data != null)
+                foreach (var item in resevations.Data)
+                {
+                    Reserva reserva = new Reserva();
+                    reserva.Converte(item);
+                    listareserva.Add(reserva);
+                }
+
+            return listareserva;
+        }
+        catch (FileNotFoundException e)
+        {
+            Console.WriteLine(e.Message);
+            return new List<Reserva>();
+        }
+
+    }
+
+    public static async Task<List<Reserva>> getReservationsCheckOutAsync(string checkOutFrom)
+    {
+        try
+        {
+            string url = urlapi + "/getReservations";
+
+            url += "?checkOutFrom=" + checkOutFrom;
+            url += "&checkOutTo=" + checkOutFrom;
+            url += "&status=checked_in";
+
+
+            HttpResponseMessage response = GetApi(url).Result;
+
+            Reservations resevations = await LerRespostaComoObjetoAsync<Reservations>(response);
+
+            List<Reserva> listareserva = new List<Reserva>();
+            if (resevations.Data != null)
+                foreach (var item in resevations.Data)
+                {
+                    Reserva reserva = new Reserva();
+                    reserva.Converte(item);
+                    listareserva.Add(reserva);
+                }
+
+            return listareserva;
+        }
+        catch (FileNotFoundException e)
+        {
+            Console.WriteLine(e.Message);
+            return new List<Reserva>();
+        }
+
+    }
+
+    public static async Task<List<Reserva>> getReservationsIDsAsync(string checkOutFrom)
+    {
+        try
+        {
+            string url = urlapi + "/getReservations";
+
+            url += "?sourceReservationId=" + checkOutFrom;
+
+
+            HttpResponseMessage response = GetApi(url).Result;
+
+            Reservations resevations = await LerRespostaComoObjetoAsync<Reservations>(response);
+
+            List<Reserva> listareserva = new List<Reserva>();
+            if (resevations.Data != null)
+                foreach (var item in resevations.Data)
+                {
+                    Reserva reserva = new Reserva();
+                    reserva.Converte(item);
+                    listareserva.Add(reserva);
+                }
+
+            return listareserva;
+        }
+        catch (FileNotFoundException e)
+        {
+            Console.WriteLine(e.Message);
+            return new List<Reserva>();
+        }
+
+    }
+
     public static async Task<Reserva> getReservationAsync(Reserva reserva)
     {
         try
