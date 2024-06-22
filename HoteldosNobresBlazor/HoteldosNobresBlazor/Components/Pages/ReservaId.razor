@@ -11,6 +11,7 @@
 @inject NavigationManager navigationManager
 @inject APICloudbeds cloudbedsAPI
 @inject ISnackbar Snackbar
+@inject IJSRuntime JSRuntime
 
 @rendermode InteractiveAuto
 
@@ -261,6 +262,34 @@ else
                            @onclick="SendCPF">
                     Envia CPF
                 </MudButton>
+                <MudButton Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           Class="ml-auto rounded-xl"
+                           Disabled="@(!Disabled)"
+                           @onclick="SendMtur">
+                    Envia MTur
+                </MudButton>
+                <MudButton Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           Class="ml-auto rounded-xl"
+                           Disabled="@(!Disabled)"
+                           @onclick="SendInf">
+                    Envia Inf
+                </MudButton>
+                <MudButton Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           Class="ml-auto rounded-xl"
+                           Disabled="@(!Disabled)"
+                           @onclick="SendCloubeds">
+                    Cloudbeds
+                </MudButton>
+                <MudButton Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           Class="ml-auto rounded-xl"
+                           Disabled="@(!Disabled)"
+                           @onclick="SendOrigem">
+                    Origem
+                </MudButton>
             </div>
         </MudForm>
     }
@@ -343,7 +372,7 @@ else
                 listaparametros.Add("guestBirthdate");
                 listaparametros.Add("'" + guest.Birthdate.Value.ToString("yyyy-MM-dd") + "'");
 
-                cloudbedsAPI.PutGuestAsync(guest.GuestId.ToString(), "guestCustomFields", "[" + text.ToString() + "]"); 
+                cloudbedsAPI.PutGuestAsync(guest.GuestId.ToString(), "guestCustomFields", "[" + text.ToString() + "]");
 
             }  
 
@@ -371,7 +400,7 @@ else
                 listaparametros.Add("guestAddress2");
                 listaparametros.Add(guest.GuestAddress2!);
             }
-             
+
 
             if (!string.IsNullOrEmpty(guest.GuestCity))
             {
@@ -463,5 +492,58 @@ else
         }
     }
 
+    protected async Task SendMtur()
+    {
+        try
+        {
+            var retorno = await FunctionWhatsApp.postMensagemTemplete(reserva.ProxyCelular!, "inf_mtur");
+            Snackbar.Add("Encaminhado com sucesso", Severity.Success);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("Erro ao enviar CPF", Severity.Error);
+            Console.WriteLine(ex.Message);
+        }
+    }
+
+    protected async Task SendInf()
+    {
+        try
+        {
+            var retorno = await FunctionWhatsApp.postMensagemTemplete(reserva.ProxyCelular!, "inf_inicial");
+            Snackbar.Add("Encaminhado com sucesso", Severity.Success);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("Erro ao enviar CPF", Severity.Error);
+            Console.WriteLine(ex.Message);
+        }
+    }
+
+    protected async Task SendCloubeds()
+    {
+        try
+        {  
+            await JSRuntime.InvokeVoidAsync("open", reserva.LinkReserva, "_blank");
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("Erro ao enviar CPF", Severity.Error);
+            Console.WriteLine(ex.Message);
+        }
+    }
+
+    protected async Task SendOrigem()
+    {
+        try
+        { 
+            await JSRuntime.InvokeVoidAsync("open", reserva.LinkReservaOrigem, "_blank");
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("Erro ao enviar CPF", Severity.Error);
+            Console.WriteLine(ex.Message);
+        }
+    }
 
 } 
