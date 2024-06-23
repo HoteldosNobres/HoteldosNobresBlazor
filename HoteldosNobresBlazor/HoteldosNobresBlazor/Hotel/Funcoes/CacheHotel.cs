@@ -900,17 +900,20 @@ namespace HoteldosNobresBlazor.Funcoes
             {
                 string retorno = "";
                 string ufdescrition = reserva.UF!.GetEnumDescription();
-                 
-                retorno = FunctionAPICLOUDBEDs.putGuest(reserva.GuestID!, "guestBirthDate", reserva.DataNascimento.ToString("yyyy-MM-dd")).Result;
 
+                if (!string.IsNullOrEmpty(reserva.DataNascimento.ToString("yyyy-MM-dd")))
+                {
+                    retorno = FunctionAPICLOUDBEDs.putGuest(reserva.GuestID!, "guestBirthDate", reserva.DataNascimento.ToString("yyyy-MM-dd")).Result;
+
+                    CustomField? customFieldData = new CustomField();
+                    customFieldData.CustomFieldName = "Data_de_Nascimento";
+                    customFieldData.CustomFieldValue = reserva.DataNascimento.ToString("dd/MM/yyyy");
+                    var jsoncustomFieldData = JsonConvert.SerializeObject(customFieldData);
+                    FunctionAPICLOUDBEDs.putGuest(reserva.GuestID!, "guestCustomFields", "[" + jsoncustomFieldData.ToString() + "]");
+                }
+                    
                 retorno = FunctionAPICLOUDBEDs.putGuest(reserva.GuestID!, "guestGender", "M").Result;
-
-                CustomField? customFieldData = new CustomField();
-                customFieldData.CustomFieldName = "Data_de_Nascimento";
-                customFieldData.CustomFieldValue = reserva.DataNascimento.ToString("dd/MM/yyyy");
-                var jsoncustomFieldData = JsonConvert.SerializeObject(customFieldData);
-                FunctionAPICLOUDBEDs.putGuest(reserva.GuestID!, "guestCustomFields", "[" + jsoncustomFieldData.ToString() + "]");
-
+                 
                 return retorno;
             }
             catch (Exception e)

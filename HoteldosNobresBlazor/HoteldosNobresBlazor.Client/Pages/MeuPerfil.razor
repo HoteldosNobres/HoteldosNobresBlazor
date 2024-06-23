@@ -126,7 +126,8 @@
         {
             if (guest.Birthdate is not null)
             {
-                cloudbedsAPI.PutGuestAsync(guest.GuestId.ToString(), "guestBirthDate", guest.Birthdate.Value.ToString("yyyy-MM-dd"));
+                if (!string.IsNullOrEmpty(guest.Birthdate.Value.ToString("yyyy-MM-dd")))
+                    cloudbedsAPI.PutGuestAsync(guest.GuestId.ToString(), "guestBirthDate", guest.Birthdate.Value.ToString("yyyy-MM-dd"));
                 CustomField? customField = new CustomField();
                 customField!.CustomFieldName = "Data_de_Nascimento";
                 customField!.CustomFieldValue = guest.Birthdate.Value.ToString("dd/MM/yyyy");
