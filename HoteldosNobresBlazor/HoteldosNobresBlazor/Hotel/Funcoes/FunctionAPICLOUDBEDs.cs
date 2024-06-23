@@ -313,6 +313,39 @@ public class FunctionAPICLOUDBEDs
 
     }
 
+
+    public static async Task<List<Reserva>> getReservationsNovasAsync(string checkInFrom)
+    {
+        try
+        {
+            string url = urlapi + "/getReservations";
+
+            url += "?resultsFrom=" + checkInFrom;
+             
+            HttpResponseMessage response = GetApi(url).Result;
+
+            Reservations resevations = await LerRespostaComoObjetoAsync<Reservations>(response);
+
+            List<Reserva> listareserva = new List<Reserva>();
+            if (resevations.Data != null)
+                foreach (var item in resevations.Data)
+                {
+                    Reserva reserva = new Reserva();
+                    reserva.Converte(item);
+                    listareserva.Add(reserva);
+                }
+
+            return listareserva;
+        }
+        catch (FileNotFoundException e)
+        {
+            Console.WriteLine(e.Message);
+            return new List<Reserva>();
+        }
+
+    }
+
+
     public static async Task<List<Reserva>> getReservationsIDsAsync(string checkOutFrom)
     {
         try

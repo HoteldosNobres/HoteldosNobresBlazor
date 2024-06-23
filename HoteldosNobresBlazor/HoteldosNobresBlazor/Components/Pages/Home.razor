@@ -15,7 +15,7 @@
 <MudContainer Class="px-8 pt-2 mx-4 my-4" MaxWidth="MaxWidth.False">
     <MudGrid>
         <MudItem xs="12" sm="6">
-            <MudPaper Elevation="2" Class="pa-4  rounded-xl" Style="height: 100%">
+            <MudPaper Elevation="2" Class="pa-4 d-flex flex-column rounded-xl" Style="height: 100%">
                 <h1>Check-in today!</h1>
                 @*  Check-in Today *@
                 @if (listReservacheckin == null)
@@ -52,7 +52,7 @@
         <MudItem xs="12" sm="6">
             <MudGrid>
                 <MudItem xs="12">
-                    <MudPaper Elevation="2" Class="pa-4 rounded-xl" Style="height: 200px;">
+                    <MudPaper Elevation="2" Class="pa-4 d-flex flex-column rounded-xl" Style="height: 200px;">
                         <h1>Hello, world!</h1>
                         Welcome to your new app.
                         @foreach (var linha in arrayDeLinhas)
@@ -63,7 +63,7 @@
                     </MudPaper>
                 </MudItem>
                 <MudItem xs="12">
-                    <MudPaper Elevation="2" Class="pa-4 rounded-xl" Style="height: 200px;">
+                    <MudPaper Elevation="2" Class="pa-4 flex-column rounded-xl" Style="height: 200px;">
                         <h1>Check-out today!</h1>
                         @*  Check-in Today *@
                         @if (listReservacheckout == null)
@@ -101,9 +101,9 @@
         </MudItem>
 
         <MudItem xs="12" sm="6" md="4">
-            <MudPaper Elevation="2" Class="pa-4  rounded-xl" Style="height: 200px;">
+            <MudPaper Elevation="2" Class="pa-4  d-flex flex-column rounded-xl" Style="height: 200px;">
                 <MudTextField T="string" Label="Consulta" @bind-Value="consulta" TextChanged="@Consulta" OnDebounceIntervalElapsed="Consulta"
-                              Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary" />  
+                              Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary" />
                 @if (listReservaconsulta == null)
                 {
                     <p><em>Carregando...</em></p>
@@ -135,11 +135,44 @@
             </MudPaper>
         </MudItem>
         <MudItem xs="12" sm="6" md="4">
-            <MudPaper Elevation="2" Class="pa-4 rounded-xl" Style="height: 200px;"></MudPaper>
+            <MudPaper Elevation="2" Class="pa-4 d-flex flex-column rounded-xl" Style="height: 200px;">
+                Reservas novas today!
+                @*  Check-in Today *@
+                @if (listReservasnovas == null)
+                {
+                    <p><em>Carregando...</em></p>
+                }
+                else if (listReservasnovas.Count() == 0)
+                {
+                    <p><em>Sem reserva novas.</em></p>
+                }
+                else
+                {
+                    <MudSimpleTable Dense="true" Hover="true" Striped="true" Style="overflow-x: auto;">
+                        <thead>
+                            <tr>
+                                <th>Id</th>
+                                <th>Nome Hospede</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (Reserva reserva1 in listReservasnovas)
+                            {
+                                <tr>
+                                    <td><a href='@reserva1.LinkReserva' target='_blank'> @reserva1.IDReserva </a></td>
+                                    <td> <a href='@reserva1.LinkReservaID'>@reserva1.NomeHospede!.Split(' ')[0].ToString()</a></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </MudSimpleTable>
+                }
+                <br />
+            </MudPaper>
         </MudItem>
         <MudItem xs="12" sm="12" md="4">
-            <MudPaper Elevation="2" Class="pa-4 rounded-xl" Style="height: 200px;"> 
-                    <MudChart ChartType="ChartType.Pie" @bind-SelectedIndex="Index" XAxisLabels="@XAxisLabels" Height="90px"></MudChart> 
+            Check-in X Check-out
+            <MudPaper Elevation="2" Class="pa-4 d-flex flex-column rounded-xl" Style="height: 200px;">
+                <MudChart ChartType="ChartType.Pie" InputData="@data" @bind-SelectedIndex="Index" InputLabels="@labels" Width="100px" Height="100px" />
             </MudPaper>
         </MudItem>
     </MudGrid>
@@ -153,13 +186,14 @@
     public List<Reserva>? listReservacheckin;
     public List<Reserva>? listReservacheckout;
     public List<Reserva>? listReservaconsulta;
+    public List<Reserva>? listReservasnovas;
     private Reserva reserva;
     public string consulta = "";
 
     private int Index = 0; //default value cannot be 0 -> first selectedindex is 0.
-
-    public List<ChartSeries> Series;
-    public string[] XAxisLabels = new string[] { };
+     
+    public double[] data;
+    string[] labels;
 
     protected override async Task OnInitializedAsync()
     {
@@ -168,15 +202,11 @@
         string datanow = DateTime.Now.ToString("yyyy-MM-dd");
         listReservacheckin = await FunctionAPICLOUDBEDs.getReservationsCheckinAsync(datanow);
         listReservacheckout = await FunctionAPICLOUDBEDs.getReservationsCheckOutAsync(datanow);
+        listReservasnovas = await FunctionAPICLOUDBEDs.getReservationsNovasAsync(datanow);
 
-        XAxisLabels = new string[] { datanow };
-
-        Series = new List<ChartSeries>()
-        {
-            new ChartSeries() { Name = "Check-in", Data = new double[] { listReservacheckin.Count() } },
-            new ChartSeries() { Name = "Check-Out", Data = new double[] { listReservacheckout.Count() } },
-        };
-
+        
+        data = new double[] { listReservacheckin.Count(), listReservacheckout.Count() };
+        labels = new string[] { "Check-in " + listReservacheckin.Count(), "Check-Out " + listReservacheckout.Count() };
 
     }
 
@@ -195,8 +225,8 @@
             listReservaconsulta.AddRange(listReservacache.Where(x => x.IDReserva!.Contains(consulta)));
             listReservaconsulta.AddRange(listReservacache.Where(x => x.NomeHospede!.Contains(consulta)));
 
-             listReservaconsulta.AddRange(await FunctionAPICLOUDBEDs.getReservationsIDsAsync(consulta));
-        } 
+            listReservaconsulta.AddRange(await FunctionAPICLOUDBEDs.getReservationsIDsAsync(consulta));
+        }
         else
             listReservaconsulta = new List<Reserva>();
     }
