@@ -382,7 +382,7 @@ else
                 }
                 if (item.CustomFieldName.Equals("Data de Nascimento"))
                 {
-                    string datadenascimento = Regex.Replace(item.CustomFieldValue, @"[^\d]", "");
+                    string datadenascimento = item.CustomFieldValue;
                     if (!string.IsNullOrEmpty(datadenascimento) && datadenascimento.Length > 4)
                     {
                         try{
