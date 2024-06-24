@@ -196,6 +196,32 @@ else
                     }
                     <MudSpacer />
                     <br />
+                    @if (reserva is not null && reserva.Notas is not null && reserva.Notas.Count > 0)
+                    {
+                        <MudPaper Class="rounded-xl">
+                            <MudExpansionPanel Dense="true" DisableGutters="true" Text="Notas" style="background-color: #F5F4F4;"> 
+                                <MudPaper class="rounded-b-xl">
+                                    @foreach (var item in reserva.Notas)
+                                    {
+                                        <MudListItem>
+                                            <MudGrid Justify="Justify.SpaceBetween">
+                                                <MudItem xs="12" sm="3">
+                                                    @*  <MudImage Fluid="true" Align="Align.Center" src="@($"data:image/png;base64,{qrCode}")" Alt="QRCode" Elevation="25" Width="250" Height="250" Class="rounded-lg" /> *@
+                                                </MudItem>
+                                                <MudItem xs="9" sm="6">
+                                                    <MudText Typo="Typo.caption">@item.Texto</MudText>                                                     
+                                                </MudItem>
+                                                <MudItem xs="3" sm="3">
+                                                    <MudText Typo="Typo.caption"> @item.Id </MudText>
+                                                </MudItem>
+                                            </MudGrid>
+                                        </MudListItem>
+                                    }
+                                </MudPaper>
+                            </MudExpansionPanel>
+                        </MudPaper>
+                    }
+                    <br />
                     @if (reserva is not null && reserva.ListaQuartos is not null && reserva.ListaQuartos.Count > 0)
                     {
                         <MudPaper Class="rounded-xl">
@@ -352,6 +378,20 @@ else
                     {
                         DisabledCPF = true;
                         CPF = "***.***." + cpfstring.Substring(cpfstring.Length - 4);
+                    }
+                }
+                if (item.CustomFieldName.Equals("Data de Nascimento"))
+                {
+                    string datadenascimento = Regex.Replace(item.CustomFieldValue, @"[^\d]", "");
+                    if (!string.IsNullOrEmpty(datadenascimento) && datadenascimento.Length > 4)
+                    {
+                        try{
+                            guest.Birthdate = DateTime.Parse(datadenascimento);
+                        }
+                        catch (Exception ex)
+                        {
+                            guest.Birthdate = null;
+                        } 
                     }
                 }
 
