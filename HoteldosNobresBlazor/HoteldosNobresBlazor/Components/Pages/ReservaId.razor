@@ -386,7 +386,8 @@ else
                     if (!string.IsNullOrEmpty(datadenascimento) && datadenascimento.Length > 4)
                     {
                         try{
-                            guest.Birthdate = DateTime.Parse(datadenascimento);
+                            guest.Birthdate = DateTime.Parse(datadenascimento, new CultureInfo("pt-BR"));
+                            guest.GuestBirthdate = DateTime.Parse(datadenascimento, new CultureInfo("pt-BR"));
                         }
                         catch (Exception ex)
                         {
