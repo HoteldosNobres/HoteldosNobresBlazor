@@ -3,6 +3,7 @@
         <MudTextField T="string" Label="Mensagem" Variant="Variant.Text" Text="@mensagem" @bind-Value="mensagem" Lines="7" /> 
     </DialogContent>
     <DialogActions>
+        <MudButton OnClick="Clear">Limpar</MudButton>
         <MudButton OnClick="Cancel">Cancel</MudButton>
         <MudButton Color="Color.Primary" OnClick="Submit">Ok</MudButton>
     </DialogActions>
@@ -14,4 +15,6 @@
     void Submit() => MudDialog.Close<string>(mensagem);
      
     void Cancel() => MudDialog.Cancel();
+
+    void Clear() => mensagem = "";
 }

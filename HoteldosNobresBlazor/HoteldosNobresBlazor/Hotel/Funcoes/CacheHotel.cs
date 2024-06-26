@@ -67,7 +67,7 @@ namespace HoteldosNobresBlazor.Funcoes
                 // Identificar Texto
                 if (mensagem.Entry[0].Changes[0].Value.Messages != null && mensagem.Entry[0].Changes[0].Value.Messages[0].Text != null)
                 {
-                    texto = mensagem.Entry[0].Changes[0].Value.Messages[0].Text.Body;
+                    texto = " WHATSAPP CHAT - Falou: " + mensagem.Entry[0].Changes[0].Value.Messages[0].Text.Body;
                     log.Log = texto;
                     log.Status = "texto";
                 } 
@@ -82,7 +82,7 @@ namespace HoteldosNobresBlazor.Funcoes
                     string comment_text = respostajson.Comment_text;
 
                     if (!string.IsNullOrEmpty(cpf) && !string.IsNullOrEmpty(datadenascimento))
-                        texto = "CPF: " + cpf + " Data Nascimento: " + datadenascimento + " From: " + from;
+                        texto = " CPF: " + cpf + " Data Nascimento: " + datadenascimento + " From: " + from;
                     else
                         texto = " Nota: " + hotelrating + " de 10 Comentario: " + comment_text + " From: " + from;
 
@@ -97,7 +97,7 @@ namespace HoteldosNobresBlazor.Funcoes
                 }
 
                 if (from != "553584151764" && from != "553537150180" && !texto.ToUpper().Contains("WHATSAPP STATUS"))
-                    resultado += FunctionWhatsApp.postMensagem("553537150180", "Numero " + from.Substring(from.Length - 4) + " Texto:" + texto).Result;
+                    resultado += FunctionWhatsApp.postMensagem("553537150180", "Numero " + from.Substring(from.Length - 4) +  texto).Result;
 
                 List<Reserva> listaReserva = FunctionAPICLOUDBEDs.getReservationsAsyncGuestDetails().Result;
                 Reserva reserva = listaReserva.Where(x => x.ProxyCelular.Contains(from)).FirstOrDefault();
@@ -115,15 +115,13 @@ namespace HoteldosNobresBlazor.Funcoes
                             DateTime birthdate = DateTime.Parse(datadenascimento);
                             reserva.DataNascimento = birthdate;
                             AjustarDataNascimento(reserva); 
-                        }
-
+                        } 
                         if (!string.IsNullOrEmpty(cpf))
                         {
                             reserva.Cpf = cpf;
                             AjustarCPF(reserva);
                         } 
-                    }
-                    resultado += FunctionWhatsApp.postMensagemTemplete(from, "inf_inicial").Result;
+                    } 
                 }
                 else if (!string.IsNullOrEmpty(hotelrating))
                 { 
