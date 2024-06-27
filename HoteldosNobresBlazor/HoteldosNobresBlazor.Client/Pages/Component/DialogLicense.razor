@@ -1,5 +1,6 @@
 ﻿@using System.Net
-@using System.Text
+@using System.Text 
+@inject IJSRuntime JSRuntime
 
 <MudDialog DisableSidePadding="true">
     <DialogContent>
@@ -15,6 +16,7 @@
         </MudContainer>
     </DialogContent>
     <DialogActions>
+        <MudButton OnClick="Cancel">POLÍTICA E NORMAS DO HOTEL</MudButton>
         <MudButton OnClick="Cancel">Cancelar</MudButton>
         <MudButton Color="Color.Primary" OnClick="Ok">Aceitar</MudButton>
     </DialogActions>
@@ -28,7 +30,7 @@
     {
         await base.OnInitializedAsync();
         Loading = true;
-        var response = await HttpClient.GetAsync("https://hoteldosnobres.azurewebsites.net/LICENSEHOTEL");
+        var response = await HttpClient.GetAsync("https://hoteldosnobres.azurewebsites.net/LICENSEHOTEL.txt");
         LicenseText = await response.Content.ReadAsStringAsync();
         Loading = false;
     }
@@ -42,4 +44,6 @@
     }
 
     void Cancel() => MudDialog.Cancel();
+
+    void Politica() => await JSRuntime.InvokeVoidAsync("open", "https://hoteldosnobres.com.br/politica", "_blank");
 }

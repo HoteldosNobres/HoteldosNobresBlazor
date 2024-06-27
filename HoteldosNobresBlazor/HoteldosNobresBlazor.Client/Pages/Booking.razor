@@ -114,6 +114,9 @@
             {
                 reserva = lista.FirstOrDefault(x => x.IDReservaAgencia is not null && x.IDReservaAgencia.Equals(ReservationId));
 
+                if (reserva is null)
+                    reserva = lista.FirstOrDefault(x => x.IDReserva is not null && x.IDReserva.Equals(ReservationId));
+
                 if (reserva is not null)
                 {
                     guest = await cloudbedsAPI.GetGuestAsync(reserva.GuestID!);
