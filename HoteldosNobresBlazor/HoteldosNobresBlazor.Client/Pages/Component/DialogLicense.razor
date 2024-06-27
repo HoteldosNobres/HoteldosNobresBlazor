@@ -28,7 +28,7 @@
     {
         await base.OnInitializedAsync();
         Loading = true;
-        var response = await HttpClient.GetAsync("https://raw.githubusercontent.com/HoteldosNobres/HoteldosNobresBlazor/master/HoteldosNobres.Client/LICENSE");
+        var response = await HttpClient.GetAsync("https://hoteldosnobres.azurewebsites.net/LICENSEHOTEL");
         LicenseText = await response.Content.ReadAsStringAsync();
         Loading = false;
     }
@@ -40,4 +40,6 @@
     {
         MudDialog.Close(DialogResult.Ok(true));
     }
+
+    void Cancel() => MudDialog.Cancel();
 }
