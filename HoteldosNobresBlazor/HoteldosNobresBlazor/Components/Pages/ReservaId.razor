@@ -534,7 +534,7 @@ else
     {
         try
         {
-            var retorno = await FunctionWhatsApp.postMensageFlowCPF(reserva.ProxyCelular!);
+            var retorno = await FunctionWhatsApp.postMensagemTempleteDadosFaltando(reserva.ProxyCelular!, reserva.IDReserva, reserva.NomeHospede);
             Snackbar.Add("Encaminhado com sucesso", Severity.Success);
         }
         catch (Exception ex)

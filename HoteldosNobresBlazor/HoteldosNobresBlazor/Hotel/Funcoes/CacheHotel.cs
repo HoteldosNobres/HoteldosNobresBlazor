@@ -246,12 +246,12 @@ namespace HoteldosNobresBlazor.Funcoes
                   if (logSistema.Log.Contains("CPF inválido"))
                 {
                     if (novareserva.Cpf != null && !ValidarCPF(novareserva.Cpf) && !novareserva.ProxyCelular!.Equals("553537150180"))
-                        logSistema.Log += FunctionWhatsApp.postMensageFlowCPF(novareserva.ProxyCelular!).Result;
+                        logSistema.Log += FunctionWhatsApp.postMensagemTempleteDadosFaltando(novareserva.ProxyCelular!, novareserva.IDReserva!, novareserva.NomeHospede!).Result;
                 }
 
                 if (novareserva is not null && string.IsNullOrEmpty(novareserva.Cpf)  && !novareserva.ProxyCelular!.Equals("553537150180"))
                 {
-                    logSistema.Log += FunctionWhatsApp.postMensageFlowCPF(novareserva.ProxyCelular!).Result;
+                    logSistema.Log += FunctionWhatsApp.postMensagemTempleteDadosFaltando(novareserva.ProxyCelular!, novareserva.IDReserva!, novareserva.NomeHospede!).Result;
                 }
 
 
@@ -433,7 +433,7 @@ namespace HoteldosNobresBlazor.Funcoes
                             voltar = true;
                             logSistema.Log += FunctionWhatsApp.postMensagem("553537150180", "Por favor informe seu CPF na reserva do " + reserva.NomeHospede).Result;
 
-                            logSistema.Log += FunctionWhatsApp.postMensageFlowCPF(reserva.ProxyCelular!).Result;
+                            logSistema.Log += FunctionWhatsApp.postMensagemTempleteDadosFaltando(reserva.ProxyCelular!, reserva.IDReserva!, reserva.NomeHospede!).Result;
                             logSistema.Log += FunctionWhatsApp.postMensagemTemplete(reserva.ProxyCelular!, "inf_mtur").Result;
                         }
 
@@ -442,7 +442,7 @@ namespace HoteldosNobresBlazor.Funcoes
                             voltar = true;
                             logSistema.Log += FunctionWhatsApp.postMensagem("553537150180", "Por favor informe seu CPF VALIDO - " + reserva.NomeHospede).Result;
 
-                            logSistema.Log += FunctionWhatsApp.postMensageFlowCPF(reserva.ProxyCelular!).Result;
+                            logSistema.Log += FunctionWhatsApp.postMensagemTempleteDadosFaltando(reserva.ProxyCelular!, reserva.IDReserva!, reserva.NomeHospede!).Result;
                             logSistema.Log += FunctionWhatsApp.postMensagemTemplete(reserva.ProxyCelular!, "inf_mtur").Result;
                         }
                     }

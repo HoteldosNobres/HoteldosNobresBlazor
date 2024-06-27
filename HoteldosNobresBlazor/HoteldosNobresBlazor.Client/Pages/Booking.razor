@@ -34,14 +34,14 @@
                 </MudListItem>
 
                 <MudTextField T="string" Label="E-mail" Editable="@(!Disabled)" Elevation="12" Disabled="@Disabled" @bind-Value="guest.Email" Variant="Variant.Outlined" />
-                <MudTextField T="string" Label="CPF*" Disabled="@DisabledCPF" @bind-Value="CPF" Variant="Variant.Outlined"   />
+                <MudTextField T="string" Label="CPF*" Disabled="@DisabledCPF" @bind-Value="CPF" Variant="Variant.Outlined" />
                 <MudDatePicker Label="Data de Nascimento*" PickerVariant="PickerVariant.Dialog" Editable="@(!Disabled)" Elevation="12" Disabled="@Disabled" @bind-Date="guest.Birthdate" DateFormat="dd/MM/yyyy" Variant="Variant.Outlined" />
                 <MudDivider />
                 <MudListItem Avatar="@Icons.Material.Filled.House"> Endereço </MudListItem>
                 <MudTextField T="string" Label="CEP" @bind-Value="guest.Zip" TextChanged="@SearchCEP" Editable="@Disabled"
-                              Disabled="@Disabled" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary" Variant="Variant.Outlined"  />
-               
-                <MudTextField T="string" Label="Endereço - Rua/Avenida + Número + Compl." Disabled="DisableEndereco" @bind-Value="guest.Address" Variant="Variant.Outlined"  />
+                              Disabled="@Disabled" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary" Variant="Variant.Outlined" />
+
+                <MudTextField T="string" Label="Endereço - Rua/Avenida + Número + Compl." Disabled="DisableEndereco" @bind-Value="guest.Address" Variant="Variant.Outlined" />
                 <MudListItem>
                     <div class="d-flex">
                         <MudTextField T="string" Label="Bairro" Disabled="true" @bind-Value="guest.Address2" />
@@ -54,9 +54,9 @@
                         <MudTextField T="string" Label="Pais" Disabled="true" @bind-Value="guest.GuestCountry" />
                     </div>
                 </MudListItem>
-               @*  <MudCheckBox @bind-Value="@guest.GuestOptIn" hidden="@(true)" Editable="@(!Disabled)" Elevation="12" Disabled="@Disabled" Label="Aceito receber informações/martking" Color="Color.Primary"></MudCheckBox> *@
+                @*  <MudCheckBox @bind-Value="@guest.GuestOptIn" hidden="@(true)" Editable="@(!Disabled)" Elevation="12" Disabled="@Disabled" Label="Aceito receber informações/martking" Color="Color.Primary"></MudCheckBox> *@
             </MudList>
-            <div class="mt-4"> 
+            <div class="mt-4">
                 <MudButton Variant="Variant.Filled"
                            Color="Color.Primary"
                            Class="ml-auto rounded-xl"
@@ -79,7 +79,7 @@
 
 
 <MudPaper Class="px-8 pt-2 pb-4 mx-4 my-4 rounded-xl" Justify="Justify.Center" hidden="@(!Disabled)">
-     @if (reserva is not null)
+    @if (reserva is not null)
     {
         <CardBooking reserva=reserva />
     }
@@ -106,11 +106,19 @@
 
     protected override async Task OnInitializedAsync()
     {
+        string userId = string.Empty;
+        var authorization = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        if (authorization.User.Identity!.IsAuthenticated)
+        {
+            user = new UserInfo(authorization.User);
+            userId = user.UserId;
+        }
+
         try
         {
             List<Reserva> lista = appState.ListReservas;
 
-            if(lista is not null)
+            if (lista is not null)
             {
                 reserva = lista.FirstOrDefault(x => x.IDReservaAgencia is not null && x.IDReservaAgencia.Equals(ReservationId));
 
@@ -125,11 +133,17 @@
                         throw new ArgumentException("Booking canceled.");
                 }
             }
-            
-             
+
+
             if (guest is not null)
             {
-                CellPhone = "** ****-." + guest.GuestPhone!.Substring(guest.GuestPhone.Length - 4);
+                if (!string.IsNullOrEmpty(userId) && !guest.GuestId.ToString().Equals(userId))
+                    throw new ArgumentException("Booking canceled.");
+
+                if (guest.Phone!.Length > 10)
+                    CellPhone = guest.Phone!.Substring(0, 10) + "**-****";
+                else
+                    CellPhone = guest.Phone!.Substring(0, 6) + "**-****";
 
                 if (guest.Email!.Contains("guest.booking.com"))
                     guest.Email = null;
@@ -154,14 +168,19 @@
 
                 }
             }
-            else 
+            else
                 Navigation.NavigateTo("https://hoteldosnobres.com.br/");
 
-        }catch (Exception ex){
-            Snackbar.Add("Erro ao carregar a reserva!", Severity.Error);
-            Navigation.NavigateTo("https://hoteldosnobres.com.br/");
         }
-        
+        catch (Exception ex)
+        {
+            Snackbar.Add("Erro ao carregar a reserva!", Severity.Error);
+            if (!string.IsNullOrEmpty(userId))
+                Navigation.NavigateTo("/minhareserva");
+            else
+                Navigation.NavigateTo("https://hoteldosnobres.com.br/");
+        }
+
     }
 
     protected async Task Editar()
@@ -180,8 +199,10 @@
         if (!result.Canceled)
         {
             license_accepted = (bool)(result.Data ?? false);
-            if(license_accepted)
+            if (license_accepted){
                 await Salvar();
+                reserva = await cloudbedsAPI.GetReservaAsync(reserva.IDReserva);
+            }
         }
     }
 

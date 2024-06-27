@@ -2,14 +2,15 @@
 using HoteldosNobresBlazor.Components.Pages;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Net.Http;
 using static HoteldosNobresBlazor.Components.Pages.CallApi;
 
 namespace HoteldosNobresBlazor.Funcoes
 {
     public class FunctionWhatsApp
-    { 
+    {
         static string urlapi = @"https://graph.facebook.com/v19.0/227958023743323/messages";
-       
+
 
         #region  Messages
 
@@ -17,15 +18,15 @@ namespace HoteldosNobresBlazor.Funcoes
         {
             try
             {
-                 
+
                 var client = new HttpClient();
                 var request = new HttpRequestMessage(HttpMethod.Post, urlapi);
-                request.Headers.Add("Authorization", "Bearer " + KEYs.TOKEN_WHATSAPP); 
-                var content = new StringContent("{ \"messaging_product\": \"whatsapp\", \"to\": \""+ numero + "\", \"type\": \"template\", \"template\": { \"name\": \""+ nametemplete + "\", \"language\": { \"code\": \"pt_BR\" } } }", null, "application/json");
+                request.Headers.Add("Authorization", "Bearer " + KEYs.TOKEN_WHATSAPP);
+                var content = new StringContent("{ \"messaging_product\": \"whatsapp\", \"to\": \"" + numero + "\", \"type\": \"template\", \"template\": { \"name\": \"" + nametemplete + "\", \"language\": { \"code\": \"pt_BR\" } } }", null, "application/json");
                 request.Content = content;
                 var response = await client.SendAsync(request);
-                response.EnsureSuccessStatusCode(); 
-                 
+                response.EnsureSuccessStatusCode();
+
                 return "";
             }
             catch (FileNotFoundException e)
@@ -40,49 +41,16 @@ namespace HoteldosNobresBlazor.Funcoes
         {
             try
             {
-                if (string.IsNullOrEmpty(mensagem)) 
+                if (string.IsNullOrEmpty(mensagem))
                     mensagem = @" Converse com Hotel dos Nobres no WhatsApp: https://wa.me/message/EKQWQ3LJBWUNA1 ";
 
                 var client = new HttpClient();
                 var request = new HttpRequestMessage(HttpMethod.Post, urlapi);
-                request.Headers.Add("Authorization", "Bearer " + KEYs.TOKEN_WHATSAPP); 
+                request.Headers.Add("Authorization", "Bearer " + KEYs.TOKEN_WHATSAPP);
                 var content = new StringContent("{\n    \"messaging_product\": \"whatsapp\",\n  " +
                     "  \"to\": \"" + numero + "\",\n    \"type\": \"text\",\n  " +
                     "  \"text\": {\n " +
                     "  \"body\": \"" + mensagem + "\"\n  }\n}", null, "application/json");
-                request.Content = content;
-                var response = await client.SendAsync(request);
-                response.EnsureSuccessStatusCode();  
-                Console.WriteLine(await response.Content.ReadAsStringAsync());
-                return "";
-            }
-            catch (FileNotFoundException e)
-            { 
-                return e.Message + "\n";
-            }
-
-        }
-
-        public static async Task<string> postMensageFlowCPF(string numero)
-        {
-            try
-            { 
-                var client = new HttpClient();
-                var request = new HttpRequestMessage(HttpMethod.Post, urlapi);
-                request.Headers.Add("Authorization", "Bearer " + KEYs.TOKEN_WHATSAPP);
-                var content = new StringContent("{ \n  \"messaging_product\": \"whatsapp\"," +
-                    "\n  \"to\": \"" + numero + "\", \n  \"type\": \"INTERACTIVE\", \n" +
-                    "  \"interactive\": { \n    \"type\": \"flow\", \n    \"header\": { \n" +
-                    "      \"type\": \"text\", \n      \"text\": \"Preeche os dados Faltando\" \n" +
-                    "    }, \n    \"body\": { \n      \"text\": \"Recebemos sua reserva, porem de acordo com Ministério do Turismo(MTur) precisamos do CPF e Data de nascimento. Abre o preenchimento para envio automático para o sistema do Hotel dos Nobres.\" \n" +
-                    "    }, \n    \"footer\": { \n      \"text\": \"Enviado pelo sistema do Hotel dos Nobres\" \n    }, \n  " +
-                    "  \"action\": { \n      \"name\": \"flow\", \n      \"parameters\": { \n   " +
-                    "     \"flow_message_version\": \"3\", \n        \"flow_token\": \"any_string_for_this_example\", \n    " +
-                    "    \"flow_id\": \"302483089525226\", \n        \"flow_cta\": \"Abrir prenchimento\", \n   " +
-                    "     \"flow_action\": \"navigate\", \n        \"flow_action_payload\": { \n   " +
-                    "       \"screen\": \"SIGN_UP\", \n          \"data\": { \n      " +
-                    "              \"type\": \"dynamic_object\" \n          " +
-                    "        } \n        } \n      } \n    } \n  } \n}", null, "application/json");
                 request.Content = content;
                 var response = await client.SendAsync(request);
                 response.EnsureSuccessStatusCode();
@@ -95,6 +63,39 @@ namespace HoteldosNobresBlazor.Funcoes
             }
 
         }
+
+        //public static async Task<string> postMensageFlowCPF(string numero)
+        //{
+        //    try
+        //    {
+        //        var client = new HttpClient();
+        //        var request = new HttpRequestMessage(HttpMethod.Post, urlapi);
+        //        request.Headers.Add("Authorization", "Bearer " + KEYs.TOKEN_WHATSAPP);
+        //        var content = new StringContent("{ \n  \"messaging_product\": \"whatsapp\"," +
+        //            "\n  \"to\": \"" + numero + "\", \n  \"type\": \"INTERACTIVE\", \n" +
+        //            "  \"interactive\": { \n    \"type\": \"flow\", \n    \"header\": { \n" +
+        //            "      \"type\": \"text\", \n      \"text\": \"Preeche os dados Faltando\" \n" +
+        //            "    }, \n    \"body\": { \n      \"text\": \"Recebemos sua reserva, porem de acordo com Ministério do Turismo(MTur) precisamos do CPF e Data de nascimento. Abre o preenchimento para envio automático para o sistema do Hotel dos Nobres.\" \n" +
+        //            "    }, \n    \"footer\": { \n      \"text\": \"Enviado pelo sistema do Hotel dos Nobres\" \n    }, \n  " +
+        //            "  \"action\": { \n      \"name\": \"flow\", \n      \"parameters\": { \n   " +
+        //            "     \"flow_message_version\": \"3\", \n        \"flow_token\": \"any_string_for_this_example\", \n    " +
+        //            "    \"flow_id\": \"302483089525226\", \n        \"flow_cta\": \"Abrir prenchimento\", \n   " +
+        //            "     \"flow_action\": \"navigate\", \n        \"flow_action_payload\": { \n   " +
+        //            "       \"screen\": \"SIGN_UP\", \n          \"data\": { \n      " +
+        //            "              \"type\": \"dynamic_object\" \n          " +
+        //            "        } \n        } \n      } \n    } \n  } \n}", null, "application/json");
+        //        request.Content = content;
+        //        var response = await client.SendAsync(request);
+        //        response.EnsureSuccessStatusCode();
+        //        Console.WriteLine(await response.Content.ReadAsStringAsync());
+        //        return "";
+        //    }
+        //    catch (FileNotFoundException e)
+        //    {
+        //        return e.Message + "\n";
+        //    }
+
+        //}
 
         public static async Task<string> postMensageFlowAvaliacao(string numero)
         {
@@ -154,7 +155,7 @@ namespace HoteldosNobresBlazor.Funcoes
                     "                           \"type\": \"text\",\r\n " +
                     "                           \"text\": \"" + origemID + "\"\r\n " +
                     "                           },\r\n " +
-                    "                           { \r\n " + 
+                    "                           { \r\n " +
                     "                           \"type\": \"text\",\r\n" +
                     "                            \"text\": \"" + origem + "\"\r\n" +
                     "                            }],\r\n " +
@@ -209,6 +210,51 @@ namespace HoteldosNobresBlazor.Funcoes
 
         }
 
+        public static async Task<string> postMensagemTempleteDadosFaltando(string numero, string reservaID, string Nome)
+        {
+            try
+            {
+
+                var client = new HttpClient();
+                var request = new HttpRequestMessage(HttpMethod.Post, urlapi);
+                request.Headers.Add("Authorization", "Bearer " + KEYs.TOKEN_WHATSAPP);
+                string stringcontet = "{ \r\n    \"messaging_product\": \"whatsapp\", \r\n" +
+                    "    \"to\": \"" + numero + "\", \r\n" +
+                    "    \"type\": \"template\", \r\n" +
+                    "    \"template\": \r\n    { \r\n" +
+                    "        \"name\": \"event_dados_faltando\",\r\n" +
+                    "         \"language\": \r\n " +
+                    "        { \"code\": \"pt_BR\" \r\n" +
+                    "         },\r\n         \"components\":  [{\r\n" +
+                    "            \"type\": \"body\",\r\n" +
+                    "            \"parameters\": [{\r\n" +
+                    "                               \"type\": \"text\",\r\n" +
+                    "                                \"text\": \"" + Nome + "\"\r\n" +
+                    "                            }]\r\n " +
+                    "              },{" +
+                    "            \"type\": \"button\",\r\n" +
+                    "            \"sub_type\": \"url\",\r\n" +
+                    "            \"index\": \"0\",\r\n" +
+                    "            \"parameters\": [{\r\n" +
+                    "                               \"type\": \"text\",\r\n" +
+                    "                                \"text\": \"" + reservaID + "\"\r\n" +
+                    "                            }]\r\n " +
+                    "           }] \r\n" +
+                    " } \r\n}";
+                var content = new StringContent(stringcontet, null, "application/json"); request.Content = content;
+                var response = await client.SendAsync(request);
+                response.EnsureSuccessStatusCode();
+
+                return "";
+            }
+            catch (FileNotFoundException e)
+            {
+                Console.WriteLine(e.Message);
+                return null;
+            }
+
+        }
+
 
         #endregion Messages
 
@@ -221,7 +267,7 @@ namespace HoteldosNobresBlazor.Funcoes
         }
 
         public static async Task<T> LerRespostaComoObjetoAsync<T>(string jsonString)
-        { 
+        {
             T obj = JsonConvert.DeserializeObject<T>(jsonString);
             return obj;
         }
@@ -231,16 +277,16 @@ namespace HoteldosNobresBlazor.Funcoes
             try
             {
                 var request = new HttpRequestMessage(HttpMethod.Get, url);
-                request.Headers.Add("Authorization", "Bearer " + KEYs.TOKEN_CLOUDBEDS); 
+                request.Headers.Add("Authorization", "Bearer " + KEYs.TOKEN_CLOUDBEDS);
                 request.Headers.Add("User-Agent", "HttpClientFactory-Sample");
 
                 var client = new HttpClient();
 
                 var response = client.Send(request);
-                 
-                return 
+
+                return
                     response;
-                 
+
             }
             catch (FileNotFoundException e)
             {
