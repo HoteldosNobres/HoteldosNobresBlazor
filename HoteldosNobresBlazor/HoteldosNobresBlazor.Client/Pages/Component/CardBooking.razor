@@ -1,0 +1,84 @@
+﻿@using System.Globalization
+
+<MudGrid Justify="Justify.Center" Class="align-items-center">
+    <MudItem>
+        <MudText Typo="Typo.h3" Align="Align.Center" Color="Color.Success"> <i class="fa fa-check" aria-hidden="true"></i> </MudText>
+    </MudItem>
+</MudGrid>
+<MudText Typo="Typo.h6" Align="Align.Center" GutterBottom="true">Agradecemos seu pedido!</MudText>
+<MudText Align="Align.Center"> O número da reserva é #@reserva.IDReserva  </MudText>
+@if (!string.IsNullOrEmpty(reserva.Email) && !reserva.Email.Contains("booking.com"))
+{
+    <MudText Align="Align.Center"> Enviamos a confirmação do pedido para o e-mail: @reserva.Email  </MudText>
+}
+<MudSpacer />
+<MudItem >
+    <MudGrid Spacing="1" Justify="Justify.Center">
+        <MudItem xs="4" sm="4" md="4">
+            <MudGrid Class="align-end" Color="Color.Success" Justify="Justify.FlexEnd">
+                <MudItem>
+                    <MudText Align="Align.Center"> Check-in </MudText>
+                    <MudText Typo="Typo.h6" Align="Align.Center" Color="Color.Success">  @reserva.DataCheckIn.GetValueOrDefault().ToString("dd/MM/yyyy")</MudText>
+                    <MudText Align="Align.Center">@reserva.DataCheckIn.GetValueOrDefault().ToString("dddd", new CultureInfo("pt-BR"))</MudText>
+                </MudItem>
+            </MudGrid>
+        </MudItem>
+        <MudItem xs="1" sm="1" md="1">
+            <MudGrid Justify="Justify.Center">
+                <MudItem Class="align-center"> 
+                    <MudText Typo="Typo.h6" Class="py-2 d-flex flex-1" Align="Align.Center"><i class="fa fa-arrow-right" aria-hidden="true"></i></MudText>
+                </MudItem>
+            </MudGrid>
+        </MudItem>
+        <MudItem xs="4" sm="4" md="4">
+            <MudGrid Class="align-items-center">
+                <MudItem>
+                    <MudText Align="Align.Center">Check-Out </MudText>
+                    <MudText Typo="Typo.h6" Align="Align.Center" Color="Color.Success"> @reserva.DataCheckOut.GetValueOrDefault().ToString("dd/MM/yyyy") </MudText>
+                    <MudText Align="Align.Center">@reserva.DataCheckOut.GetValueOrDefault().ToString("dddd", new CultureInfo("pt-BR")) </MudText>
+                </MudItem>
+            </MudGrid>
+        </MudItem>
+    </MudGrid>
+ </MudItem> 
+<MudText Align="Align.Center">
+    <MudChip Color="Color.Tertiary">
+        <i class="fa-solid fa-moon"> </i> @reserva.Noites.GetValueOrDefault(1).ToString() Noite(s)
+        <i class="fa fa-users" aria-hidden="true"></i> @reserva.Hospedes.GetValueOrDefault(1).ToString() Hospede(s)
+    </MudChip>
+</MudText> 
+<MudSpacer />
+<MudText Align="Align.Center"> Nome do Hospede Principal: @reserva.NomeHospede  </MudText>
+<MudText Align="Align.Center"> Origem: @reserva.Origem  </MudText>
+@if (!string.IsNullOrEmpty(reserva.IDReservaAgencia))
+{
+    <MudText Align="Align.Center"> Número da reserva via agência: @reserva.IDReservaAgencia  </MudText>
+}
+<MudSpacer />
+<br />
+@if (reserva is not null && reserva.ListaQuartos is not null && reserva.ListaQuartos.Count > 0)
+{
+    <CardAcomodacoes Reserva=reserva />
+}
+<br />
+
+
+
+@code {
+    [Parameter]
+    public Reserva? reserva { get; set; }
+
+    public string? Imagem { get; set; }
+
+    protected override void OnInitialized()
+    {
+        // Imagem = Reserva!.FotoPerfil!.Contains("Foto") ? $"https://localhost:7089/{Artista!.FotoPerfil}" : "images/cardArtista.png";
+
+    }
+
+    private string LimitaCaracteres(string texto, int tamanhoMaximo)
+    {
+        tamanhoMaximo -= 3;
+        return (texto.Length >= tamanhoMaximo) ? $"{texto.Substring(0, tamanhoMaximo)}..." : texto;
+    }
+}

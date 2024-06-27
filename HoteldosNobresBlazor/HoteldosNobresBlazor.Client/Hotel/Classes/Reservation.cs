@@ -415,6 +415,17 @@ public partial class Guest
             }
         }
     }
+
+
+    [JsonProperty("optIn")]
+    public bool? OptIn { get; set; }
+
+    [JsonProperty("guestOptIn")]
+    public bool? GuestOptIn
+    {
+        get { return OptIn; }
+        set { OptIn = value; }
+    }
 }
 
 public partial class CustomField

@@ -1,0 +1,43 @@
+﻿@using System.Net
+@using System.Text
+
+<MudDialog DisableSidePadding="true">
+    <DialogContent>
+        <MudContainer Style="max-height: 300px; overflow-y: scroll">
+            @if (Loading)
+            {
+                <MudProgressCircular Indeterminate="true"></MudProgressCircular>
+            }
+            else
+            {
+                <MudText Style="white-space: pre-wrap;">@LicenseText</MudText>
+            }
+        </MudContainer>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancelar</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Ok">Aceitar</MudButton>
+    </DialogActions>
+</MudDialog>
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+    [Inject] HttpClient HttpClient { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        Loading = true;
+        var response = await HttpClient.GetAsync("https://raw.githubusercontent.com/HoteldosNobres/HoteldosNobresBlazor/master/HoteldosNobres.Client/LICENSE");
+        LicenseText = await response.Content.ReadAsStringAsync();
+        Loading = false;
+    }
+
+    private string LicenseText;
+    private bool Loading = false;
+
+    private void Ok()
+    {
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+}

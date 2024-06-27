@@ -36,6 +36,9 @@
     <Content Update="Pages\Component\CardPix.razor">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
     </Content>
+    <Content Update="Pages\Component\DialogLicense.razor">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </Content>
     <Content Update="Pages\MeuPerfil.razor">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
     </Content>

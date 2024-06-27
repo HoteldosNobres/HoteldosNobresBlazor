@@ -25,62 +25,9 @@ else
         <MudGrid>
             <MudItem xs="12" sm="6">
                 <MudPaper Elevation="2" Class="pa-4  rounded-xl" Style="height: 100%">
-                    <MudGrid Justify="Justify.Center" Class="align-items-center">
-                        <MudItem>
-                            <MudText Typo="Typo.h3" Align="Align.Center" Color="Color.Success"> <i class="fa fa-check" aria-hidden="true"></i> </MudText>
-                        </MudItem>
-                    </MudGrid>
-                    <MudText Typo="Typo.h6" Align="Align.Center" GutterBottom="true">Agradecemos seu pedido!</MudText>
-                    <MudText Align="Align.Center"> O número da reserva é #@reserva.IDReserva  </MudText>
-                    <MudText Align="Align.Center"> Enviamos a confirmação do pedido para o e-mail: @reserva.Email  </MudText>
-                    <MudGrid Justify="Justify.Center">
-                        <MudItem xs="3">
-                            <MudGrid Class="align-items-center">
-                                <MudItem>
-                                    <MudText Align="Align.Center"> Check-in </MudText>
-                                    <MudText Typo="Typo.h6" Align="Align.Center" Color="Color.Success">  @reserva.DataCheckIn.GetValueOrDefault().ToString("dd/MM/yyyy")</MudText>
-                                    <MudText Align="Align.Center">@reserva.DataCheckIn.GetValueOrDefault().ToString("dddd", new CultureInfo("pt-BR"))</MudText>
-                                </MudItem>
-                            </MudGrid>
-                        </MudItem>
-                        <MudItem xs="1">
-                            <MudGrid Justify="Justify.Center" Class="d-flex flex-1 align-items-center">
-                                <MudItem>
-                                    <i class="fa fa-arrow-right" aria-hidden="true"></i>
-                                </MudItem>
-                            </MudGrid>
-                        </MudItem>
-                        <MudItem xs="3">
-                            <MudGrid Class="align-items-center">
-                                <MudItem>
-                                    <MudText Align="Align.Center">Check-Out </MudText>
-                                    <MudText Typo="Typo.h6" Align="Align.Center" Color="Color.Success"> @reserva.DataCheckOut.GetValueOrDefault().ToString("dd/MM/yyyy") </MudText>
-                                    <MudText Align="Align.Center">@reserva.DataCheckOut.GetValueOrDefault().ToString("dddd", new CultureInfo("pt-BR")) </MudText>
-                                </MudItem>
-                            </MudGrid>
-                        </MudItem>
-                    </MudGrid>
-                    <MudText Align="Align.Center">
-                        <MudChip Color="Color.Tertiary">
-                            <i class="fa-solid fa-moon"> </i> @reserva.Noites.GetValueOrDefault(1).ToString() Noite(s)
-                            <i class="fa fa-users" aria-hidden="true"></i> @reserva.Hospedes.GetValueOrDefault(1).ToString() Hospede(s)
-                        </MudChip>
-                    </MudText>
-                    <MudSpacer />
-                    <MudText Align="Align.Center" Class="mb-n4"> - </MudText>
-                    <MudText Align="Align.Center"> Nome do Hospede Principal: @reserva.NomeHospede  </MudText>
-                    <MudText Align="Align.Center"> Origem: @reserva.Origem  </MudText>
-                    @if (!string.IsNullOrEmpty(reserva.IDReservaAgencia))
-                    {
-                        <MudText Align="Align.Center"> Número da reserva via agência: @reserva.IDReservaAgencia  </MudText>
-                    }
-                    <MudSpacer />
-                    <br />
-                    @if (reserva is not null && reserva.ListaQuartos is not null && reserva.ListaQuartos.Count > 0)
-                    {
-                        <CardAcomodacoes Reserva=reserva />
-                    }
-                    <br />
+                    <CardBooking reserva=reserva />
+                   
+                   
                     <MudSpacer />
                     @if (reserva is not null && (reserva.BalanceDetailed!.GrandTotal - reserva.BalanceDetailed!.Paid) > 0)
                     {
@@ -88,6 +35,7 @@ else
                     }
                 </MudPaper>
             </MudItem>
+
             <MudItem xs="12" sm="3">
                 <MudGrid>
                     <MudItem xs="12">

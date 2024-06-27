@@ -1,0 +1,270 @@
+﻿@page "/booking/{ReservationId}"
+@using System.Security.Claims
+@using System.Net.NetworkInformation
+@using HoteldosNobresBlazor.Client.Pages.Component
+@using System.Text.RegularExpressions
+@using MosaicoSolutions.ViaCep
+@using MosaicoSolutions.ViaCep.Modelos
+@using Newtonsoft.Json
+@inject APICloudbeds cloudbedsAPI
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject AppState appState
+@inject ISnackbar Snackbar
+@inject NavigationManager Navigation
+
+@rendermode InteractiveServer
+@inherits LayoutComponentBase
+@inject IDialogService DialogService
+
+@attribute [AllowAnonymous]
+
+<PageTitle>Reserva Booking.Com</PageTitle>
+
+<MudPaper Class="px-8 pt-2 pb-4 mx-4 my-4 rounded-xl" Justify="Justify.Center" hidden="@(Disabled)">
+    @if (guest is not null)
+    {
+        <MudForm>
+            <MudList>
+                <MudListItem Avatar="@Icons.Material.Filled.Info"> Dados - Suas informações </MudListItem>
+                <MudListItem>
+                    <div class="d-flex">
+                        <MudTextField T="string" Label="Nome" Disabled="true" @bind-Value="guest.FirstName" />
+                        <MudTextField T="string" Label="Celular/Telefone" Disabled="true" @bind-Value="CellPhone" />
+                    </div>
+                </MudListItem>
+
+                <MudTextField T="string" Label="E-mail" Editable="@(!Disabled)" Elevation="12" Disabled="@Disabled" @bind-Value="guest.Email" Variant="Variant.Outlined" />
+                <MudTextField T="string" Label="CPF*" Disabled="@DisabledCPF" @bind-Value="CPF" Variant="Variant.Outlined"   />
+                <MudDatePicker Label="Data de Nascimento*" PickerVariant="PickerVariant.Dialog" Editable="@(!Disabled)" Elevation="12" Disabled="@Disabled" @bind-Date="guest.Birthdate" DateFormat="dd/MM/yyyy" Variant="Variant.Outlined" />
+                <MudDivider />
+                <MudListItem Avatar="@Icons.Material.Filled.House"> Endereço </MudListItem>
+                <MudTextField T="string" Label="CEP" @bind-Value="guest.Zip" TextChanged="@SearchCEP" Editable="@Disabled"
+                              Disabled="@Disabled" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary" Variant="Variant.Outlined"  />
+               
+                <MudTextField T="string" Label="Endereço - Rua/Avenida + Número + Compl." Disabled="DisableEndereco" @bind-Value="guest.Address" Variant="Variant.Outlined"  />
+                <MudListItem>
+                    <div class="d-flex">
+                        <MudTextField T="string" Label="Bairro" Disabled="true" @bind-Value="guest.Address2" />
+                        <MudTextField T="string" Label="Cidade" Disabled="true" @bind-Value="guest.City" />
+                    </div>
+                </MudListItem>
+                <MudListItem>
+                    <div class="d-flex">
+                        <MudTextField T="string" Label="Estado" Disabled="true" @bind-Value="guest.State" />
+                        <MudTextField T="string" Label="Pais" Disabled="true" @bind-Value="guest.GuestCountry" />
+                    </div>
+                </MudListItem>
+               @*  <MudCheckBox @bind-Value="@guest.GuestOptIn" hidden="@(true)" Editable="@(!Disabled)" Elevation="12" Disabled="@Disabled" Label="Aceito receber informações/martking" Color="Color.Primary"></MudCheckBox> *@
+            </MudList>
+            <div class="mt-4"> 
+                <MudButton Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           Class="ml-auto rounded-xl"
+                           Disabled="@DisabledSave"
+                           @onclick="OpenDialog">
+                    Salvar
+                </MudButton>
+            </div>
+        </MudForm>
+    }
+    else
+    {
+        <MudGrid Justify="Justify.Center" Class="align-items-center">
+            <MudItem>
+                <MudProgressCircular Indeterminate="true"></MudProgressCircular>
+            </MudItem>
+        </MudGrid>
+    }
+</MudPaper>
+
+
+<MudPaper Class="px-8 pt-2 pb-4 mx-4 my-4 rounded-xl" Justify="Justify.Center" hidden="@(!Disabled)">
+     @if (reserva is not null)
+    {
+        <CardBooking reserva=reserva />
+    }
+</MudPaper>
+
+@code {
+    [Parameter]
+    public string ReservationId { get; set; }
+
+    public Reserva reserva { get; set; }
+
+    public Guest guest { get; set; }
+    private UserInfo user = default!;
+    public string CPF { get; set; }
+    public string CellPhone { get; set; }
+
+    bool ReadOnly = false;
+    bool NestedReadOnly;
+    bool Disabled = false;
+    bool NestedDisabled;
+    bool DisabledSave = false;
+    bool DisabledCPF = false;
+    bool DisableEndereco = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            List<Reserva> lista = appState.ListReservas;
+
+            if(lista is not null)
+            {
+                reserva = lista.FirstOrDefault(x => x.IDReservaAgencia is not null && x.IDReservaAgencia.Equals(ReservationId));
+
+                if (reserva is not null)
+                {
+                    guest = await cloudbedsAPI.GetGuestAsync(reserva.GuestID!);
+
+                    if (reserva.Status is not null && reserva.Status.Equals("canceled"))
+                        throw new ArgumentException("Booking canceled.");
+                }
+            }
+            
+             
+            if (guest is not null)
+            {
+                CellPhone = "** ****-." + guest.GuestPhone!.Substring(guest.GuestPhone.Length - 4);
+
+                if (guest.Email!.Contains("guest.booking.com"))
+                    guest.Email = null;
+
+                DisabledCPF = false;
+                foreach (var item in guest.CustomFields)
+                {
+                    if (item.CustomFieldName.Equals("CPF"))
+                    {
+                        string cpfstring = Regex.Replace(item.CustomFieldValue, @"[^\d]", "");
+                        if (!string.IsNullOrEmpty(cpfstring))
+                        {
+                            DisabledCPF = true;
+                            ReadOnly = true;
+                            Disabled = true;
+                            DisabledSave = true;
+                            DisabledCPF = true;
+                            DisableEndereco = true;
+                            CPF = "***.***." + cpfstring.Substring(cpfstring.Length - 4);
+                        }
+                    }
+
+                }
+            }
+            else 
+                Navigation.NavigateTo("https://hoteldosnobres.com.br/");
+
+        }catch (Exception ex){
+            Snackbar.Add("Erro ao carregar a reserva!", Severity.Error);
+            Navigation.NavigateTo("https://hoteldosnobres.com.br/");
+        }
+        
+    }
+
+    protected async Task Editar()
+    {
+        Disabled = !Disabled;
+        ReadOnly = !ReadOnly;
+        DisabledSave = !DisabledSave;
+
+    }
+
+    async Task OpenDialog()
+    {
+        bool license_accepted = false;
+        var result = await DialogService.Show<DialogLicense>("Termos e Condições ").Result;
+
+        if (!result.Canceled)
+        {
+            license_accepted = (bool)(result.Data ?? false);
+            if(license_accepted)
+                await Salvar();
+        }
+    }
+
+    protected async Task Salvar()
+    {
+        try
+        {
+            if (guest.Birthdate is not null)
+            {
+                if (!string.IsNullOrEmpty(guest.Birthdate.Value.ToString("yyyy-MM-dd")))
+                    cloudbedsAPI.PutGuestAsync(guest.GuestId.ToString(), "guestBirthDate", guest.Birthdate.Value.ToString("yyyy-MM-dd"));
+                CustomField? customField = new CustomField();
+                customField!.CustomFieldName = "Data_de_Nascimento";
+                customField!.CustomFieldValue = guest.Birthdate.Value.ToString("dd/MM/yyyy");
+                var text = JsonConvert.SerializeObject(customField);
+                cloudbedsAPI.PutGuestAsync(guest.GuestId.ToString(), "guestCustomFields", "[" + text.ToString() + "]");
+            }
+
+
+            if (!DisabledCPF && !string.IsNullOrEmpty(CPF))
+            {
+                CustomField? customField = guest.CustomFields.Where(x => x.CustomFieldName.Equals("CPF")).FirstOrDefault();
+                if (customField is null)
+                    customField = new CustomField();
+                customField!.CustomFieldName = "CPF";
+                customField!.CustomFieldValue = CPF;
+                var text = JsonConvert.SerializeObject(customField);
+                cloudbedsAPI.PutGuestAsync(guest.GuestId.ToString(), "guestCustomFields", "[" + text.ToString() + "]");
+                cloudbedsAPI.PutGuestDNIAsync(guest.GuestId.ToString(), CPF);
+                cloudbedsAPI.PutGuestAsync(guest.GuestId.ToString(), "guestTaxID", CPF);
+
+            }
+
+            if (!string.IsNullOrEmpty(guest.GuestZip))
+                cloudbedsAPI.PutGuestAsync(guest.GuestId.ToString(), "guestZip", guest.GuestZip);
+
+            if (!string.IsNullOrEmpty(guest.GuestAddress))
+                cloudbedsAPI.PutGuestAsync(guest.GuestId.ToString(), "guestAddress", guest.GuestAddress);
+
+            if (!string.IsNullOrEmpty(guest.GuestAddress2))
+                cloudbedsAPI.PutGuestAsync(guest.GuestId.ToString(), "guestAddress2", guest.GuestAddress2);
+
+            if (!string.IsNullOrEmpty(guest.GuestCity))
+                cloudbedsAPI.PutGuestAsync(guest.GuestId.ToString(), "guestCity", guest.GuestCity);
+
+
+            Snackbar.Add("Cadastrado alterado com sucesso!", Severity.Success);
+
+            Disabled = !Disabled;
+            ReadOnly = !ReadOnly;
+            DisabledSave = !DisabledSave;
+            DisabledCPF = true;
+
+            if (!DisableEndereco)
+                DisableEndereco = true;
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("Erro ao alterar o cadastro!", Severity.Error);
+        }
+    }
+
+    private void SearchCEP(string value)
+    {
+        if (value.Length >= 8)
+        {
+            Cep cep = value;
+            var viaCepService = ViaCepService.Default();
+            var endereco = viaCepService.ObterEndereco(cep);
+            string Cidade = endereco.Localidade;
+            guest.City = Cidade;
+            if (string.IsNullOrEmpty(guest.Address))
+                guest.Address = endereco.Logradouro;
+            guest.State = endereco.UF;
+            guest.Country = "BRASIL";
+            guest.Address2 = endereco.Bairro;
+            guest.Zip = endereco.Cep;
+
+            if (!Disabled && DisableEndereco)
+                DisableEndereco = false;
+
+        }
+        else
+        {
+        }
+
+    }
+
+}
