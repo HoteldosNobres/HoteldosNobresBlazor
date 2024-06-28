@@ -4,6 +4,7 @@ using HoteldosNobresBlazor.Components.Pages;
 using HoteldosNobresBlazor.Services;
 using Newtonsoft.Json;
 using System.Globalization;
+using System.IO;
 
 namespace HoteldosNobresBlazor.Funcoes
 {
@@ -219,13 +220,19 @@ namespace HoteldosNobresBlazor.Funcoes
                 logSistema.DataLog = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone);
                 novareserva = FunctionAPICLOUDBEDs.getReservationAsync(novareserva).Result;
 
-                if (!novareserva.Equals(null) && novareserva.Origem.Contains("Airbnb"))
+                if (!novareserva.Equals(null) && novareserva.Origem is not null && novareserva.Origem.Contains("Airbnb"))
                 {
                     logSistema.Log += AjustarEndereco(novareserva);
                     if (novareserva.GuestID != null)
                         logSistema.Log += FunctionAPICLOUDBEDs.putGuest(novareserva.GuestID, "guestEmail", "reserva@airbnb.com").Result;
                     logSistema.Log += FunctionAPICLOUDBEDs.putGuest(novareserva.GuestID, "guestState", "Minas Gerais").Result;
                     logSistema.Log += FunctionAPICLOUDBEDs.putGuest(novareserva.GuestID, "guestCountry", "BR").Result;
+                }
+
+                if (novareserva is not null && novareserva.Origem is not null && novareserva.Origem!.ToUpper().Contains("BOOKING.COM"))
+                {
+                    logSistema.Log += FunctionWhatsApp.postMensagemTempleteDadosFaltando(novareserva.ProxyCelular!, novareserva.IDReserva!, novareserva.NomeHospede!).Result;
+                    FuncoesEmail.EnviarEmailCPF(novareserva.Email, novareserva.IDReserva, novareserva.NomeHospede);
                 }
 
                 if (novareserva != null && novareserva.Estado != null && novareserva.CEP != null)

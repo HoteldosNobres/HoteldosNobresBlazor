@@ -111,6 +111,13 @@
                                @onclick="SendOrigem">
                         Origem
                     </MudButton>
+                    <MudButton Variant="Variant.Filled"
+                               Color="Color.Primary"
+                               Class="ml-auto rounded-xl"
+                               Disabled="@(!Disabled)"
+                               @onclick="SendEmail">
+                        Envia Email
+                    </MudButton>
                 </MudList>
             </div>
         </MudForm>
@@ -585,11 +592,40 @@ else
                 string mensagem = result.Data.ToString();
                 var retorno = await FunctionWhatsApp.postMensagem(reserva.ProxyCelular!, mensagem);
                 Snackbar.Add("Encaminhado com sucesso", Severity.Success);
+
+                if(!string.IsNullOrEmpty(reserva.Email))
+                    FuncoesEmail.EnviarEmail(reserva.Email, mensagem, "Enviada pelo Sistema do Hotel");
             }
 
 
             // 
            
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("Erro ao enviar CPF", Severity.Error);
+            Console.WriteLine(ex.Message);
+        }
+    }
+
+    protected async Task SendEmail()
+    {
+        try
+        {
+            DialogOptions closeOnEscapeKey = new DialogOptions() { MaxWidth = MaxWidth.Medium, FullWidth = true, CloseOnEscapeKey = true };
+
+            var result = await DialogService.Show<DialogMensager>("Mensagem", closeOnEscapeKey).Result;
+
+            if (!result.Canceled)
+            {
+                string mensagem = result.Data.ToString();
+                FuncoesEmail.EnviarEmail(reserva.Email, mensagem, "Mensagem do Hotel dos Nobres");
+                Snackbar.Add("Encaminhado com sucesso", Severity.Success);
+            }
+
+
+            //
+
         }
         catch (Exception ex)
         {
