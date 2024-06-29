@@ -210,6 +210,17 @@
     {
         try
         {
+            if (!string.IsNullOrEmpty(CPF))
+            {
+                Snackbar.Add("Deverá informar um CPF", Severity.Warning);
+                return;
+            }
+            if (!string.IsNullOrEmpty(guest.Birthdate!.Value.ToString("yyyy-MM-dd")))
+            {
+                Snackbar.Add("Deverá informar um Data de Nascimento", Severity.Warning);
+                return;
+            }
+
             List<string> listaparametros = new List<string>();
 
             if (guest.Birthdate is not null)
