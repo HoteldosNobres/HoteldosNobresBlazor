@@ -41,34 +41,34 @@ else
                     <MudItem xs="12">
                         <MudPaper Elevation="2" Class="pa-4 align-items-center rounded-xl" Style="height: 100%">
                             <MudText Typo="Typo.h5" Align="Align.Center">Cobrança</MudText>
-                            <MudList Clickable="false" Dense="true">
+                            <MudList T="string" ReadOnly="true" Dense="true">
                                 <MudDivider />
-                                <MudListItem>
+                                <MudListItem T="string">
                                     <div class="d-flex">
                                         <MudText Typo="Typo.caption">Acomodações</MudText>
                                         <MudText Typo="Typo.caption" GutterBottom="true" Class="ml-auto">R$ @reserva.BalanceDetailed!.SubTotal.ToString("N2", new CultureInfo("pt-BR"))</MudText>
                                     </div>
                                 </MudListItem>
-                                <MudListItem>
+                                <MudListItem T="string">
                                     <div class="d-flex">
                                         <MudText Typo="Typo.caption">Itens adicionais e extras</MudText>
                                         <MudText Typo="Typo.caption" GutterBottom="true" Class="ml-auto">R$ @reserva.BalanceDetailed!.AdditionalItems.ToString("N2", new CultureInfo("pt-BR"))</MudText>
                                     </div>
                                 </MudListItem>
-                                <MudListItem>
+                                <MudListItem T="string">
                                     <div class="d-flex">
                                         <MudText Typo="Typo.caption">Imposto e taxas</MudText>
                                         <MudText Typo="Typo.caption" GutterBottom="true" Class="ml-auto">R$ @reserva.BalanceDetailed!.TaxesFees.ToString("N2", new CultureInfo("pt-BR"))</MudText>
                                     </div>
                                 </MudListItem>
                                 <MudDivider />
-                                <MudListItem>
+                                <MudListItem T="string">
                                     <div class="d-flex">
                                         <MudText Typo="Typo.caption" GutterBottom="true"><b>Total</b></MudText>
                                         <MudText Typo="Typo.caption" GutterBottom="true" Class="ml-auto"><b>R$ @reserva.BalanceDetailed!.GrandTotal.ToString("N2", new CultureInfo("pt-BR"))</b></MudText>
                                     </div>
                                 </MudListItem>
-                                <MudListItem>
+                                <MudListItem T="string">
                                     <div class="d-flex">
                                         <MudText Typo="Typo.caption" GutterBottom="true"><b>Valor pago</b></MudText>
                                         <MudText Typo="Typo.caption" GutterBottom="true" Class="ml-auto"><b>R$ @reserva.BalanceDetailed!.Paid.ToString("N2", new CultureInfo("pt-BR"))</b></MudText>

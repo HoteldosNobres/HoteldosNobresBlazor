@@ -23,8 +23,8 @@
     @if (guest is not null)
     { 
         <MudForm>
-            <MudList>
-                <MudListItem Avatar="@Icons.Material.Filled.Info"> Dados </MudListItem>
+            <MudList T="string">
+                <MudListItem Icon="@Icons.Material.Filled.Info"> Dados </MudListItem>
                 <MudTextField T="string" Label="Nome" Disabled="true" @bind-Value="guest.FirstName" />
                 <MudTextField T="string" Label="E-mail" Disabled="true" @bind-Value="guest.Email" />
                 <MudTextField T="string" Label="Celular ou Telefone Principal" Disabled="true" @bind-Value="guest.Phone" />
@@ -44,7 +44,7 @@
                 <MudTextField T="string" Label="CPF" Disabled="@DisabledCPF" @bind-Value="CPF" />
                 <MudDatePicker Label="Data de Nascimento" PickerVariant="PickerVariant.Dialog" Editable="@(!Disabled)" Elevation="12" Disabled="@Disabled" @bind-Date="guest.Birthdate" DateFormat="dd/MM/yyyy" />
                 <MudDivider />
-                <MudListItem Avatar="@Icons.Material.Filled.House"> Endereço </MudListItem>
+                <MudListItem Icon="@Icons.Material.Filled.House"> Endereço </MudListItem>
                 <MudTextField T="string" Label="CEP" @bind-Value="guest.Zip" TextChanged="@SearchCEP" Editable="@Disabled"
                               Disabled="@Disabled" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary" />
                 <MudTextField T="string" Label="Endereço" Disabled="DisableEndereco" @bind-Value="guest.Address" />
@@ -54,7 +54,7 @@
                 <MudTextField T="string" Label="Pais" Disabled="true" @bind-Value="guest.GuestCountry" />
             </MudList>
             <div class="mt-4">
-                <MudList>
+                <MudList T="string">
                     <MudButton Variant="Variant.Filled"
                                Color="Color.Primary"
                                Class="ml-auto rounded-xl"
@@ -185,7 +185,7 @@ else
                         </MudItem>
                     </MudGrid>
                     <MudText Align="Align.Center">
-                        <MudChip Color="Color.Tertiary">
+                        <MudChip T="string" Color="Color.Tertiary">
                             <i class="fa-solid fa-moon"> </i> @reserva.Noites.GetValueOrDefault(1).ToString() Noite(s)
                             <i class="fa fa-users" aria-hidden="true"></i> @reserva.Hospedes.GetValueOrDefault(1).ToString() Hospede(s)
                         </MudChip>
@@ -203,11 +203,11 @@ else
                     @if (reserva is not null && reserva.Notas is not null && reserva.Notas.Count > 0)
                     {
                         <MudPaper Class="rounded-xl">
-                            <MudExpansionPanel Dense="true" DisableGutters="true" Text="Notas" style="background-color: #F5F4F4;"> 
+                            <MudExpansionPanel Dense="true" Text="Notas" style="background-color: #F5F4F4;"> 
                                 <MudPaper class="rounded-b-xl">
                                     @foreach (var item in reserva.Notas)
                                     {
-                                        <MudListItem>
+                                        <MudListItem T="string">
                                             <MudGrid Justify="Justify.SpaceBetween">
                                                 <MudItem xs="12" sm="3">
                                                     @*  <MudImage Fluid="true" Align="Align.Center" src="@($"data:image/png;base64,{qrCode}")" Alt="QRCode" Elevation="25" Width="250" Height="250" Class="rounded-lg" /> *@
@@ -229,24 +229,24 @@ else
                     @if (reserva is not null && reserva.ListaQuartos is not null && reserva.ListaQuartos.Count > 0)
                     {
                         <MudPaper Class="rounded-xl">
-                            <MudExpansionPanel Dense="true" DisableGutters="true" Text="Acomodações" style="background-color: #F5F4F4;">
+                            <MudExpansionPanel Dense="true" Text="Acomodações" style="background-color: #F5F4F4;">
                                 <MudDivider />
                                 <MudPaper class="rounded-b-xl">
                                     @foreach (var item in reserva.ListaQuartos)
                                     {
-                                        <MudListItem>
+                                        <MudListItem T="string">
                                             <MudGrid Justify="Justify.SpaceBetween">
                                                 <MudItem xs="12" sm="3">
                                                     @*  <MudImage Fluid="true" Align="Align.Center" src="@($"data:image/png;base64,{qrCode}")" Alt="QRCode" Elevation="25" Width="250" Height="250" Class="rounded-lg" /> *@
                                                 </MudItem>
                                                 <MudItem xs="9" sm="6">
                                                     <MudText Typo="Typo.caption">@item.Descricao</MudText>
-                                                    <MudChip Color="Color.Tertiary">
+                                                    <MudChip  T="string" Color="Color.Tertiary">
                                                         <i class="fa fa-user" aria-hidden="true"></i> @item.Adults.GetValueOrDefault(1).ToString()
-                                                    </MudChip>
+                                                    </MudChip >
                                                     @if (item.Children.GetValueOrDefault(0) > 0)
                                                     {
-                                                        <MudChip Color="Color.Tertiary">
+                                                        <MudChip T="string" Color="Color.Tertiary">
                                                             <i class="fa fa-users" aria-hidden="true"></i> @item.Children.GetValueOrDefault(1).ToString()
                                                         </MudChip>
                                                     }
@@ -264,7 +264,7 @@ else
                     <br />
                     <MudSpacer />
                     <MudPaper Class="rounded-xl">
-                        <MudListItem style="background-color: #F5F4F4;" class="rounded-t-xl">
+                        <MudListItem T="string" style="background-color: #F5F4F4;" class="rounded-t-xl">
                             <MudStack Row="true">
                                 <MudText><b>Instruções para a transferência bancária - PIX</b></MudText>
                                 <MudSpacer />
@@ -272,7 +272,7 @@ else
                             </MudStack>
                         </MudListItem>
                         <MudDivider />
-                        <MudListItem>
+                        <MudListItem T="string">
                             <MudText Typo="Typo.caption">NÃO E POSSÍVEL PAGAR NO CHECK-IN !!!</MudText><br />
                             <MudText Typo="Typo.caption" GutterBottom="true" Class="ml-auto">
                                 Reservas não paga no período de  20 minutos sera cancelada, como nossos Termos e Politicas.<br />
@@ -290,38 +290,38 @@ else
                 <MudGrid>
                     <MudItem xs="12">
                         <MudPaper Elevation="2" Class="align-items-center rounded-xl">
-                            <MudListItem class="rounded-t-xl">
+                            <MudListItem T="string" class="rounded-t-xl">
                                 <MudText Typo="Typo.h6" Align="Align.Center"><b>Cobrança</b></MudText>
                             </MudListItem>
                             <MudDivider />
                             <MudContainer>
-                                <MudList Clickable="false" Dense="true">
-                                    <MudListItem>
+                                <MudList T="string" ReadOnly="true" Dense="true">
+                                    <MudListItem T="string">
                                         <div class="d-flex">
                                             <MudText Typo="Typo.caption">Acomodações</MudText>
                                             <MudText Typo="Typo.caption" GutterBottom="true" Class="ml-auto">R$ @reserva.BalanceDetailed!.SubTotal.ToString("N2", new CultureInfo("pt-BR"))</MudText>
                                         </div>
                                     </MudListItem>
-                                    <MudListItem>
+                                    <MudListItem T="string">
                                         <div class="d-flex">
                                             <MudText Typo="Typo.caption">Itens adicionais e extras</MudText>
                                             <MudText Typo="Typo.caption" GutterBottom="true" Class="ml-auto">R$ @reserva.BalanceDetailed!.AdditionalItems.ToString("N2", new CultureInfo("pt-BR"))</MudText>
                                         </div>
                                     </MudListItem>
-                                    <MudListItem>
+                                    <MudListItem T="string">
                                         <div class="d-flex">
                                             <MudText Typo="Typo.caption">Imposto e taxas</MudText>
                                             <MudText Typo="Typo.caption" GutterBottom="true" Class="ml-auto">R$ @reserva.BalanceDetailed!.TaxesFees.ToString("N2", new CultureInfo("pt-BR"))</MudText>
                                         </div>
                                     </MudListItem>
                                     <MudDivider />
-                                    <MudListItem>
+                                    <MudListItem T="string">
                                         <div class="d-flex">
                                             <MudText Typo="Typo.caption" GutterBottom="true"><b>Total</b></MudText>
                                             <MudText Typo="Typo.caption" GutterBottom="true" Class="ml-auto"><b>R$ @reserva.BalanceDetailed!.GrandTotal.ToString("N2", new CultureInfo("pt-BR"))</b></MudText>
                                         </div>
                                     </MudListItem>
-                                    <MudListItem>
+                                    <MudListItem T="string">
                                         <div class="d-flex">
                                             <MudText Typo="Typo.caption" GutterBottom="true"><b>Valor pago</b></MudText>
                                             <MudText Typo="Typo.caption" GutterBottom="true" Class="ml-auto"><b>R$ @reserva.BalanceDetailed!.Paid.ToString("N2", new CultureInfo("pt-BR"))</b></MudText>

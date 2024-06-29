@@ -1,25 +1,25 @@
 ﻿@using System.Globalization
 <br />
 <MudPaper Class="rounded-xl">
-    <MudExpansionPanel Dense="true" DisableGutters="true" Text="Acomodações" style="background-color: #F5F4F4;">
+    <MudExpansionPanel Dense="true" Text="Acomodações" style="background-color: #F5F4F4;">
         <MudDivider />
         <MudPaper class="rounded-b-xl">
             @if (Reserva is not null && Reserva.ListaQuartos is not null)
             @foreach (var item in Reserva.ListaQuartos)
             {
-                <MudListItem>
+                <MudListItem T="string">
                     <MudGrid Justify="Justify.SpaceBetween">
                         <MudItem xs="12" sm="3">
                                 <MudImage  Width="50" Height="50" Src="images/logo.png" Alt="Mony the dog" Style="margin-right: 10px" Class="rounded-lg" /> 
                         </MudItem>
                         <MudItem xs="9" sm="6">
                             <MudText Typo="Typo.caption">@item.Descricao</MudText>
-                            <MudChip Color="Color.Tertiary">
+                            <MudChip T="string" Color="Color.Tertiary">
                                 <i class="fa fa-user" aria-hidden="true"></i> @item.Adults.GetValueOrDefault(1).ToString()
                             </MudChip>
                             @if (item.Children.GetValueOrDefault(0) > 0)
                             {
-                                <MudChip Color="Color.Tertiary">
+                                <MudChip T="string" Color="Color.Tertiary">
                                     <i class="fa fa-users" aria-hidden="true"></i> @item.Children.GetValueOrDefault(1).ToString()
                                 </MudChip>
                             }

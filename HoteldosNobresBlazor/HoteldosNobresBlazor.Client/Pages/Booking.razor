@@ -24,31 +24,30 @@
     @if (guest is not null)
     {
         <MudForm>
-            <MudList>
-                <MudListItem Avatar="@Icons.Material.Filled.Info"> Dados - Suas informações </MudListItem>
-                <MudListItem>
+            <MudList T="string" ReadOnly="true">
+                <MudListItem T="string" ReadOnly="true" Icon="@Icons.Material.Filled.Info"> Dados - Suas informações </MudListItem>
+                <MudListItem T="string">
                     <div class="d-flex">
                         <MudTextField T="string" Label="Nome" Disabled="true" @bind-Value="guest.FirstName" />
                         <MudTextField T="string" Label="Celular/Telefone" Disabled="true" @bind-Value="CellPhone" />
                     </div>
                 </MudListItem>
-
                 <MudTextField T="string" Label="E-mail" Editable="@(!Disabled)" Elevation="12" Disabled="@Disabled" @bind-Value="guest.Email" Variant="Variant.Outlined" />
                 <MudTextField T="string" Label="CPF*" Disabled="@DisabledCPF" @bind-Value="CPF" Variant="Variant.Outlined" />
                 <MudDatePicker Label="Data de Nascimento*" PickerVariant="PickerVariant.Dialog" Editable="@(!Disabled)" Elevation="12" Disabled="@Disabled" @bind-Date="guest.Birthdate" DateFormat="dd/MM/yyyy" Variant="Variant.Outlined" />
                 <MudDivider />
-                <MudListItem Avatar="@Icons.Material.Filled.House"> Endereço </MudListItem>
+                <MudListItem Icon="@Icons.Material.Filled.House"> Endereço </MudListItem>
                 <MudTextField T="string" Label="CEP" @bind-Value="guest.Zip" TextChanged="@SearchCEP" Editable="@Disabled"
                               Disabled="@Disabled" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary" Variant="Variant.Outlined" />
 
                 <MudTextField T="string" Label="Endereço - Rua/Avenida + Número + Compl." Disabled="DisableEndereco" @bind-Value="guest.Address" Variant="Variant.Outlined" />
-                <MudListItem>
+                <MudListItem T="string">
                     <div class="d-flex">
                         <MudTextField T="string" Label="Bairro" Disabled="true" @bind-Value="guest.Address2" />
                         <MudTextField T="string" Label="Cidade" Disabled="true" @bind-Value="guest.City" />
                     </div>
                 </MudListItem>
-                <MudListItem>
+                <MudListItem T="string">
                     <div class="d-flex">
                         <MudTextField T="string" Label="Estado" Disabled="true" @bind-Value="guest.State" />
                         <MudTextField T="string" Label="Pais" Disabled="true" @bind-Value="guest.GuestCountry" />
@@ -199,7 +198,8 @@
         if (!result.Canceled)
         {
             license_accepted = (bool)(result.Data ?? false);
-            if (license_accepted){
+            if (license_accepted)
+            {
                 await Salvar();
                 reserva = await cloudbedsAPI.GetReservaAsync(reserva.IDReserva);
             }
