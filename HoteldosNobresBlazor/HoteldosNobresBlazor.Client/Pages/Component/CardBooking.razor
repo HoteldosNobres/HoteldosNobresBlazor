@@ -54,6 +54,10 @@
 {
     <MudText Align="Align.Center"> Número da reserva via agência: @reserva.IDReservaAgencia  </MudText>
 }
+@if (!string.IsNullOrEmpty(reserva.SnNum))
+{
+        <MudText Align="Align.Center"> Número da reserva Ministério do Turismo(Mtur): @reserva.SnNum  </MudText>
+}
 <MudSpacer />
 <br />
 @if (reserva is not null && reserva.ListaQuartos is not null && reserva.ListaQuartos.Count > 0)

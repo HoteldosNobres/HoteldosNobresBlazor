@@ -41,6 +41,11 @@ namespace HoteldosNobresBlazor.Services
         public string Log { get; set; } = "";
 
     }
-     
+
+    public class ListaLogSistema
+    { 
+        public LogSistema[] logSistemas { get; set; }
+    }
+
 
 }

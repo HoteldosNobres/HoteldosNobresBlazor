@@ -124,8 +124,12 @@
                 if (reserva is null)
                     reserva = lista.FirstOrDefault(x => x.IDReserva is not null && x.IDReserva.Equals(ReservationId));
 
+                if (reserva is null)
+                    reserva = await cloudbedsAPI.GetReservaAsync(ReservationId);
+
                 if (reserva is not null)
                 {
+                    reserva = await cloudbedsAPI.GetReservaAsync(reserva.IDReserva);
                     guest = await cloudbedsAPI.GetGuestAsync(reserva.GuestID!);
 
                     if (reserva.Status is not null && reserva.Status.Equals("canceled"))
