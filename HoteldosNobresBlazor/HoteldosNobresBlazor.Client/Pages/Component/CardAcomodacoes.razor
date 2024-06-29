@@ -1,37 +1,46 @@
 ﻿@using System.Globalization
 <br />
 <MudPaper Class="rounded-xl">
-    <MudExpansionPanel Dense="true" Text="Acomodações" style="background-color: #F5F4F4;">
-        <MudDivider />
-        <MudPaper class="rounded-b-xl">
-            @if (Reserva is not null && Reserva.ListaQuartos is not null)
-            @foreach (var item in Reserva.ListaQuartos)
-            {
-                <MudListItem T="string">
-                    <MudGrid Justify="Justify.SpaceBetween">
-                        <MudItem xs="12" sm="3">
-                                <MudImage  Width="50" Height="50" Src="images/logo.png" Alt="Mony the dog" Style="margin-right: 10px" Class="rounded-lg" /> 
-                        </MudItem>
-                        <MudItem xs="9" sm="6">
-                            <MudText Typo="Typo.caption">@item.Descricao</MudText>
-                            <MudChip T="string" Color="Color.Tertiary">
-                                <i class="fa fa-user" aria-hidden="true"></i> @item.Adults.GetValueOrDefault(1).ToString()
-                            </MudChip>
-                            @if (item.Children.GetValueOrDefault(0) > 0)
-                            {
-                                <MudChip T="string" Color="Color.Tertiary">
-                                    <i class="fa fa-users" aria-hidden="true"></i> @item.Children.GetValueOrDefault(1).ToString()
-                                </MudChip>
-                            }
-                        </MudItem>
-                        <MudItem xs="3" sm="3">
-                            <MudText Typo="Typo.caption">R$ @item.Total.GetValueOrDefault(0).ToString("N2", new CultureInfo("pt-BR"))</MudText>
-                        </MudItem>
-                    </MudGrid>
-                </MudListItem>
-            }
-        </MudPaper>
-    </MudExpansionPanel>
+    <MudExpansionPanels Dense="true" Gutters="false" Class="rounded-xl">
+        <MudExpansionPanel Dense="true" Gutters="false" Style="background-color: #F5F4F4;" Expanded="true">
+            <TitleContent>
+                <div class="d-flex">
+                    @*  <MudIcon Icon="@Icons.Material.Filled.Info" class="mr-3"></MudIcon> *@
+                    <MudText><strong>Acomodações</strong></MudText>
+                </div>
+            </TitleContent>
+            <ChildContent>
+                <MudPaper  class="rounded-b-xl">
+                    @if (Reserva is not null && Reserva.ListaQuartos is not null)
+                        @foreach (var item in Reserva.ListaQuartos)
+                        {
+                            <MudListItem T="string">
+                                <MudGrid Justify="Justify.SpaceBetween">
+                                    <MudItem xs="12" sm="3">
+                                        <MudImage Width="50" Height="50" Src="images/logo.png" Alt="Mony the dog" Style="margin-right: 10px" Class="rounded-lg" />
+                                    </MudItem>
+                                    <MudItem xs="9" sm="6">
+                                        <MudText Typo="Typo.caption">@item.Descricao</MudText>
+                                        <MudChip T="string" Color="Color.Tertiary">
+                                            <i class="fa fa-user" aria-hidden="true"></i> @item.Adults.GetValueOrDefault(1).ToString()
+                                        </MudChip>
+                                        @if (item.Children.GetValueOrDefault(0) > 0)
+                                        {
+                                            <MudChip T="string" Color="Color.Tertiary">
+                                                <i class="fa fa-users" aria-hidden="true"></i> @item.Children.GetValueOrDefault(1).ToString()
+                                            </MudChip>
+                                        }
+                                    </MudItem>
+                                    <MudItem xs="3" sm="3">
+                                        <MudText Typo="Typo.caption">R$ @item.Total.GetValueOrDefault(0).ToString("N2", new CultureInfo("pt-BR"))</MudText>
+                                    </MudItem>
+                                </MudGrid>
+                            </MudListItem>
+                        }
+                </MudPaper>
+            </ChildContent>
+        </MudExpansionPanel>
+    </MudExpansionPanels>
 </MudPaper>
 <br />
 
@@ -39,10 +48,10 @@
 @code {
     [Parameter]
     public Reserva? Reserva { get; set; }
-     
+
     protected override void OnInitialized()
-    { 
-       
+    {
+
     }
- 
+
 }
