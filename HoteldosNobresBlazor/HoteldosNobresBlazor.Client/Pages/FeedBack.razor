@@ -1,0 +1,258 @@
+﻿@page "/feedback/{ReservationId}"
+@using System.Security.Claims
+@using System.Net.NetworkInformation
+@using HoteldosNobresBlazor.Client.Pages.Component
+@using System.Text.RegularExpressions
+@using MosaicoSolutions.ViaCep
+@using MosaicoSolutions.ViaCep.Modelos
+@using Newtonsoft.Json
+@inject APICloudbeds cloudbedsAPI
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject AppState appState
+@inject ISnackbar Snackbar
+@inject NavigationManager Navigation
+
+@rendermode InteractiveServer
+@inherits LayoutComponentBase
+@inject IDialogService DialogService
+
+@attribute [AllowAnonymous]
+
+<PageTitle> Reserva Hotel dos Nobres</PageTitle>
+
+<MudPaper Class="px-8 pt-2 pb-4 mx-4 my-4 rounded-xl" Justify="Justify.Center" hidden="@(Disabled)">
+    @if (guest is not null)
+    {
+        <MudForm>
+            <MudList T="string" ReadOnly="true">
+                <MudListItem T="string" ReadOnly="true" Icon="@Icons.Material.Filled.Info"> FeedBack - Sua avaliação </MudListItem>
+                <MudText Typo="Typo.subtitle1" Class="deep-purple-text mt-2">Reserva de numero: @reserva.IDReserva </MudText>
+                <MudText Typo="Typo.subtitle2" Class="deep-purple-text mt-2">Nota do Hotel</MudText>
+                <MudRating @bind-SelectedValue="selectedVal" HoveredValueChanged="HandleHoveredValueChanged" />
+                <MudText Typo="Typo.subtitle2" Class="deep-purple-text mt-2">@LabelText</MudText>
+                <MudText Typo="Typo.subtitle2" Class="deep-purple-text mt-2">Atedimento</MudText>
+                <MudRating @bind-SelectedValue="selectedValAtendimento" FullIcon="@Icons.Material.Filled.Favorite" EmptyIcon="@Icons.Material.Filled.FavoriteBorder" HoveredValueChanged="HandleHoveredValueAtendimentoChanged" />
+                <MudText Typo="Typo.subtitle2" Class="deep-purple-text mt-2">@LabelTextAtendimento</MudText>
+                <MudTextField T="string" Label="Mensagem" Variant="Variant.Outlined" Text="@sampleText" AutoGrow HelperText="Deixa sua mensagem" />
+                <MudTextField @bind-Value="Password" Label="Validação" Variant="Variant.Outlined" InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="ButtonTestclick" HelperText="4 Ultimos digitos do CPF ou do seu Celular" AdornmentAriaLabel="4 Ultimos digitos do CPF ou do seu Celular" />
+                <MudDivider /> 
+            </MudList>
+            <div class="mt-4">
+                <MudButton Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           Class="ml-auto rounded-xl"
+                           Disabled="@Disabled"
+                           @onclick="OpenDialog">
+                    Enviar
+                </MudButton>
+            </div>
+        </MudForm>
+    }
+    else
+    {
+        <MudGrid Justify="Justify.Center" Class="align-items-center">
+            <MudItem>
+                <MudProgressCircular Indeterminate="true"></MudProgressCircular>
+            </MudItem>
+        </MudGrid>
+    }
+</MudPaper>
+
+
+<MudPaper Class="px-8 pt-2 pb-4 mx-4 my-4 rounded-xl" Justify="Justify.Center" hidden="@(!Disabled)">
+    @if (reserva is not null)
+    {
+        <MudGrid Justify="Justify.Center" Class="align-items-center">
+            <MudItem>
+                <MudText Typo="Typo.h3" Align="Align.Center" Color="Color.Success"> <i class="fa fa-check" aria-hidden="true"></i> </MudText>
+            </MudItem>
+        </MudGrid>
+        <MudText Typo="Typo.h6" Align="Align.Center" GutterBottom="true">Agradecemos!</MudText>
+    }
+</MudPaper>
+
+@code {
+    [Parameter]
+    public string ReservationId { get; set; }
+
+    public Reserva reserva { get; set; }
+
+    public Guest guest { get; set; }
+    private UserInfo user = default!;
+    public string Password { get; set; } 
+    string PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+    string sampleText;
+    InputType PasswordInput = InputType.Password;
+
+    bool ReadOnly = false;
+    bool Disabled = false;
+    bool isShow;
+
+    private int selectedVal = 0;
+    private int selectedValAtendimento = 0;
+    private int? activeVal;
+    private int? activeValAtendimento;
+
+    private void HandleHoveredValueChanged(int? val) => activeVal = val;
+    private void HandleHoveredValueAtendimentoChanged(int? val) => activeValAtendimento = val;
+
+    protected override async Task OnInitializedAsync()
+    {
+        string userId = string.Empty;
+        var authorization = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        if (authorization.User.Identity!.IsAuthenticated)
+        {
+            user = new UserInfo(authorization.User);
+            userId = user.UserId;
+        }
+
+        try
+        {
+            List<Reserva> lista = appState.ListReservas;
+
+            if (lista is not null)
+            {
+                reserva = lista.FirstOrDefault(x => x.IDReservaAgencia is not null && x.IDReservaAgencia.Equals(ReservationId));
+
+                if (reserva is null)
+                    reserva = lista.FirstOrDefault(x => x.IDReserva is not null && x.IDReserva.Equals(ReservationId));
+
+                if (reserva is null)
+                    reserva = await cloudbedsAPI.GetReservaAsync(ReservationId);
+
+                if (reserva is not null)
+                {
+                    reserva = await cloudbedsAPI.GetReservaAsync(reserva.IDReserva);
+                    guest = await cloudbedsAPI.GetGuestAsync(reserva.GuestID!);
+
+                    if (reserva.Status is not null && !reserva.Status.Equals("checked_out"))
+                        throw new ArgumentException("Booking is not checked-out.");
+                }
+            }
+
+
+            if (reserva is not null)
+            {  
+                Disabled = false;
+                // foreach (var item in guest.CustomFields)
+                // {
+                //     if (item.CustomFieldName.Equals("CPF"))
+                //     {
+                //         string cpfstring = Regex.Replace(item.CustomFieldValue, @"[^\d]", "");
+                //         if (!string.IsNullOrEmpty(cpfstring))
+                //         {
+                //             DisabledCPF = true;
+                //             ReadOnly = true;
+                //             Disabled = true;
+                //             DisabledSave = true;
+                //             DisabledCPF = true;
+                //             DisableEndereco = true;
+                //             CPF = "***.***." + cpfstring.Substring(cpfstring.Length - 4);
+                //         }
+                //     }
+
+                // }
+            }
+            else
+                Navigation.NavigateTo("https://hoteldosnobres.com.br/");
+
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("Erro ao carregar a reserva!", Severity.Error);
+            if (!string.IsNullOrEmpty(userId))
+                Navigation.NavigateTo("/minhareserva");
+            else
+                Navigation.NavigateTo("https://hoteldosnobres.com.br/");
+        }
+
+    }
+
+    protected async Task Editar()
+    {
+        Disabled = !Disabled;
+        ReadOnly = !ReadOnly; 
+
+    }
+
+    async Task OpenDialog()
+    {
+        bool license_accepted = false;
+        var result = await DialogService.Show<DialogLicense>("Termos e Condições ").Result;
+
+        if (!result.Canceled)
+        {
+            license_accepted = (bool)(result.Data ?? false);
+            if (license_accepted)
+            {
+                await Salvar();
+                reserva = await cloudbedsAPI.GetReservaAsync(reserva.IDReserva);
+            }
+        }
+    }
+
+    protected async Task Salvar()
+    {
+        try
+        {
+            if (!string.IsNullOrEmpty(Password))
+            {
+                Snackbar.Add("Deverá informar um validação", Severity.Warning);
+                return;
+            }
+           
+
+            if (!Disabled && !string.IsNullOrEmpty(Password))
+            {
+                
+            }
+ 
+            Snackbar.Add("Cadastrado alterado com sucesso!", Severity.Success);
+
+            Disabled = !Disabled;
+            ReadOnly = !ReadOnly; 
+             
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("Erro ao alterar o cadastro!", Severity.Error);
+        }
+    }
+
+    private string LabelText => (activeVal ?? selectedVal) switch
+    {
+        1 => "Muito Ruim",
+        2 => "Ruim",
+        3 => "Suficiente",
+        4 => "Bom",
+        5 => "Excelente!",
+        _ => "Nota do Hotel"
+    };
+
+    private string LabelTextAtendimento => (activeValAtendimento ?? selectedValAtendimento) switch
+    {
+        1 => "Muito Ruim",
+        2 => "Ruim",
+        3 => "Suficiente",
+        4 => "Bom",
+        5 => "Excelente!",
+        _ => "Nosso atendimento"
+    };
+
+    void ButtonTestclick()
+    {
+        @if (isShow)
+        {
+            isShow = false;
+            PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+            PasswordInput = InputType.Password;
+        }
+        else
+        {
+            isShow = true;
+            PasswordInputIcon = Icons.Material.Filled.Visibility;
+            PasswordInput = InputType.Text;
+        }
+    }
+
+}

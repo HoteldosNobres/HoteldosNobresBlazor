@@ -53,14 +53,39 @@
             <MudGrid>
                 <MudItem xs="12">
                     <MudPaper Elevation="2" Class="pa-4 d-flex flex-column rounded-xl" Style="height: 200px;">
-                        <h1>Hello, world!</h1>
-                        Welcome to your new app.
-                        @foreach (var linha in arrayDeLinhas)
+                        Reservas novas today!
+                        @*  Check-in Today *@
+                        @if (listReservasnovas == null)
                         {
-                            @linha <br />
+                            <p><em>Carregando...</em></p>
+                        }
+                        else if (listReservasnovas.Count() == 0)
+                        {
+                            <p><em>Sem reserva novas.</em></p>
+                        }
+                        else
+                        {
+                            <MudSimpleTable Dense="true" Hover="true" Striped="true" Style="overflow-x: auto;">
+                                <thead>
+                                    <tr>
+                                        <th>Id</th>
+                                        <th>Nome Hospede</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (Reserva reserva1 in listReservasnovas)
+                                    {
+                                        <tr>
+                                            <td><a href='@reserva1.LinkReserva' target='_blank'> @reserva1.IDReserva </a></td>
+                                            <td> <a href='@reserva1.LinkReservaID'>@reserva1.NomeHospede!.Split(' ')[0].ToString()</a></td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </MudSimpleTable>
                         }
                         <br />
                     </MudPaper>
+                    
                 </MudItem>
                 <MudItem xs="12">
                     <MudPaper Elevation="2" Class="pa-4 flex-column rounded-xl" Style="height: 200px;">
@@ -134,45 +159,23 @@
                 }
             </MudPaper>
         </MudItem>
-        <MudItem xs="12" sm="6" md="4">
-            <MudPaper Elevation="2" Class="pa-4 d-flex flex-column rounded-xl" Style="height: 200px;">
-                Reservas novas today!
-                @*  Check-in Today *@
-                @if (listReservasnovas == null)
-                {
-                    <p><em>Carregando...</em></p>
-                }
-                else if (listReservasnovas.Count() == 0)
-                {
-                    <p><em>Sem reserva novas.</em></p>
-                }
-                else
-                {
-                    <MudSimpleTable Dense="true" Hover="true" Striped="true" Style="overflow-x: auto;">
-                        <thead>
-                            <tr>
-                                <th>Id</th>
-                                <th>Nome Hospede</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (Reserva reserva1 in listReservasnovas)
-                            {
-                                <tr>
-                                    <td><a href='@reserva1.LinkReserva' target='_blank'> @reserva1.IDReserva </a></td>
-                                    <td> <a href='@reserva1.LinkReservaID'>@reserva1.NomeHospede!.Split(' ')[0].ToString()</a></td>
-                                </tr>
-                            }
-                        </tbody>
-                    </MudSimpleTable>
-                }
-                <br />
-            </MudPaper>
-        </MudItem>
+        
         <MudItem xs="12" sm="12" md="4">           
             <MudPaper Elevation="2" Class="pa-4 d-flex flex-column rounded-xl" Style="height: 200px;">
                 Check-in X Check-out
                 <MudChart ChartType="ChartType.Pie" InputData="@data" @bind-SelectedIndex="Index" InputLabels="@labels" Width="100px" Height="100px" />
+            </MudPaper>
+        </MudItem>
+
+        <MudItem xs="12" sm="6" md="4">
+            <MudPaper Elevation="2" Class="pa-4 d-flex flex-column rounded-xl" Style="height: 200px;">
+                <h1>Hello, world!</h1>
+                Welcome to your new app.
+                @foreach (var linha in arrayDeLinhas)
+                {
+                    @linha <br />
+                }
+                <br />
             </MudPaper>
         </MudItem>
     </MudGrid>
