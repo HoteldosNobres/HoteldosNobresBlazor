@@ -140,13 +140,14 @@ namespace HoteldosNobresBlazor.Funcoes
                 {  
                     if (reserva != null && !string.IsNullOrEmpty(reserva.IDReserva))
                     {  
-                        if (reserva.Notas.Where(x => x.Texto.Contains("WHATSAPP STATUS")).Count() > 0)
-                        {
-                            Nota nota = reserva.Notas.Where(x => x.Texto.Contains("WHATSAPP STATUS")).FirstOrDefault();
-                            nota.Texto += "  " + TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone).ToString("dd/MM/yyyy HH:mm:ss") + " - " + texto;
-                            log.Log += FunctionAPICLOUDBEDs.putReservationNote(reserva.IDReserva!, nota.Id, nota.Texto).Result; 
-                        }
-                        else if (reserva.Notas.Where(x => x.Texto.Contains("WHATSAPP CHAT")).Count() > 0)
+                        //if (reserva.Notas.Where(x => x.Texto.Contains("WHATSAPP STATUS")).Count() > 0)
+                        //{
+                        //    //Nota nota = reserva.Notas.Where(x => x.Texto.Contains("WHATSAPP STATUS")).FirstOrDefault();
+                        //    //nota.Texto += "  " + TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone).ToString("dd/MM/yyyy HH:mm:ss") + " - " + texto;
+                        //    //log.Log += FunctionAPICLOUDBEDs.putReservationNote(reserva.IDReserva!, nota.Id, nota.Texto).Result; 
+                        //}
+                        //else
+                        if (reserva.Notas.Where(x => x.Texto.Contains("WHATSAPP CHAT")).Count() > 0)
                         {
                             Nota nota = reserva.Notas.Where(x => x.Texto.Contains("WHATSAPP CHAT")).FirstOrDefault();
                             nota.Texto += "  " + TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone).ToString("dd/MM/yyyy HH:mm:ss") + " - " + texto;

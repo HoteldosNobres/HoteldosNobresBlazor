@@ -594,7 +594,7 @@ else
                 Snackbar.Add("Encaminhado com sucesso", Severity.Success);
 
                 if(!string.IsNullOrEmpty(reserva.Email))
-                    FuncoesEmail.EnviarEmail(reserva.Email, mensagem, "Enviada pelo Sistema do Hotel");
+                    FuncoesEmail.EnviarEmail(reserva.Email, mensagem, " - ");
             }
 
 
