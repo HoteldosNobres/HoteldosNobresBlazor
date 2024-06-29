@@ -21,7 +21,7 @@
 
 <MudPaper Class="px-8 pt-2 pb-4 mx-4 my-4 rounded-xl" Justify="Justify.Center">
     @if (guest is not null)
-    { 
+    {
         <MudForm>
             <MudList T="string">
                 <MudListItem Icon="@Icons.Material.Filled.Info"> Dados </MudListItem>
@@ -203,63 +203,76 @@ else
                     @if (reserva is not null && reserva.Notas is not null && reserva.Notas.Count > 0)
                     {
                         <MudPaper Class="rounded-xl">
-                            <MudExpansionPanel Dense="true" Text="Notas" style="background-color: #F5F4F4;"> 
-                                <MudPaper class="rounded-b-xl">
-                                    @foreach (var item in reserva.Notas)
-                                    {
-                                        <MudListItem T="string">
-                                            <MudGrid Justify="Justify.SpaceBetween">
-                                                <MudItem xs="12" sm="3">
-                                                    @*  <MudImage Fluid="true" Align="Align.Center" src="@($"data:image/png;base64,{qrCode}")" Alt="QRCode" Elevation="25" Width="250" Height="250" Class="rounded-lg" /> *@
-                                                </MudItem>
-                                                <MudItem xs="9" sm="6">
-                                                    <MudText Typo="Typo.caption">@item.Texto</MudText>                                                     
-                                                </MudItem>
-                                                <MudItem xs="3" sm="3">
-                                                    <MudText Typo="Typo.caption"> @item.Id </MudText>
-                                                </MudItem>
-                                            </MudGrid>
-                                        </MudListItem>
-                                    }
-                                </MudPaper>
-                            </MudExpansionPanel>
+                            <MudExpansionPanels Dense="true" Gutters="false" Class="rounded-xl">
+                                <MudExpansionPanel Dense="true" Gutters="false" Text="Notas" Style="background-color: #F5F4F4;" Expanded="true">
+                                    <MudPaper class="rounded-b-xl">
+                                        @foreach (var item in reserva.Notas)
+                                        {
+                                            <MudListItem T="string">
+                                                <MudGrid Justify="Justify.SpaceBetween">
+                                                    <MudItem xs="12" sm="3">
+                                                        @*  <MudImage Fluid="true" Align="Align.Center" src="@($"data:image/png;base64,{qrCode}")" Alt="QRCode" Elevation="25" Width="250" Height="250" Class="rounded-lg" /> *@
+                                                    </MudItem>
+                                                    <MudItem xs="9" sm="6">
+                                                        <MudText Typo="Typo.caption">@item.Texto</MudText>
+                                                    </MudItem>
+                                                    <MudItem xs="3" sm="3">
+                                                        <MudText Typo="Typo.caption"> @item.Id </MudText>
+                                                    </MudItem>
+                                                </MudGrid>
+                                            </MudListItem>
+                                        }
+                                    </MudPaper>
+                                </MudExpansionPanel>
+                            </MudExpansionPanels>
                         </MudPaper>
                     }
                     <br />
                     @if (reserva is not null && reserva.ListaQuartos is not null && reserva.ListaQuartos.Count > 0)
                     {
                         <MudPaper Class="rounded-xl">
-                            <MudExpansionPanel Dense="true" Text="Acomodações" style="background-color: #F5F4F4;">
-                                <MudDivider />
-                                <MudPaper class="rounded-b-xl">
-                                    @foreach (var item in reserva.ListaQuartos)
-                                    {
-                                        <MudListItem T="string">
-                                            <MudGrid Justify="Justify.SpaceBetween">
-                                                <MudItem xs="12" sm="3">
-                                                    @*  <MudImage Fluid="true" Align="Align.Center" src="@($"data:image/png;base64,{qrCode}")" Alt="QRCode" Elevation="25" Width="250" Height="250" Class="rounded-lg" /> *@
-                                                </MudItem>
-                                                <MudItem xs="9" sm="6">
-                                                    <MudText Typo="Typo.caption">@item.Descricao</MudText>
-                                                    <MudChip  T="string" Color="Color.Tertiary">
-                                                        <i class="fa fa-user" aria-hidden="true"></i> @item.Adults.GetValueOrDefault(1).ToString()
-                                                    </MudChip >
-                                                    @if (item.Children.GetValueOrDefault(0) > 0)
-                                                    {
-                                                        <MudChip T="string" Color="Color.Tertiary">
-                                                            <i class="fa fa-users" aria-hidden="true"></i> @item.Children.GetValueOrDefault(1).ToString()
-                                                        </MudChip>
-                                                    }
-                                                </MudItem>
-                                                <MudItem xs="3" sm="3">
-                                                    <MudText Typo="Typo.caption">R$ @item.Total.GetValueOrDefault(0).ToString("N2", new CultureInfo("pt-BR"))</MudText>
-                                                </MudItem>
-                                            </MudGrid>
-                                        </MudListItem>
-                                    }
-                                </MudPaper>
-                            </MudExpansionPanel>
+                            <MudExpansionPanels Dense="true" Gutters="false" Class="rounded-xl">
+                                <MudExpansionPanel Dense="true" Gutters="false" Style="background-color: #F5F4F4;" Expanded="true">
+                                    <TitleContent>
+                                        <div class="d-flex">
+                                            @*  <MudIcon Icon="@Icons.Material.Filled.Info" class="mr-3"></MudIcon> *@
+                                            <MudText><strong>Acomodações</strong></MudText>
+                                        </div>
+                                    </TitleContent>
+                                    <ChildContent>
+                                        <MudPaper class="rounded-b-xl">
+                                            @if (reserva is not null && reserva.ListaQuartos is not null)
+                                                @foreach (var item in reserva.ListaQuartos)
+                                                {
+                                                    <MudListItem T="string">
+                                                        <MudGrid Justify="Justify.SpaceBetween">
+                                                            <MudItem xs="12" sm="3">
+                                                                <MudImage Width="50" Height="50" Src="images/logo.png" Alt="Mony the dog" Style="margin-right: 10px" Class="rounded-lg" />
+                                                            </MudItem>
+                                                            <MudItem xs="9" sm="6">
+                                                                <MudText Typo="Typo.caption">@item.Descricao</MudText>
+                                                                <MudChip T="string" Color="Color.Tertiary">
+                                                                    <i class="fa fa-user" aria-hidden="true"></i> @item.Adults.GetValueOrDefault(1).ToString()
+                                                                </MudChip>
+                                                                @if (item.Children.GetValueOrDefault(0) > 0)
+                                                                {
+                                                                    <MudChip T="string" Color="Color.Tertiary">
+                                                                        <i class="fa fa-users" aria-hidden="true"></i> @item.Children.GetValueOrDefault(1).ToString()
+                                                                    </MudChip>
+                                                                }
+                                                            </MudItem>
+                                                            <MudItem xs="3" sm="3">
+                                                                <MudText Typo="Typo.caption">R$ @item.Total.GetValueOrDefault(0).ToString("N2", new CultureInfo("pt-BR"))</MudText>
+                                                            </MudItem>
+                                                        </MudGrid>
+                                                    </MudListItem>
+                                                }
+                                        </MudPaper>
+                                    </ChildContent>
+                                </MudExpansionPanel>
+                            </MudExpansionPanels>
                         </MudPaper>
+                        <br />
                     }
                     <br />
                     <MudSpacer />
@@ -389,14 +402,15 @@ else
                     string datadenascimento = item.CustomFieldValue;
                     if (!string.IsNullOrEmpty(datadenascimento) && datadenascimento.Length > 4)
                     {
-                        try{
+                        try
+                        {
                             guest.Birthdate = DateTime.Parse(datadenascimento, new CultureInfo("pt-BR"));
                             guest.GuestBirthdate = DateTime.Parse(datadenascimento, new CultureInfo("pt-BR"));
                         }
                         catch (Exception ex)
                         {
                             guest.Birthdate = null;
-                        } 
+                        }
                     }
                 }
 
@@ -584,7 +598,7 @@ else
         try
         {
             DialogOptions closeOnEscapeKey = new DialogOptions() { MaxWidth = MaxWidth.Medium, FullWidth = true, CloseOnEscapeKey = true };
-             
+
             var result = await DialogService.Show<DialogMensager>("Mensagem", closeOnEscapeKey).Result;
 
             if (!result.Canceled)
@@ -593,13 +607,13 @@ else
                 var retorno = await FunctionWhatsApp.postMensagem(reserva.ProxyCelular!, mensagem);
                 Snackbar.Add("Encaminhado com sucesso", Severity.Success);
 
-                if(!string.IsNullOrEmpty(reserva.Email))
+                if (!string.IsNullOrEmpty(reserva.Email))
                     FuncoesEmail.EnviarEmail(reserva.Email, mensagem, " - ");
             }
 
 
-            // 
-           
+            //
+
         }
         catch (Exception ex)
         {
