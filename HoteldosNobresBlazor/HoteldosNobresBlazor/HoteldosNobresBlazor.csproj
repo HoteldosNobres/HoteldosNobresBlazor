@@ -39,6 +39,9 @@
     <Content Update="Components\Layout\MainAppDrawerBar.razor">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
     </Content>
+    <Content Update="Components\Pages\Account\NovoLogin.razor">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </Content>
     <Content Update="Components\Pages\AddNumero.razor">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
     </Content>

@@ -1,0 +1,139 @@
+﻿@page "/Account/Login2"
+@attribute [AllowAnonymous]
+
+@using System.ComponentModel.DataAnnotations
+@using HoteldosNobresBlazor.Classes
+@using HoteldosNobresBlazor.Client.API
+@using HoteldosNobresBlazor.Funcoes
+@using HoteldosNobresBlazor.Modelo
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Identity
+@inject NavigationManager Navigation
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject APICloudbeds cloudbedsAPI
+@rendermode InteractiveAuto
+
+<PageTitle>Entre no sistema</PageTitle>
+
+<MudGrid Justify="Justify.SpaceAround">
+    <MudItem xs="12" sm="12" md="4">
+        <MudPaper Class="px-8 pt-2 pb-4 mx-4 my-4 py-8 rounded-xl" Outlined="true">
+            <section>
+                <EditForm Model="@InputNovo" Method="POST" OnValidSubmit="LoginUser" FormName="login">
+                    <DataAnnotationsValidator />
+                    <h2>Sistema Hotel dos Nobres</h2>
+                    <hr />
+                    <div class="form-floating mb-3"> 
+                        <MudTextField T="string" Label="E-mail ou Número da reserva" Elevation="12"  @bind-Value="InputNovo.Email" For="@(() => InputNovo.Email)" Variant="Variant.Outlined" />
+                    </div>
+                    <div class="form-floating mb-3">
+                        <MudTextField @bind-Value="InputNovo.Password"  For="@(() => InputNovo.Password)" Label="Senha" Variant="Variant.Outlined" InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="ButtonTestclick" HelperText="4 Ultimos digitos do CPF ou do seu Celular" AdornmentAriaLabel="4 Ultimos digitos do CPF ou do seu Celular" />
+                    </div>
+                    <MudButton Variant="Variant.Filled"
+                               Color="Color.Primary"
+                               class="w-100 btn btn-lg  rounded-xl"
+                               ButtonType="MudBlazor.ButtonType.Submit">
+                        Entrar
+                    </MudButton> 
+                </EditForm>
+            </section>
+        </MudPaper>
+    </MudItem>
+    <MudItem xs="12" sm="12" md="7">
+        <MudPaper Class="px-8 pt-2 pb-4 mx-4 my-4 align-center justify-center py-8 rounded-xl" Outlined="true">
+            <ExternalLoginPicker />
+        </MudPaper>
+    </MudItem>
+</MudGrid>
+
+
+@code {
+    [SupplyParameterFromForm]
+    InputModel InputNovo { get; set; } = new InputModel();
+      
+    [CascadingParameter]
+    private HttpContext HttpContext { get; set; } = default!;
+
+    [SupplyParameterFromQuery]
+    private string? userName { get; set; }
+
+    [SupplyParameterFromQuery]
+    private string? ReturnUrl { get; set; }
+
+    private AuthAPI authAPI { get; set; }
+
+    private string Password = ""; 
+    private string Name = "";
+     
+
+    InputType PasswordInput = InputType.Password;
+    string PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+    bool isShow;
+
+    protected override async Task OnInitializedAsync()
+    {
+        List<Reserva> listaReserva = await cloudbedsAPI.getReservationsAsyncGuestDetails();
+        authAPI = new AuthAPI(listaReserva);
+        
+        InputNovo = new InputModel();
+    }
+
+    private async Task LoginUser()
+    {
+        if (HttpContext is not null)
+        {
+            var resposta = await authAPI.LoginAsync(InputNovo.Email, InputNovo.Password);
+            if (resposta.Sucesso)
+            {
+                var teste = (PersistingRevalidatingAuthenticationStateProvider)AuthenticationStateProvider;
+                teste.AuthenticateUser(authAPI.GetAuthenticationStateAsync());
+
+                HttpContext.User = resposta.User;
+                await HttpContext.SignInAsync(resposta.User);
+                // var authResult = await HttpContext.AuthenticateAsync();
+
+                if (ReturnUrl is not null)
+                    Navigation.NavigateTo(ReturnUrl);
+                else
+                    Navigation.NavigateTo(Navigation.BaseUri);
+
+            }
+        }
+       
+    }
+
+    private sealed class InputModel
+    {
+        [Required]
+        [StringLength(6, ErrorMessage = "Tem que ser maior 6")]
+        public string Email { get; set; } = "";
+
+        [Required]
+        [DataType(DataType.Password)]
+        public string Password { get; set; } = "";
+
+        [Display(Name = "Remember me?")]
+        public bool RememberMe { get; set; }
+
+    }
+
+    void ButtonTestclick()
+    {
+        @if (isShow)
+        {
+            isShow = false;
+            PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+            PasswordInput = InputType.Password;
+        }
+        else
+        {
+            isShow = true;
+            PasswordInputIcon = Icons.Material.Filled.Visibility;
+            PasswordInput = InputType.Text;
+        }
+    }
+
+
+
+}
