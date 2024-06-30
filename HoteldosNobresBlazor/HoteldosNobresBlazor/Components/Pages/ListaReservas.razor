@@ -5,47 +5,43 @@
 @attribute [StreamRendering]
 @inject AppState appState
 
-<MudPaper Class="px-8 pt-2 pb-4 mx-4 my-4 rounded-xl" Justify="Justify.Center">
-    <PageTitle>Lista Reserva</PageTitle>
-    <br />
-    <MudContainer>
-        <MudPaper>
-            @if (listReserva == null)
-            {
-                <p><em>Carregando...</em></p>
-            }
-            else
-            {
-                <MudSimpleTable Hover="true" Striped="true" Style="overflow-x: auto;">
-                    <thead>
-                        <tr>
-                            <th>Id</th>
-                            <th>Data Check In</th>
-                            <th>Nome Hospede</th>
-                            <th>Origem</th>  
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (Reserva reserva1 in listReserva) 
-                        {
-                            <tr>
-                                <td><a href='@reserva1.LinkReserva' target='_blank'> @reserva1.IDReserva </a></td>
-                                <td>@reserva1.DataCheckIn.GetValueOrDefault().ToString("dd/MM/yyyy")</td>
-                                <td> <a href='@reserva1.LinkReservaID' >@reserva1.NomeHospede!.Split(' ')[0].ToString()</a></td>
-                                <td><a href='@reserva1.LinkReservaOrigem' target='_blank'>@reserva1.Origem</a></td> 
-                            </tr>
-                        }
-                    </tbody>
-                </MudSimpleTable> 
-            }
+<PageTitle>Lista Reserva</PageTitle>
+<br />
 
-        </MudPaper>
-    </MudContainer>
+<MudPaper Class="px-8 pt-2 pb-4 mx-4 my-4 rounded-xl" Justify="Justify.Center">
+    @if (listReserva == null)
+    {
+        <p><em>Carregando...</em></p>
+    }
+    else
+    {
+        <MudSimpleTable Hover="true" Striped="true" Style="overflow-x: auto;">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Data Check In</th>
+                    <th>Nome Hospede</th>
+                    <th>Origem</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (Reserva reserva1 in listReserva)
+                {
+                    <tr>
+                        <td><a href='@reserva1.LinkReserva' target='_blank'> @reserva1.IDReserva </a></td>
+                        <td>@reserva1.DataCheckIn.GetValueOrDefault().ToString("dd/MM/yyyy")</td>
+                        <td> <a href='@reserva1.LinkReservaID'>@reserva1.NomeHospede!.Split(' ')[0].ToString()</a></td>
+                        <td><a href='@reserva1.LinkReservaOrigem' target='_blank'>@reserva1.Origem</a></td>
+                    </tr>
+                }
+            </tbody>
+        </MudSimpleTable>
+    }
 </MudPaper>
 
 @code {
     public List<Reserva>? listReserva;
-    private Reserva reserva; 
+    private Reserva reserva;
 
     protected override async Task OnInitializedAsync()
     {
@@ -73,7 +69,4 @@
 
 
     }
-
-
-
-    }
+}

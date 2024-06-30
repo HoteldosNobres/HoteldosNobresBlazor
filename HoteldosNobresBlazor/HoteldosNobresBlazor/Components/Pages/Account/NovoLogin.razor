@@ -106,7 +106,7 @@
     private sealed class InputModel
     {
         [Required]
-        [StringLength(6, ErrorMessage = "Tem que ser maior 6")]
+        [DataType(DataType.Text)]
         public string Email { get; set; } = "";
 
         [Required]
