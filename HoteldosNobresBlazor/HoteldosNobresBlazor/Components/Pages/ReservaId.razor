@@ -43,6 +43,7 @@
                 </div>
                 <MudTextField T="string" Label="CPF" Disabled="@DisabledCPF" @bind-Value="CPF" />
                 <MudDatePicker Label="Data de Nascimento" PickerVariant="PickerVariant.Dialog" Editable="@(!Disabled)" Elevation="12" Disabled="@Disabled" @bind-Date="guest.Birthdate" DateFormat="dd/MM/yyyy" />
+                <MudText Typo="Typo.subtitle1" Class="deep-purple-text mt-2">Foi informado o CPF @reserva.ProxyCPF e Data de Nascimento @reserva.DataNascimento.ToString("dd/MM/yyyy") </MudText>
                 <MudDivider />
                 <MudListItem Icon="@Icons.Material.Filled.House"> Endereço </MudListItem>
                 <MudTextField T="string" Label="CEP" @bind-Value="guest.Zip" TextChanged="@SearchCEP" Editable="@Disabled"
