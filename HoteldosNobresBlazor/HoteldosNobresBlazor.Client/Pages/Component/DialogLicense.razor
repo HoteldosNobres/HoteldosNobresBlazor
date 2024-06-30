@@ -2,25 +2,24 @@
 @using System.Text 
 @inject IJSRuntime JSRuntime
 
-<MudDialog DisableSidePadding="true">
+<MudDialog Style="height: 410px">
     <DialogContent>
-        <MudContainer Style="max-height: 300px; overflow-y: scroll">
-            @if (Loading)
-            {
-                <MudProgressCircular Indeterminate="true"></MudProgressCircular>
-            }
-            else
-            {
-                <MudText Style="white-space: pre-wrap;">@LicenseText</MudText>
-            }
-        </MudContainer>
+        @if (Loading)
+        {
+            <MudProgressCircular Indeterminate="true"></MudProgressCircular>
+        }
+        else
+        {
+            <MudText Style="white-space: pre-wrap;">@LicenseText</MudText>
+        }
     </DialogContent>
     <DialogActions>
-        <MudButton OnClick="Cancel">POLÍTICA E NORMAS DO HOTEL</MudButton>
+         <MudButton OnClick="Cancel">POLÍTICA E NORMAS DO HOTEL</MudButton>
         <MudButton OnClick="Cancel">Cancelar</MudButton>
-        <MudButton Color="Color.Primary" OnClick="Ok">Aceitar</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Ok">Aceitar</MudButton> 
     </DialogActions>
 </MudDialog>
+
 @code {
     [CascadingParameter] MudDialogInstance MudDialog { get; set; }
 

@@ -25,7 +25,7 @@
     {
         <MudForm>
             <MudList T="string" ReadOnly="true">
-                <MudListItem T="string" ReadOnly="true" Icon="@Icons.Material.Filled.Info"> FeedBack - Sua avaliação </MudListItem>
+                <MudListItem T="string" ReadOnly="true" Icon="@Icons.Material.Filled.Feedback" Class="deep-purple-text mt-2"> FeedBack - Sua avaliação </MudListItem>
                 <MudText Typo="Typo.subtitle1" Class="deep-purple-text mt-2">Reserva de numero: @reserva.IDReserva </MudText>
                 <MudText Typo="Typo.subtitle2" Class="deep-purple-text mt-2">Nota do Hotel</MudText>
                 <MudRating @bind-SelectedValue="selectedVal" HoveredValueChanged="HandleHoveredValueChanged" />
@@ -33,7 +33,7 @@
                 <MudText Typo="Typo.subtitle2" Class="deep-purple-text mt-2">Atedimento</MudText>
                 <MudRating @bind-SelectedValue="selectedValAtendimento" FullIcon="@Icons.Material.Filled.Favorite" EmptyIcon="@Icons.Material.Filled.FavoriteBorder" HoveredValueChanged="HandleHoveredValueAtendimentoChanged" />
                 <MudText Typo="Typo.subtitle2" Class="deep-purple-text mt-2">@LabelTextAtendimento</MudText>
-                <MudTextField T="string" Label="Mensagem" Variant="Variant.Outlined" Text="@sampleText" AutoGrow HelperText="Deixa sua mensagem" />
+                <MudTextField T="string" Label="Mensagem" Variant="Variant.Outlined" Text="@sampleText" @bind-Value="sampleText" AutoGrow HelperText="Deixa sua mensagem - Não vamos divulgar isso." />
                 <MudTextField @bind-Value="Password" Label="Validação" Variant="Variant.Outlined" InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="ButtonTestclick" HelperText="4 Ultimos digitos do CPF ou do seu Celular" AdornmentAriaLabel="4 Ultimos digitos do CPF ou do seu Celular" />
                 <MudDivider /> 
             </MudList>
@@ -42,7 +42,7 @@
                            Color="Color.Primary"
                            Class="ml-auto rounded-xl"
                            Disabled="@Disabled"
-                           @onclick="OpenDialog">
+                           @onclick="Salvar">
                     Enviar
                 </MudButton>
             </div>
@@ -133,25 +133,13 @@
 
             if (reserva is not null)
             {  
-                Disabled = false;
-                // foreach (var item in guest.CustomFields)
-                // {
-                //     if (item.CustomFieldName.Equals("CPF"))
-                //     {
-                //         string cpfstring = Regex.Replace(item.CustomFieldValue, @"[^\d]", "");
-                //         if (!string.IsNullOrEmpty(cpfstring))
-                //         {
-                //             DisabledCPF = true;
-                //             ReadOnly = true;
-                //             Disabled = true;
-                //             DisabledSave = true;
-                //             DisabledCPF = true;
-                //             DisableEndereco = true;
-                //             CPF = "***.***." + cpfstring.Substring(cpfstring.Length - 4);
-                //         }
-                //     }
-
-                // }
+                Disabled = false; 
+                if (reserva.Notas is not null && reserva.Notas.Count() > 0  && reserva.Notas!.Any(x => x.Texto!.Contains("Nota:")))
+                {
+                    Disabled = true;
+                    ReadOnly = true;
+                    Navigation.NavigateTo("https://hoteldosnobres.com.br/");
+                }
             }
             else
                 Navigation.NavigateTo("https://hoteldosnobres.com.br/");
@@ -168,46 +156,39 @@
 
     }
 
-    protected async Task Editar()
-    {
-        Disabled = !Disabled;
-        ReadOnly = !ReadOnly; 
-
-    }
-
-    async Task OpenDialog()
-    {
-        bool license_accepted = false;
-        var result = await DialogService.Show<DialogLicense>("Termos e Condições ").Result;
-
-        if (!result.Canceled)
-        {
-            license_accepted = (bool)(result.Data ?? false);
-            if (license_accepted)
-            {
-                await Salvar();
-                reserva = await cloudbedsAPI.GetReservaAsync(reserva.IDReserva);
-            }
-        }
-    }
-
     protected async Task Salvar()
     {
         try
         {
-            if (!string.IsNullOrEmpty(Password))
+            if (string.IsNullOrEmpty(Password))
             {
                 Snackbar.Add("Deverá informar um validação", Severity.Warning);
                 return;
             }
-           
 
-            if (!Disabled && !string.IsNullOrEmpty(Password))
+            bool validacao = false;
+            string cpf = reserva.Cpf!.Substring(reserva.Cpf.Length - 4);
+            if(cpf.Equals(Password))
+                validacao = true;
+
+            string celular = reserva.ProxyCelular!.Substring(reserva.ProxyCelular.Length - 4);
+            if (celular.Equals(Password))
+                validacao = true;
+
+
+
+            if (!validacao)
             {
-                
+                Snackbar.Add("Validação incorreta!", Severity.Warning);
+                return;
+            } else
+            {
+                string texto = " Nota: " + selectedVal + " de 5 do Hotel. Nota: " + selectedValAtendimento + " de 5 de atendimento. Comentario: " + sampleText;
+                cloudbedsAPI.PostReservationNote(reserva.IDReserva, texto);
             }
+
  
-            Snackbar.Add("Cadastrado alterado com sucesso!", Severity.Success);
+            Snackbar.Add("Feedback enviado com sucesso!", Severity.Success);
 
             Disabled = !Disabled;
             ReadOnly = !ReadOnly; 

@@ -25,7 +25,7 @@
     {
         <MudForm>
             <MudList T="string" ReadOnly="true">
-                <MudListItem T="string" ReadOnly="true" Icon="@Icons.Material.Filled.Info"> Dados - Suas informações </MudListItem>
+                <MudListItem T="string" ReadOnly="true" Class="deep-purple-text mt-2" Icon="@Icons.Material.Filled.Info">Dados do Hóspede Principal</MudListItem>
                 <MudListItem T="string">
                     <div class="d-flex">
                         <MudTextField T="string" Label="Nome" Disabled="true" @bind-Value="guest.FirstName" />
@@ -33,12 +33,13 @@
                     </div>
                 </MudListItem>
                 <MudTextField T="string" Label="E-mail" Editable="@(!Disabled)" Elevation="12" Disabled="@Disabled" @bind-Value="guest.Email" Variant="Variant.Outlined" />
-                <MudTextField T="string" Label="CPF*" Disabled="@DisabledCPF" @bind-Value="CPF" Variant="Variant.Outlined" />
-                <MudDatePicker Label="Data de Nascimento*" PickerVariant="PickerVariant.Dialog" Editable="@(!Disabled)" Elevation="12" Disabled="@Disabled" @bind-Date="guest.Birthdate" DateFormat="dd/MM/yyyy" Variant="Variant.Outlined" />
+                <MudTextField Label="CPF*" 
+                Editable="@(!Disabled)" Disabled="@DisabledCPF" Placeholder="000.000.000-00" @bind-Value="CPF" Variant="@Variant.Outlined" Clearable />
+                <MudDatePicker Label="Data de Nascimento*" Editable="@(!Disabled)" @bind-Date="guest.Birthdate" Placeholder="dd/MM/aaaa" Variant="Variant.Outlined" />
                 <MudDivider />
                 <MudListItem Icon="@Icons.Material.Filled.House"> Endereço </MudListItem>
                 <MudTextField T="string" Label="CEP" @bind-Value="guest.Zip" TextChanged="@SearchCEP" Editable="@Disabled"
-                              Disabled="@Disabled" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary" Variant="Variant.Outlined" />
+                              Class="deep-purple-text mt-2" Disabled="@Disabled" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary" Variant="Variant.Outlined" />
 
                 <MudTextField T="string" Label="Endereço - Rua/Avenida + Número + Compl." Disabled="DisableEndereco" @bind-Value="guest.Address" Variant="Variant.Outlined" />
                 <MudListItem T="string">
@@ -214,12 +215,12 @@
     {
         try
         {
-            if (!string.IsNullOrEmpty(CPF))
+            if (string.IsNullOrEmpty(CPF))
             {
                 Snackbar.Add("Deverá informar um CPF", Severity.Warning);
                 return;
             }
-            if (!string.IsNullOrEmpty(guest.Birthdate!.Value.ToString("yyyy-MM-dd")))
+            if (string.IsNullOrEmpty(guest.Birthdate!.Value.ToString("yyyy-MM-dd")))
             {
                 Snackbar.Add("Deverá informar um Data de Nascimento", Severity.Warning);
                 return;
@@ -342,4 +343,5 @@
 
     }
 
+ 
 }
