@@ -755,7 +755,7 @@ namespace HoteldosNobresBlazor.Funcoes
                 if (!reserva.ProxyCelular!.Equals("553537150180"))
                 {
                     retorno += FunctionWhatsApp.postMensagemTemplete(reserva.ProxyCelular!, "inf_obrigado").Result;
-                    retorno += FunctionWhatsApp.postMensageFlowAvaliacao(reserva.ProxyCelular!).Result;
+                    retorno += FunctionWhatsApp.postMensagemTempleteFeedback(reserva.ProxyCelular!, reserva.IDReserva, reserva.NomeHospede).Result;
                 }
             }
             return retorno;

@@ -89,6 +89,24 @@ public class APICloudbeds
         return obj;
     }
 
+    public async void PostReservationNote(string Id, string note)
+    {
+        try
+        {
+            var collection = new List<KeyValuePair<string, string>>();
+            collection.Add(new("reservationID", Id));
+            collection.Add(new("reservationNote", note)); 
+
+            var content = new FormUrlEncodedContent(collection);
+            await _httpClient.PostAsync(_httpClient.BaseAddress + "/postReservationNote", content);
+
+        }
+        catch (FileNotFoundException e)
+        {
+
+        }
+    }
+
     #region Guest
     public async Task<Guest> GetGuestAsync(string Id)
     {
