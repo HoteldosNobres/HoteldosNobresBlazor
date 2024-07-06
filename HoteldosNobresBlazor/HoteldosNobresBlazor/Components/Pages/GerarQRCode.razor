@@ -24,46 +24,48 @@
             <MudPaper Elevation="2" Class="pa-4  rounded-xl" Style="height: 100%">
                 <br />
                 <MudPaper Class="rounded-xl">
-                    <MudListItem T="string" style="background-color: #F5F4F4;" class="rounded-t-xl">
-                        <MudStack Row="true">
-                            <MudText><b>Instruções para a transferência bancária - PIX</b></MudText>
-                            <MudSpacer />
-                            <MudIcon Icon="fa-solid fa-building-columns" Title="Favorite" />
-                        </MudStack>
-                    </MudListItem>
-                    <MudDivider />
-                    <MudListItem T="string">
-                        <MudText Typo="Typo.caption">NÃO E POSSÍVEL PAGAR NO CHECK-IN !!!</MudText><br />
-                        <br />
-                        <MudText Typo="Typo.caption" GutterBottom="true" Class="ml-auto">
-                            Reservas não paga no período de  30 minutos sera cancelada, como em nossos Termos e Politicas.<br />
-                            Pix nossa <b>CHAVE CNPJ 35.337.342/0001-86</b><br />
-                            Nome <b>JOSE CARLOS NOBRE</b> ou <b>HOTEL DOS NOBRES LTDA</b><br />
-                            Banco <b>CC AGROCREDI LTDA - SICOOB</b><br />
-                            @if (valordecimal > 0)
-                            {
-                                <MudText Typo="Typo.caption">Valor<b> R$ @Valor </b><br /> </MudText>
-                            }
-                            @if (ReservationId is not null && ReservationId != "nova")
-                            {
-                                <MudText Typo="Typo.caption" >Identificador/Reserva <b> @ReservationId </b><br /> </MudText>
-                            }
+                    <MudList T="string"  ReadOnly="true" class="rounded-t-xl">
+                        <MudListItem T="string" style="background-color: #F5F4F4;" class="rounded-t-xl">
+                            <MudStack Row="true">
+                                <MudText><b>Instruções para a transferência bancária - PIX</b></MudText>
+                                <MudSpacer />
+                                <MudIcon Icon="fa-solid fa-building-columns" Title="Favorite" />
+                            </MudStack>
+                        </MudListItem>
+                        <MudDivider />
+                        <MudListItem T="string" ReadOnly="true">
+                            <MudText Typo="Typo.caption">NÃO E POSSÍVEL PAGAR NO CHECK-IN !!!</MudText><br />
+                            <br />
+                            <MudText Typo="Typo.caption" GutterBottom="true" Class="ml-auto">
+                                Reservas não paga no período de  30 minutos sera cancelada, como em nossos Termos e Politicas.<br />
+                                Pix nossa <b>CHAVE CNPJ 35.337.342/0001-86</b><br />
+                                Nome <b>JOSE CARLOS NOBRE</b> ou <b>HOTEL DOS NOBRES LTDA</b><br />
+                                Banco <b>CC AGROCREDI LTDA - SICOOB</b><br />
+                                @if (valordecimal > 0)
+                                {
+                                    <MudText Typo="Typo.caption">Valor<b> R$ @Valor </b><br /> </MudText>
+                                }
+                                @if (ReservationId is not null && ReservationId != "nova")
+                                {
+                                    <MudText Typo="Typo.caption">Identificador/Reserva <b> @ReservationId </b><br /> </MudText>
+                                }
 
-                        </MudText>
-                        <br />
-                        <MudGrid>
-                             <MudItem xs="12">
-                                <MudGrid Justify="Justify.SpaceBetween">
-                                    <MudItem xs="12" sm="6">
-                                        <MudImage Fluid="true" Align="Align.Center" src="@($"data:image/png;base64,{qrCode}")" Alt="QRCode" Elevation="25" Width="250" Height="250" Class="rounded-lg" />
-                                    </MudItem>
-                                    <MudItem xs="12" sm="6">
-                                        <MudTextField T="string" Label="Copia e Cola" Variant="Variant.Text" Text="@stringToQrCode" AutoGrow HelperText="Use no APP pagar PIX Copia e Cola" />
-                                    </MudItem>
-                                </MudGrid> 
-                            </MudItem>
-                        </MudGrid>
-                    </MudListItem>
+                            </MudText>
+                            <br />
+                            <MudGrid>
+                                <MudItem xs="12">
+                                    <MudGrid Justify="Justify.SpaceBetween">
+                                        <MudItem xs="12" sm="6">
+                                            <MudImage Fluid="true" Align="Align.Center" src="@($"data:image/png;base64,{qrCode}")" Alt="QRCode" Elevation="25" Width="250" Height="250" Class="rounded-lg" />
+                                        </MudItem>
+                                        <MudItem xs="12" sm="6">
+                                            <MudTextField T="string" Label="Copia e Cola" Variant="Variant.Text" Text="@stringToQrCode" AutoGrow HelperText="Use no APP pagar PIX Copia e Cola" />
+                                        </MudItem>
+                                    </MudGrid>
+                                </MudItem>
+                            </MudGrid>
+                        </MudListItem>
+                    </MudList>
                 </MudPaper>
                 <br />
                 <br />
@@ -128,7 +130,7 @@
             valordecimal = reserva!.BalanceDetailed!.GrandTotal - reserva!.BalanceDetailed!.Paid;
             Valor = valordecimal.ToString("N2", new CultureInfo("pt-BR"));
         }
-        
+
 
         GerarQrcode();
     }
@@ -138,7 +140,7 @@
         Disabled = !Disabled;
         ReadOnly = !ReadOnly;
     }
-     
+
 
     protected async Task Salvar()
     {
@@ -189,7 +191,7 @@
     {
         QRCodeGenerator qrGenerator = new QRCodeGenerator();
         QRCodeData qrCodeData = qrGenerator.CreateQrCode(data, QRCodeGenerator.ECCLevel.M);
-        PngByteQRCode qrCode = new PngByteQRCode(qrCodeData); 
+        PngByteQRCode qrCode = new PngByteQRCode(qrCodeData);
         byte[] qrCodeImage = qrCode.GetGraphic(20);
         string qrCodeAsBase64 = Convert.ToBase64String(qrCodeImage);
         return qrCodeAsBase64;

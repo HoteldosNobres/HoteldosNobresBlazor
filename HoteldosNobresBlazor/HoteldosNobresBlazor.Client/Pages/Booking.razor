@@ -25,27 +25,26 @@
     {
         <MudForm>
             <MudList T="string" ReadOnly="true">
-                <MudListItem T="string" ReadOnly="true" Class="deep-purple-text mt-2" Icon="@Icons.Material.Filled.Info">Dados do Hóspede Principal</MudListItem>
+                <MudListItem T="string" ReadOnly="true" IconColor="Color.Primary" Class="deep-purple-text mt-2" Icon="@Icons.Material.Filled.Info">Dados do Hóspede Principal</MudListItem>
                 <MudListItem T="string">
                     <div class="d-flex">
-                        <MudTextField T="string" Label="Nome" Disabled="true" @bind-Value="guest.FirstName" />
-                        <MudTextField T="string" Label="Celular/Telefone" Disabled="true" @bind-Value="CellPhone" />
+                        <MudTextField T="string" Label="Nome" Class="deep-purple-text mt-2"  Disabled="true" @bind-Value="guest.FirstName" />
+                        <MudTextField T="string" Label="Celular/Telefone" Class="deep-purple-text mt-2" Disabled="true" @bind-Value="CellPhone" />
                     </div>
-                </MudListItem>
-                <MudTextField T="string" Label="E-mail" Editable="@(!Disabled)" Elevation="12" Disabled="@Disabled" @bind-Value="guest.Email" Variant="Variant.Outlined" />
+                </MudListItem> 
                 <MudTextField Label="CPF*" 
                 Editable="@(!Disabled)" Disabled="@DisabledCPF" Placeholder="000.000.000-00" @bind-Value="CPF" Variant="@Variant.Outlined" Clearable />
-                <MudDatePicker Label="Data de Nascimento*" Editable="@(!Disabled)" @bind-Date="guest.Birthdate" Placeholder="dd/MM/aaaa" Variant="Variant.Outlined" />
+                <MudDatePicker Label="Data de Nascimento*" Editable="@(!Disabled)" @bind-Date="guest.Birthdate" Placeholder="dd/MM/aaaa" Variant="Variant.Outlined" DateFormat="dd/MM/yyyy" />
+                <MudTextField T="string" Label="E-mail" Editable="@(!Disabled)" Elevation="12" Disabled="@Disabled" @bind-Value="guest.Email" Variant="Variant.Outlined" />
                 <MudDivider />
-                <MudListItem Icon="@Icons.Material.Filled.House"> Endereço </MudListItem>
+                <MudListItem Class="deep-purple-text mt-2" IconColor="Color.Primary" Icon="@Icons.Material.Filled.House"> Endereço </MudListItem>
                 <MudTextField T="string" Label="CEP" @bind-Value="guest.Zip" TextChanged="@SearchCEP" Editable="@Disabled"
-                              Class="deep-purple-text mt-2" Disabled="@Disabled" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary" Variant="Variant.Outlined" />
-
+                             Disabled="@Disabled" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary" Variant="Variant.Outlined" />  
                 <MudTextField T="string" Label="Endereço - Rua/Avenida + Número + Compl." Disabled="DisableEndereco" @bind-Value="guest.Address" Variant="Variant.Outlined" />
                 <MudListItem T="string">
                     <div class="d-flex">
-                        <MudTextField T="string" Label="Bairro" Disabled="true" @bind-Value="guest.Address2" />
-                        <MudTextField T="string" Label="Cidade" Disabled="true" @bind-Value="guest.City" />
+                        <MudTextField T="string" Class="deep-purple-text mt-2" Label="Bairro" Disabled="true" @bind-Value="guest.Address2" />
+                        <MudTextField T="string" Class="deep-purple-text mt-2" Label="Cidade" Disabled="true" @bind-Value="guest.City" />
                     </div>
                 </MudListItem>
                 <MudListItem T="string">
@@ -84,6 +83,10 @@
         <CardBooking reserva=reserva />
     }
 </MudPaper>
+
+<MudText Typo="Typo.subtitle1" Class="px-8 pt-2 pb-4 mx-4 my-4 align-items-center" Align="Align.Center">
+    <i class="fas fa-brands fa-creative-commons"></i> Feito com <i class="fas fa-heart"></i> pela <a href="https://instagram.com/hoteldosnobres" target="_blank" rel="nofollow">Equipe do Hotel dos Nobres</a>
+</MudText>
 
 @code {
     [Parameter]
@@ -149,7 +152,7 @@
                 else
                     CellPhone = guest.Phone!.Substring(0, 6) + "**-****";
 
-                if (guest.Email!.Contains("guest.booking.com"))
+                if (guest.Email!.Contains("guest.booking.com") || guest.Email!.Contains("expediapartnercentral.com"))
                     guest.Email = null;
 
                 DisabledCPF = false;

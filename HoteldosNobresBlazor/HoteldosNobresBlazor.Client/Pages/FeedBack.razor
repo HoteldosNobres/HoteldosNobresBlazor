@@ -27,14 +27,20 @@
             <MudList T="string" ReadOnly="true">
                 <MudListItem T="string" ReadOnly="true" Icon="@Icons.Material.Filled.Feedback" Class="deep-purple-text mt-2"> FeedBack - Sua avaliação </MudListItem>
                 <MudText Typo="Typo.subtitle1" Class="deep-purple-text mt-2">Reserva de numero: @reserva.IDReserva </MudText>
-                <MudText Typo="Typo.subtitle2" Class="deep-purple-text mt-2">Nota do Hotel</MudText>
-                <MudRating @bind-SelectedValue="selectedVal" HoveredValueChanged="HandleHoveredValueChanged" />
+                <MudDivider />
+                <MudText Typo="Typo.subtitle2" Class="deep-purple-text mt-2">Nota do Hotel: </MudText>
+                <MudRating @bind-SelectedValue="selectedVal" HoveredValueChanged="HandleHoveredValueChanged" MaxValue="10" Size="Size.Large" />
                 <MudText Typo="Typo.subtitle2" Class="deep-purple-text mt-2">@LabelText</MudText>
-                <MudText Typo="Typo.subtitle2" Class="deep-purple-text mt-2">Atedimento</MudText>
-                <MudRating @bind-SelectedValue="selectedValAtendimento" FullIcon="@Icons.Material.Filled.Favorite" EmptyIcon="@Icons.Material.Filled.FavoriteBorder" HoveredValueChanged="HandleHoveredValueAtendimentoChanged" />
+                <MudDivider />
+                <MudText Typo="Typo.subtitle2" Class="deep-purple-text mt-2">Atedimento: </MudText>
+                <MudRating @bind-SelectedValue="selectedValAtendimento" FullIcon="@Icons.Material.Filled.Favorite" EmptyIcon="@Icons.Material.Filled.FavoriteBorder" HoveredValueChanged="HandleHoveredValueAtendimentoChanged" MaxValue="10" Size="Size.Large" Color="Color.Primary" />
                 <MudText Typo="Typo.subtitle2" Class="deep-purple-text mt-2">@LabelTextAtendimento</MudText>
-                <MudTextField T="string" Label="Mensagem" Variant="Variant.Outlined" Text="@sampleText" @bind-Value="sampleText" AutoGrow HelperText="Deixa sua mensagem - Não vamos divulgar isso." />
-                <MudTextField @bind-Value="Password" Label="Validação" Variant="Variant.Outlined" InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="ButtonTestclick" HelperText="4 Ultimos digitos do CPF ou do seu Celular" AdornmentAriaLabel="4 Ultimos digitos do CPF ou do seu Celular" />
+                <MudDivider />
+                <MudText Typo="Typo.subtitle2" Class="deep-purple-text mt-2">Mensagem: </MudText>
+                <MudTextField T="string" Variant="Variant.Outlined" Text="@sampleText" @bind-Value="sampleText" AutoGrow HelperText="Deixa sua mensagem - Não vamos divulgar isso." />
+                <MudDivider />
+                <MudText Typo="Typo.subtitle2" Class="deep-purple-text mt-2">Validação: </MudText>
+                <MudTextField @bind-Value="Password" Variant="Variant.Outlined" InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="ButtonTestclick" HelperText="4 Ultimos digitos do CPF ou do seu Celular" AdornmentAriaLabel="4 Ultimos digitos do CPF ou do seu Celular" />
                 <MudDivider /> 
             </MudList>
             <div class="mt-4">
@@ -56,8 +62,7 @@
             </MudItem>
         </MudGrid>
     }
-</MudPaper>
-
+</MudPaper> 
 
 <MudPaper Class="px-8 pt-2 pb-4 mx-4 my-4 rounded-xl" Justify="Justify.Center" hidden="@(!Disabled)">
     @if (reserva is not null)
@@ -70,6 +75,12 @@
         <MudText Typo="Typo.h6" Align="Align.Center" GutterBottom="true">Agradecemos!</MudText>
     }
 </MudPaper>
+
+<MudText Typo="Typo.subtitle1" Class="px-8 pt-2 pb-4 mx-4 my-4 align-items-center" Align="Align.Center">
+            <i class="fas fa-brands fa-creative-commons"></i> Feito com
+            <i class="fas fa-heart"></i> pela
+            <a href="https://instagram.com/hoteldosnobres" target="_blank" rel="nofollow">Equipe do Hotel dos Nobres</a>
+</MudText>
 
 @code {
     [Parameter]
@@ -183,7 +194,7 @@
                 return;
             } else
             {
-                string texto = " Nota: " + selectedVal + " de 5 do Hotel. Nota: " + selectedValAtendimento + " de 5 de atendimento. Comentario: " + sampleText;
+                string texto = " Nota: " + selectedVal + " de 10 do Hotel. Nota: " + selectedValAtendimento + " de 10 de atendimento. Comentario: " + sampleText;
                 cloudbedsAPI.PostReservationNote(reserva.IDReserva, texto);
             }
 
@@ -202,21 +213,31 @@
 
     private string LabelText => (activeVal ?? selectedVal) switch
     {
-        1 => "Muito Ruim",
-        2 => "Ruim",
-        3 => "Suficiente",
-        4 => "Bom",
-        5 => "Excelente!",
+        1 => "1 - Péssimo",
+        2 => "2 - Muito Ruim",
+        3 => "3 - Ruim",
+        4 => "4 - Decepcionante",
+        5 => "5 - Aceitável",
+        6 => "6 - Satisfatório",
+        7 => "7 - Muito Bom",
+        8 => "8 - Fabuloso",
+        9 => "9 - Fantástico",
+        10 => "10 - Excepcional",
         _ => "Nota do Hotel"
     };
 
     private string LabelTextAtendimento => (activeValAtendimento ?? selectedValAtendimento) switch
     {
-        1 => "Muito Ruim",
-        2 => "Ruim",
-        3 => "Suficiente",
-        4 => "Bom",
-        5 => "Excelente!",
+        1 => "1 - Péssimo",
+        2 => "2 - Muito Ruim",
+        3 => "3 - Ruim",
+        4 => "4 - Decepcionante",
+        5 => "5 - Aceitável",
+        6 => "6 - Satisfatório",
+        7 => "7 - Muito Bom",
+        8 => "8 - Fabuloso",
+        9 => "9 - Fantástico",
+        10 => "10 - Excepcional",
         _ => "Nosso atendimento"
     };
 
