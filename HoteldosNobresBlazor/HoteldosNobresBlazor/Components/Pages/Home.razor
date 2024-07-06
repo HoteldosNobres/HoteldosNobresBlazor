@@ -1,6 +1,8 @@
 ﻿@page "/"
 @using HoteldosNobresBlazor.Classes
 @using HoteldosNobresBlazor.Funcoes
+@using OpenAI_API
+@using OpenAI_API.Models
 @inject AppState appState
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 @inject NavigationManager NavigationManagerHome
@@ -176,6 +178,12 @@
                     @linha <br />
                 }
                 <br />
+                <MudButton Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           Class="ml-auto rounded-xl" 
+                           @onclick="OpenIA">
+                    IA
+                </MudButton>
             </MudPaper>
         </MudItem>
     </MudGrid>
@@ -255,5 +263,12 @@
         // {
         //     await JS.InvokeVoidAsync("toggleTheme", cookieContent);
         // }
+    }
+
+    async Task OpenIA()
+    { 
+        // OpenAIAPI api = new OpenAIAPI(new APIAuthentication(KEYs.OPENAI)); // create object manually
+        // var chat = api.Chat.CreateConversation(); 
+        // Console.WriteLine(result);
     }
 } 
