@@ -12,6 +12,9 @@ public partial class Reservation
 
     [JsonProperty("data")]
     public Data Data { get; set; }
+
+    [JsonProperty("message")]
+    public string Message { get; set; }
 }
 
 public partial class Data
@@ -82,6 +85,9 @@ public partial class Data
 
     [JsonProperty("orderId")]
     public string OrderId { get; set; }
+
+    [JsonProperty("estimatedArrivalTime")]
+    public string EstimatedArrivalTime { get; set; }
 
     public List<Guest> GuestLista => GuestList.Values.ToList();
 }

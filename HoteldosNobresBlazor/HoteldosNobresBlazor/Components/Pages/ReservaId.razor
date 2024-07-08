@@ -194,11 +194,15 @@ else
                     <MudSpacer />
                     <MudText Align="Align.Center" Class="mb-n4"> - </MudText>
                     <MudText Align="Align.Center"> Nome do Hospede Principal: @reserva.NomeHospede  </MudText>
-                    <MudText Align="Align.Center"> Origem: @reserva.Origem  </MudText>
+                    <MudText Align="Align.Center"> Origem: @reserva.Origem  </MudText>                  
                     @if (!string.IsNullOrEmpty(reserva.IDReservaAgencia))
                     {
                         <MudText Align="Align.Center"> Número da reserva via agência: @reserva.IDReservaAgencia  </MudText>
                     }
+                    <MudItem Align="Align.Center">
+                        <MudTextField T="string" Label="Horário previsto de chegada" HelperText="Horário tem que ser entre 14:00 e 23:00 (Brasilia)"
+                                      @bind-Value="HorarioAproximado" InputType="InputType.Time" TextChanged="OnValueChangeHandler" />
+                    </MudItem> 
                     <MudSpacer />
                     <br />
                     @if (reserva is not null && reserva.Notas is not null && reserva.Notas.Count > 0)
@@ -369,6 +373,7 @@ else
     public Guest guest { get; set; }
     private UserInfo user = default!;
     public string CPF { get; set; }
+    public string HorarioAproximado { get; set; }
 
     public Reserva reserva { get; set; }
 
@@ -383,6 +388,12 @@ else
     protected override async Task OnInitializedAsync()
     {
         reserva = await cloudbedsAPI.GetReservaAsync(ReservationId);
+
+        if(reserva is not null && reserva.HorarioAproximado is not null)
+         {
+            HorarioAproximado = reserva.HorarioAproximado.GetValueOrDefault().ToString("HH:mm");
+        }
+
         guest = await cloudbedsAPI.GetGuestAsync(reserva.GuestID);
         if (guest is not null)
         {
@@ -671,6 +682,28 @@ else
         catch (Exception ex)
         {
             Snackbar.Add("Erro ao enviar CPF", Severity.Error);
+            Console.WriteLine(ex.Message);
+        }
+    }
+
+    protected async Task OnValueChangeHandler(string newValue)
+    {
+        try
+        {
+            DateTime horario = DateTime.Parse(newValue);
+            if (horario.Hour >= 14 && horario.Hour <= 23)
+            {
+                cloudbedsAPI.PutReservaAsync(reserva.IDReserva.ToString(), "estimatedArrivalTime", horario.ToString("HH:mm"));
+            }
+            else
+            {
+                Snackbar.Add("O horário previsão de chegada está fora 14 horas e 23 horas.", Severity.Warning);
+            }
+
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("Erro autualizar horario", Severity.Error);
             Console.WriteLine(ex.Message);
         }
     }

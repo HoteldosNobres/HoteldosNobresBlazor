@@ -35,6 +35,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Update="Pages\Component\CardHorario.razor">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </Content>
     <Content Update="Pages\FeedBack.razor">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
     </Content>

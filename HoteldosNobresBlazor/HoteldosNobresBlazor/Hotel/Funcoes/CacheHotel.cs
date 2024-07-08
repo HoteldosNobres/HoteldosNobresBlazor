@@ -229,7 +229,14 @@ namespace HoteldosNobresBlazor.Funcoes
                     FuncoesEmail.EnviarEmailCPF(novareserva.Email, novareserva.IDReserva, novareserva.NomeHospede);
                 }
 
-                if (novareserva != null && novareserva.Estado != null && novareserva.CEP != null)
+                if (novareserva is not null && novareserva.Origem is not null && novareserva.Origem.Contains("Website/Booking Engine"))
+                {
+
+
+                }
+
+
+                    if (novareserva != null && novareserva.Estado != null && novareserva.CEP != null)
                 {
                     logSistema.Log += AjustarEndereco(novareserva);
                 }

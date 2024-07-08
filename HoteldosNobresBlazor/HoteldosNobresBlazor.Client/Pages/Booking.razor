@@ -98,6 +98,7 @@
     private UserInfo user = default!;
     public string CPF { get; set; }
     public string CellPhone { get; set; }
+    private string emailota { get; set; }
 
     bool ReadOnly = false;
     bool NestedReadOnly;
@@ -153,7 +154,10 @@
                     CellPhone = guest.Phone!.Substring(0, 6) + "**-****";
 
                 if (guest.Email!.Contains("guest.booking.com") || guest.Email!.Contains("expediapartnercentral.com"))
+                {
+                    emailota = guest.Email.ToString();
                     guest.Email = null;
+                }
 
                 DisabledCPF = false;
                 foreach (var item in guest.CustomFields)
@@ -199,7 +203,10 @@
     }
 
     async Task OpenDialog()
-    {
+    { 
+        if (Validacao())
+            return;
+
         bool license_accepted = false;
         var result = await DialogService.Show<DialogLicense>("Termos e Condições ").Result;
 
@@ -218,16 +225,7 @@
     {
         try
         {
-            if (string.IsNullOrEmpty(CPF))
-            {
-                Snackbar.Add("Deverá informar um CPF", Severity.Warning);
-                return;
-            }
-            if (string.IsNullOrEmpty(guest.Birthdate!.Value.ToString("yyyy-MM-dd")))
-            {
-                Snackbar.Add("Deverá informar um Data de Nascimento", Severity.Warning);
-                return;
-            }
+
 
             List<string> listaparametros = new List<string>();
 
@@ -304,6 +302,12 @@
             if (listaparametros.Count > 2)
                 cloudbedsAPI.PutGuestMaisAsync(guest.GuestId.ToString(), listaparametros);
 
+            if(!string.IsNullOrEmpty(emailota))
+            {
+                string mensagem = " Foi informado o CPF: " + reserva.ProxyCPF + " e Data de Nascimento: " + guest.Birthdate!.Value.ToString("dd/MM/yyyy");
+                FuncoesEmail.EnviarEmail(emailota, mensagem, "Mensagem do Hotel dos Nobres");
+            }
+
             Snackbar.Add("Cadastrado alterado com sucesso!", Severity.Success);
 
             Disabled = !Disabled;
@@ -313,12 +317,40 @@
 
             if (!DisableEndereco)
                 DisableEndereco = true;
+
+
         }
         catch (Exception ex)
         {
             Snackbar.Add("Erro ao alterar o cadastro!", Severity.Error);
         }
     }
+
+    protected bool Validacao()
+    {
+        if (string.IsNullOrEmpty(CPF))
+        {
+            Snackbar.Add("Deverá informar um CPF", Severity.Warning);
+            return true;
+        }
+        if (string.IsNullOrEmpty(guest.Birthdate!.Value.ToString("yyyy-MM-dd")))
+        {
+            Snackbar.Add("Deverá informar um Data de Nascimento", Severity.Warning);
+            return true;
+        }
+
+        if (string.IsNullOrEmpty(guest.GuestZip))
+        {
+            Snackbar.Add(
+                new MarkupString($"<div><h3>Deverá informar um CEP</h3><ul><li>Coloque o <strong>CEP</strong></li><li>Depois coloque <em>a rua e o número</em></li> </ul> </div>")
+            , Severity.Warning);
+            return true;
+        }
+
+        return false;
+
+    }
+
 
     private void SearchCEP(string value)
     {

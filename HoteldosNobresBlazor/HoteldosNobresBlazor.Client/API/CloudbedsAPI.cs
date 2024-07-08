@@ -14,6 +14,29 @@ public class APICloudbeds
         _httpClient = factory.CreateClient("CloudbedsAPI");
     }
 
+    public async void PutReservaAsync(string Id, string campo, string valor)
+    {
+        try
+        {
+            var collection = new List<KeyValuePair<string, string>>();
+            collection.Add(new("reservationID", Id));
+            collection.Add(new(campo, valor));
+            var content = new FormUrlEncodedContent(collection);
+            var result = await _httpClient.PutAsync(_httpClient.BaseAddress + "/putReservation", content);
+            if (result.IsSuccessStatusCode)
+            {
+                Reservation resevation = await LerRespostaComoObjetoAsync<Reservation>(await result.Content.ReadAsStringAsync());
+                if(!resevation.Success)
+                   throw new Exception(resevation.Message);
+            }
+
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message); 
+        }
+    }
+
     public async Task<Reserva> GetReservaAsync(string ID)
     {
         Reserva reserva = new Reserva();

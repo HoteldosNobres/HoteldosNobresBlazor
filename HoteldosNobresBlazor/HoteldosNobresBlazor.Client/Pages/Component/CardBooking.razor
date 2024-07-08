@@ -1,4 +1,5 @@
 ﻿@using System.Globalization
+@inject APICloudbeds cloudbedsAPI
 
 <MudGrid Justify="Justify.Center" Class="align-items-center">
     <MudItem>
@@ -60,11 +61,21 @@
 }
 <MudSpacer />
 <br />
+@* <MudItem Align="Align.Center">
+    <MudTextField T="string" Label="Horário previsto de chegada" HelperText="Horário tem que ser entre 14:00 e 23:00 (Brasilia)" InputType="InputType.Time" TextChanged="OnValueChangeHandler" />
+</MudItem>
+<br /> *@
 @if (reserva is not null && reserva.ListaQuartos is not null && reserva.ListaQuartos.Count > 0)
 {
     <CardAcomodacoes Reserva=reserva />
 }
+<br /> 
+@if (reserva is not null && reserva.Origem is not null && reserva.Origem.Contains("Website/Booking Engine"))
+{
+    <CardPix Reserva=reserva />
+}
 <br />
+
 
 
 
@@ -74,9 +85,11 @@
 
     public string? Imagem { get; set; }
 
-    protected override void OnInitialized()
+
+    protected override async Task OnInitializedAsync()
     {
         // Imagem = Reserva!.FotoPerfil!.Contains("Foto") ? $"https://localhost:7089/{Artista!.FotoPerfil}" : "images/cardArtista.png";
+        reserva = await cloudbedsAPI.GetReservaAsync(reserva.IDReserva!);
 
     }
 

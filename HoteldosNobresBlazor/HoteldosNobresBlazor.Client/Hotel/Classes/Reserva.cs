@@ -1,5 +1,6 @@
 ﻿using MosaicoSolutions.ViaCep;
 using MosaicoSolutions.ViaCep.Modelos;
+using MudBlazor.Extensions;
 using System.Diagnostics.Metrics;
 using System.Globalization;
 using System.Text.RegularExpressions;
@@ -14,6 +15,7 @@ public class Reserva
     public DateTime DataCheckInRealizado { get; set; }
     public DateTime? DataCheckOut { get; set; }
     public DateTime DataCheckOutRealizado { get; set; }
+    public DateTime? HorarioAproximado { get; set; }
     public int? Noites { get; set; }
     public int? Hospedes { get; set; }
     public string? Origem { get; set; }
@@ -236,6 +238,9 @@ public class Reserva
         Snuhnum = reservation.Data.Assigned.Length.ToString();
          
         NomeHospede = reservation.Data.GuestName;
+
+        if(!string.IsNullOrEmpty(reservation.Data.EstimatedArrivalTime))
+            HorarioAproximado = DateTime.Parse(reservation.Data.EstimatedArrivalTime);
 
         Guest guest = reservation.Data.GuestLista.First();
         GuestID = guest.GuestId.ToString();    
