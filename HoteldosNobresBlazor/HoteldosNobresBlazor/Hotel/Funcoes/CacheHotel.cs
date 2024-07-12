@@ -71,7 +71,7 @@ namespace HoteldosNobresBlazor.Funcoes
                 if (mensagem.Entry[0].Changes[0].Value.Messages != null && mensagem.Entry[0].Changes[0].Value.Messages[0].Text != null)
                 {
                     texto = " WHATSAPP CHAT - Falou: " + mensagem.Entry[0].Changes[0].Value.Messages[0].Text.Body;
-                    log.Log = texto;
+                    log.Log = texto + "From: " + from;
                     log.Status = "texto";
                 }
                 else if (mensagem.Entry[0].Changes[0].Value.Messages != null && mensagem.Entry[0].Changes[0].Value.Messages[0].Interactive != null)
@@ -105,8 +105,11 @@ namespace HoteldosNobresBlazor.Funcoes
                 List<Reserva> listaReserva = FunctionAPICLOUDBEDs.getReservationsAsyncGuestDetails().Result;
                 Reserva reserva = listaReserva.Where(x => x.ProxyCelular.Contains(from)).FirstOrDefault();
                 if (reserva is not null)
+                {
                     reserva = FunctionAPICLOUDBEDs.getReservationAsync(reserva).Result;
-                log.IDReserva = reserva.IDReserva;
+                    log.IDReserva = reserva.IDReserva!;
+                }
+                  
 
                 // Distribuir Texto
                 if (!string.IsNullOrEmpty(cpf))
@@ -134,7 +137,7 @@ namespace HoteldosNobresBlazor.Funcoes
                     }
                 }
                 else if (!string.IsNullOrEmpty(from) && !texto.ToUpper().Contains("WHATSAPP STATUS"))
-                    resultado += FunctionWhatsApp.postMensagemTemplete(from, "inf_converse").Result;
+                    resultado += FunctionWhatsApp.postMensagemTempleteConverse(from).Result;
 
 
                 //Salvar Texto 
@@ -229,11 +232,10 @@ namespace HoteldosNobresBlazor.Funcoes
                     FuncoesEmail.EnviarEmailCPF(novareserva.Email, novareserva.IDReserva, novareserva.NomeHospede);
                 }
 
-                if (novareserva is not null && novareserva.Origem is not null && novareserva.Origem.Contains("Website/Booking Engine"))
-                {
-
-
-                }
+                //if (novareserva is not null && novareserva.Origem is not null && novareserva.Origem.Contains("Website/Booking Engine"))
+                //{ 
+                     //FuncoesEmail.EnviarEmaiSuporte(novareserva!.NomeHospede);
+                //}
 
 
                     if (novareserva != null && novareserva.Estado != null && novareserva.CEP != null)
@@ -248,7 +250,7 @@ namespace HoteldosNobresBlazor.Funcoes
 
                 if (logSistema.Log.Contains("SNRHos-MS0001") && !novareserva.ProxyCelular!.Equals("553537150180"))
                 {
-                    logSistema.Log += FunctionWhatsApp.postMensagemTemplete(novareserva.ProxyCelular!, "inf_inicial").Result;
+                    logSistema.Log += FunctionWhatsApp.postMensagemTempleteInicial(novareserva.ProxyCelular!, novareserva.IDReserva!, novareserva.NomeHospede!).Result;
                 }
                 else
                   if (logSistema.Log.Contains("CPF inválido"))
@@ -537,8 +539,8 @@ namespace HoteldosNobresBlazor.Funcoes
                 {
                     logSistema.Log += FunctionGoogle.AddPeople(reserva.NomeHospede, reserva.Origem, reserva.ProxyCelular, reserva.Email.ToString());
 
-                    logSistema.Log += FunctionWhatsApp.postMensagemTemplete(reserva.ProxyCelular, "inf_inicial").Result;
-                    logSistema.Log += FunctionWhatsApp.postMensagemTemplete(reserva.ProxyCelular, "inf_converse").Result;
+                    logSistema.Log += FunctionWhatsApp.postMensagemTempleteInicial(reserva.ProxyCelular!, reserva.IDReserva!, reserva.NomeHospede!).Result;
+                    logSistema.Log += FunctionWhatsApp.postMensagemTempleteConverse(reserva.ProxyCelular).Result;
                 }
 
                 logSistema.Log += retorno + " ";
@@ -760,8 +762,7 @@ namespace HoteldosNobresBlazor.Funcoes
                 retorno += FunctionAPICLOUDBEDs.deleteReservationNote(reserva, "SNRHos-").Result;
 
                 if (!reserva.ProxyCelular!.Equals("553537150180"))
-                {
-                    retorno += FunctionWhatsApp.postMensagemTemplete(reserva.ProxyCelular!, "inf_obrigado").Result;
+                { 
                     retorno += FunctionWhatsApp.postMensagemTempleteFeedback(reserva.ProxyCelular!, reserva.IDReserva, reserva.NomeHospede).Result;
                 }
             }

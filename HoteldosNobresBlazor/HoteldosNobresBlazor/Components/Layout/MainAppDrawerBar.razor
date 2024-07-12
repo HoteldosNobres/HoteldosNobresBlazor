@@ -1,19 +1,31 @@
 ﻿@inject AuthenticationStateProvider authStateProvider
 @inherits LayoutComponentBase
 
-<MudAppBar Color="Color.Primary">
-    <a href="" Style="color:white; margin-right: 50px">
-        <MudImage Width="50" Height="50" Src="images/logo.png" Alt="Mony the dog" Style="margin-right: 10px" Class="rounded-lg"></MudImage> Hotel dos Nobres
-    </a>
-    <MudSpacer />
+<AuthorizeView Roles="client">
+    <Authorized>
+        <MudAppBar Color="Color.Primary">
+            <a href="" Style="color:white; margin-right: 50px">
+                <MudImage Width="50" Height="50" Src="images/logo.png" Alt="Mony the dog" Style="margin-right: 10px" Class="rounded-lg"></MudImage> Hotel dos Nobres
+            </a>
+            <MudSpacer />
             <MudIconButton Icon="fa-solid fa-right-from-bracket" Color="Color.Inherit" Edge="Edge.End" Href="account/logout" />
-            <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.End" OnClick="@ToggleDrawer" />
-            @*  <MudIconButton Icon="@Icons.Material.Filled.MobiledataOff" Color="Color.Inherit" Edge="Edge.End" OnClick="@DrawerToggle" /> *@
-</MudAppBar>
-<MudDrawer Class="mud-drawer-fixed" ClipMode="DrawerClipMode.Always" @bind-Open="@_isDrawerOpen" PreserveOpenState="true" Variant="@DrawerVariant.Responsive">
-    @* <MudDrawerHeader Style="height:5px;" />   *@
-    <NavMenu />
-</MudDrawer>
+            <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.End" OnClick="@ToggleDrawer" /> 
+        </MudAppBar>
+        <MudDrawer Class="mud-drawer-fixed" ClipMode="DrawerClipMode.Always" @bind-Open="@_isDrawerOpen" PreserveOpenState="true" Variant="@DrawerVariant.Responsive"> 
+            <NavMenu />
+        </MudDrawer>
+    </Authorized>
+    <NotAuthorized>
+        <MudAppBar Color="Color.Primary">
+            @*   <a href="" Style="color:white; margin-right: 50px"> *@
+            <MudImage @onclick="HandleClick" Width="50" Height="50" Src="images/logo.png" Alt="Mony the dog" Style="margin-right: 10px" Class="rounded-lg"> </MudImage> Hotel dos Nobres
+            @*    </a> *@
+        </MudAppBar>
+    </NotAuthorized>
+</AuthorizeView>
+@* <MudMainContent Class="mud-theme-background, mud-height-full"> *@
+@*     @Body
+</MudMainContent> *@
 
 @code {
 
@@ -38,6 +50,9 @@
         DarkMode = !DarkMode;
     }
 
-
+    public void HandleClick(MouseEventArgs e)
+    {
+        DarkMode = !DarkMode;
+    }
 
 }

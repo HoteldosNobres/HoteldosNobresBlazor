@@ -19,13 +19,24 @@ public class FuncoesEmail
 
     public static void EnviarEmailCPF(string from, string id, string nome)
     {
-        string body = nome + ", Recebemos sua reserva porem precisamos do seu CPF e data de nascimento para fazer o cadastro no Ministério do Turismo(MTur) informações exigidas pela  pela Lei 11.771 de 2008 e Decreto 7.381  de 2010";
-        body += @"  Clique abaixo para responder com os dados de forma segura. https://hoteldosnobres.azurewebsites.net/booking/" + id;
-        string subject = "Dados faltando para reserva";
+        string body = nome + ", Recebemos sua reserva! Para completar seu cadastro no Ministério do Turismo (MTur), precisamos do seu CPF e data de nascimento. Essas informações são exigidas pela Lei 11.771/2008 e pelo Decreto 7.381/2010.  ";
+        body += @" 
+                Clique no link abaixo para enviar seus dados de forma segura. 
+                https://hoteldosnobres.azurewebsites.net/booking/" + id;
+        string subject = "Informações pendentes para completar sua reserva";
 
         EnviarEmail( from, body, subject);
     }
 
+
+    public static void EnviarEmaiSuporte(string nome)
+    {
+        string body =  "Recebemos a reclamação do hospede " + nome + " que ao reservar ficou muito incomodado com o BRAZIL com isso estou encaminhando essa reclamação para voces tambem. ";
+        body += "   ";
+        string subject = "BUG - country 'BRASIL' in PT-BR";
+
+        EnviarEmail("support@cloudbeds.com", body, subject);
+    }
 
     public static void EnviarEmail(string from, string body, string subject)
     {

@@ -150,12 +150,24 @@ else
         <MudGrid>
             <MudItem xs="12" sm="6">
                 <MudPaper Elevation="2" Class="pa-4  rounded-xl" Style="height: 100%">
-                    <MudGrid Justify="Justify.Center" Class="align-items-center">
-                        <MudItem>
-                            <MudText Typo="Typo.h3" Align="Align.Center" Color="Color.Success"> <i class="fa fa-check" aria-hidden="true"></i> </MudText>
-                        </MudItem>
-                    </MudGrid>
-                    <MudText Typo="Typo.h6" Align="Align.Center" GutterBottom="true">Agradecemos seu pedido!</MudText>
+                    @if (reserva is not null && reserva.Status is not null && reserva.Status.ToUpper().Equals("CANCELED"))
+                    {
+                        <MudGrid Justify="Justify.Center" Class="align-items-center">
+                            <MudItem>
+                                <MudText Typo="Typo.h3" Align="Align.Center" Color="Color.Error"> <i class="fa-solid fa-xmark" aria-hidden="true"></i> </MudText>
+                            </MudItem>
+                        </MudGrid>
+                        <MudText Typo="Typo.h6" Align="Align.Center" GutterBottom="true">Seu pedido foi cancelado!</MudText>
+                    }
+                    else
+                    {
+                        <MudGrid Justify="Justify.Center" Class="align-items-center">
+                            <MudItem>
+                                <MudText Typo="Typo.h3" Align="Align.Center" Color="Color.Success"> <i class="fa fa-check" aria-hidden="true"></i> </MudText>
+                            </MudItem>
+                        </MudGrid>
+                        <MudText Typo="Typo.h6" Align="Align.Center" GutterBottom="true">Agradecemos seu pedido!</MudText>
+                    } 
                     <MudText Align="Align.Center"> O número da reserva é #@reserva.IDReserva  </MudText>
                     <MudText Align="Align.Center"> Enviamos a confirmação do pedido para o e-mail: @reserva.Email  </MudText>
                     <MudGrid Justify="Justify.Center">
@@ -194,7 +206,7 @@ else
                     <MudSpacer />
                     <MudText Align="Align.Center" Class="mb-n4"> - </MudText>
                     <MudText Align="Align.Center"> Nome do Hospede Principal: @reserva.NomeHospede  </MudText>
-                    <MudText Align="Align.Center"> Origem: @reserva.Origem  </MudText>                  
+                    <MudText Align="Align.Center"> Origem: @reserva.Origem  </MudText>
                     @if (!string.IsNullOrEmpty(reserva.IDReservaAgencia))
                     {
                         <MudText Align="Align.Center"> Número da reserva via agência: @reserva.IDReservaAgencia  </MudText>
@@ -202,7 +214,7 @@ else
                     <MudItem Align="Align.Center">
                         <MudTextField T="string" Label="Horário previsto de chegada" HelperText="Horário tem que ser entre 14:00 e 23:00 (Brasilia)"
                                       @bind-Value="HorarioAproximado" InputType="InputType.Time" TextChanged="OnValueChangeHandler" />
-                    </MudItem> 
+                    </MudItem>
                     <MudSpacer />
                     <br />
                     @if (reserva is not null && reserva.Notas is not null && reserva.Notas.Count > 0)
@@ -389,8 +401,8 @@ else
     {
         reserva = await cloudbedsAPI.GetReservaAsync(ReservationId);
 
-        if(reserva is not null && reserva.HorarioAproximado is not null)
-         {
+        if (reserva is not null && reserva.HorarioAproximado is not null)
+        {
             HorarioAproximado = reserva.HorarioAproximado.GetValueOrDefault().ToString("HH:mm");
         }
 
@@ -595,7 +607,7 @@ else
     {
         try
         {
-            var retorno = await FunctionWhatsApp.postMensagemTemplete(reserva.ProxyCelular!, "inf_inicial");
+            var retorno = await FunctionWhatsApp.postMensagemTempleteInicial(reserva.ProxyCelular!, reserva.IDReserva!, reserva.NomeHospede!);
             Snackbar.Add("Encaminhado com sucesso", Severity.Success);
         }
         catch (Exception ex)

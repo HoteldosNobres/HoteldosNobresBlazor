@@ -24,12 +24,14 @@
     <PackageReference Include="Dapper" Version="2.1.35" />
     <PackageReference Include="Google.Apis.Auth" Version="1.68.0" />
     <PackageReference Include="Google.Apis.PeopleService.v1" Version="1.68.0.3359" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="8.0.6" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.6" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.6" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="8.0.7" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.7" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.7" />
     <PackageReference Include="MosaicoSolutions.ViaCep" Version="5.0.0" />
-    <PackageReference Include="MudBlazor" Version="7.0.0" />
+    <PackageReference Include="MudBlazor" Version="7.1.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="OpenAC.Net.NFSe" Version="1.5.0.2" />
+    <PackageReference Include="OpenAC.Net.NFSe.DANFSe.FastReport.OpenSource" Version="1.5.0.2" />
     <PackageReference Include="OpenAI" Version="1.11.0" />
     <PackageReference Include="pix-payload-generator.net" Version="1.0.21" />
     <PackageReference Include="QRCoder" Version="1.6.0" />
