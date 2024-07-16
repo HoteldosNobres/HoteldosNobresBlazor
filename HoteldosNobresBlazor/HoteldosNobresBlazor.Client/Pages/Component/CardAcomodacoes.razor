@@ -1,20 +1,20 @@
 ﻿@using System.Globalization
 <br />
 <MudPaper Class="rounded-xl">
-    <MudExpansionPanels Dense="true" Gutters="false" Class="rounded-xl">
-        <MudExpansionPanel Dense="true" Gutters="false" Style="background-color: #F5F4F4;" Expanded="true">
+    <MudList T="string" ReadOnly="true" class="rounded-t-xl">
+        <MudExpansionPanel Dense="true" Gutters="false" Style="background-color: #F5F4F4;" Expanded="true" class="rounded-xl">
             <TitleContent>
                 <div class="d-flex">
                     @*  <MudIcon Icon="@Icons.Material.Filled.Info" class="mr-3"></MudIcon> *@
                     <MudText><strong>Acomodações</strong></MudText>
                 </div>
             </TitleContent>
-            <ChildContent>
-                <MudPaper  class="rounded-b-xl">
+            <ChildContent >
+                <MudPaper class="rounded-b-xl">
                     @if (Reserva is not null && Reserva.ListaQuartos is not null)
                         @foreach (var item in Reserva.ListaQuartos)
                         {
-                            <MudListItem T="string">
+                            <MudListItem  T="string">
                                 <MudGrid Justify="Justify.SpaceBetween">
                                     <MudItem xs="12" sm="3">
                                      @*    <MudImage Width="50" Height="50" Src="images/logo.png" Alt="Mony the dog" Style="margin-right: 10px" Class="rounded-lg" /> *@
@@ -40,7 +40,7 @@
                 </MudPaper>
             </ChildContent>
         </MudExpansionPanel>
-    </MudExpansionPanels>
+    </MudList>
 </MudPaper>
 <br />
 

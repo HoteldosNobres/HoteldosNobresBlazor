@@ -16,7 +16,7 @@
 @inject IJSRuntime JSRuntime
 @inject IDialogService DialogService
 
-@rendermode InteractiveServer
+@rendermode InteractiveAuto
 
 <PageTitle>Reserva</PageTitle>
 
@@ -26,14 +26,14 @@
         <MudForm>
             <MudList T="string">
                 <MudListItem Icon="@Icons.Material.Filled.Info"> Dados </MudListItem>
-                <MudTextField T="string" Label="Nome" Disabled="true" @bind-Value="guest.FirstName" />
-                <MudTextField T="string" Label="E-mail" Disabled="true" @bind-Value="guest.Email" />
+                <MudTextField T="string" Label="Nome" @bind-Value="guest.FirstName" TextChanged="TextChangedName" />
+                <MudTextField T="string" Label="Sobrenome" @bind-Value="guest.LastName" TextChanged="TextChangedLastName" />
+                <MudTextField T="string" Label="E-mail" @bind-Value="guest.Email" TextChanged="TextChangedEmail" />
                 <MudTextField T="string" Label="Celular ou Telefone Principal" Disabled="true" @bind-Value="guest.Phone" />
-                <MudTextField T="string" Label="Celular ou Telefone Secundario" Disabled="true" @bind-Value="guest.CellPhone" />
-                <MudSelect T="string" Label="Genero" Variant="Variant.Text" @bind-Value="guest.Gender">
+                <MudSelect T="string" Label="Genero" Variant="Variant.Text" @bind-Value="guest.Gender" class="mr-1">
                     <MudSelectItem Value="@("M")">Masculino</MudSelectItem>
                     <MudSelectItem Value="@("F")">Feminino</MudSelectItem>
-                    <MudSelectItem Value="@("N/A")">Nada</MudSelectItem>
+                    <MudSelectItem Value="@("N/A")">Nada</MudSelectItem> 
                 </MudSelect>
                 <div>
                     <select class="form-select" aria-label="Genero" disabled="@Disabled" @bind="guest.Gender">
@@ -221,30 +221,7 @@ else
 
                     @if (reserva is not null && reserva.Notas is not null && reserva.Notas.Count > 0)
                     {
-                        <MudPaper Class="rounded-xl">
-                            <MudExpansionPanels Dense="true" Gutters="false" Class="rounded-xl">
-                                <MudExpansionPanel Dense="true" Gutters="false" Text="Notas" Style="background-color: #F5F4F4;" Expanded="true">
-                                    <MudPaper class="rounded-b-xl">
-                                        @foreach (var item in reserva.Notas)
-                                        {
-                                            <MudListItem T="string">
-                                                <MudGrid Justify="Justify.SpaceBetween">
-                                                    <MudItem xs="12" sm="3">
-                                                        @*  <MudImage Fluid="true" Align="Align.Center" src="@($"data:image/png;base64,{qrCode}")" Alt="QRCode" Elevation="25" Width="250" Height="250" Class="rounded-lg" /> *@
-                                                    </MudItem>
-                                                    <MudItem xs="9" sm="6">
-                                                        <MudText Typo="Typo.caption">@item.Texto</MudText>
-                                                    </MudItem>
-                                                    <MudItem xs="3" sm="3">
-                                                        <MudText Typo="Typo.caption"> @item.Id </MudText>
-                                                    </MudItem>
-                                                </MudGrid>
-                                            </MudListItem>
-                                        }
-                                    </MudPaper>
-                                </MudExpansionPanel>
-                            </MudExpansionPanels>
-                        </MudPaper>
+                        <CardNotas Reserva=reserva />
                     }
                     <br />
                     @if (reserva is not null && reserva.ListaQuartos is not null && reserva.ListaQuartos.Count > 0)
@@ -312,10 +289,7 @@ else
         </MudGrid>
     </MudContainer>
 }
-
-
-
-
+ 
 
 @code {
     [Parameter]
@@ -353,12 +327,8 @@ else
             {
                 if (item.CustomFieldName.Equals("CPF"))
                 {
-                    string cpfstring = Regex.Replace(item.CustomFieldValue, @"[^\d]", "");
-                    if (!string.IsNullOrEmpty(cpfstring) && cpfstring.Length > 4)
-                    {
-                        DisabledCPF = true;
-                        CPF = "***.***." + cpfstring.Substring(cpfstring.Length - 4);
-                    }
+                    string cpfstring = Regex.Replace(item.CustomFieldValue, @"[^\d]", ""); 
+                        CPF =   reserva.ProxyCPF;   
                 }
                 if (item.CustomFieldName.Equals("Data de Nascimento"))
                 {
@@ -375,13 +345,11 @@ else
                             guest.Birthdate = null;
                         }
                     }
-                }
-
+                } 
             }
         }
     }
-
-
+     
     protected async Task Editar()
     {
         Disabled = !Disabled;
@@ -512,8 +480,7 @@ else
         }
 
     }
-
-
+     
     protected async Task SendCPF()
     {
         try
@@ -655,6 +622,69 @@ else
         catch (Exception ex)
         {
             Snackbar.Add("Erro autualizar horario", Severity.Error);
+            Console.WriteLine(ex.Message);
+        }
+    }
+
+    protected async Task TextChangedName(string newValue)
+    {
+        try
+        { 
+            if (!string.IsNullOrEmpty(newValue))
+            {
+                cloudbedsAPI.PutGuestAsync(guest.GuestId.ToString(), "guestName", newValue);
+            }
+            else
+            {
+                Snackbar.Add("Nome nao pode ser vazio.", Severity.Warning);
+            }
+
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("Erro atualizar o nome.", Severity.Error);
+            Console.WriteLine(ex.Message);
+        }
+    }
+
+    protected async Task TextChangedLastName(string newValue)
+    {
+        try
+        {
+            if (!string.IsNullOrEmpty(newValue))
+            {
+                cloudbedsAPI.PutGuestAsync(guest.GuestId.ToString(), "guestLastName", newValue);
+            }
+            else
+            {
+                Snackbar.Add("Nome nao pode ser vazio.", Severity.Warning);
+            }
+
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("Erro atualizar o nome.", Severity.Error);
+            Console.WriteLine(ex.Message);
+        }
+    }
+
+    protected async Task TextChangedEmail(string newValue)
+    {
+        try
+        {
+            if (!string.IsNullOrEmpty(newValue))
+            {
+                cloudbedsAPI.PutGuestAsync(guest.GuestId.ToString(), "guestEmail", newValue);
+            }
+            else
+            {
+                Snackbar.Add("E-mail nao pode ser vazio.", Severity.Warning);
+            }
+
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("Erro atualizar o e-mail.", Severity.Error);
             Console.WriteLine(ex.Message);
         }
     }
