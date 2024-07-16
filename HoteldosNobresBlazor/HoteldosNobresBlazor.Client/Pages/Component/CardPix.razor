@@ -2,51 +2,60 @@
 @using QRCoder
 @using pix_payload_generator.net.Models.CobrancaModels
 @using pix_payload_generator.net.Models.PayloadModels
+@inject APICloudbeds cloudbedsAPI
 
 <br />
 <MudPaper Class="rounded-xl">
-    <MudListItem T="string" style="background-color: #F5F4F4;" class="rounded-t-xl">
-        <MudStack Row="true">
-            <MudText><b>Instruções para a transferência bancária - PIX</b></MudText>
-            <MudSpacer />
-            <MudIcon Icon="fa-solid fa-building-columns" Title="Favorite" />
-        </MudStack>
-    </MudListItem>
-    <MudDivider />
-    <MudListItem T="string">
-        <MudText Typo="Typo.caption">NÃO E POSSÍVEL PAGAR NO CHECK-IN !!!</MudText><br />
-        <br />
-        <MudText Typo="Typo.caption" GutterBottom="true" Class="ml-auto">
-            Reservas não paga no período de  30 minutos sera cancelada, como em nossos Termos e Politicas.<br />
-            Pix nossa <b>CHAVE CNPJ 35.337.342/0001-86</b><br />
-            Nome <b>JOSE CARLOS NOBRE</b> ou <b>HOTEL DOS NOBRES LTDA</b><br />
-            Banco <b>CC AGROCREDI LTDA - SICOOB</b><br />
-            @if (valordecimal > 0)
+    <MudList T="string" ReadOnly="true" class="rounded-t-xl">
+        <MudListItem T="string" style="background-color: #F5F4F4;" class="rounded-t-xl">
+            <MudStack Row="true">
+                <MudText><b>Instruções para a transferência bancária - PIX</b></MudText>
+                <MudSpacer />
+                <MudIcon Icon="fa-solid fa-building-columns" Title="Favorite" />
+            </MudStack>
+        </MudListItem>
+        <MudDivider />
+        <MudListItem T="string" ReadOnly="true">
+            @if (Reserva is not null && Reserva.Origem is not null && Reserva.Origem.Contains("Website/Booking Engine"))
             {
-                <MudText Typo="Typo.caption">Valor<b> R$ @Valor </b><br /> </MudText>
+                <MudText Typo="Typo.caption">NÃO E POSSÍVEL PAGAR NO CHECK-IN !!!</MudText>
+                <br />
+                <br />
+                <MudText Typo="Typo.caption" GutterBottom="true" Class="ml-auto">
+                    Reservas não paga no período de  30 minutos sera cancelada, como em nossos Termos e Politicas.<br />
+                </MudText>
             }
-            @if (Reserva is not null && Reserva.IDReserva is not null && Reserva.IDReserva != "nova")
-            {
-                <MudText Typo="Typo.caption">Identificador/Reserva <b> @Reserva.IDReserva </b><br /> </MudText>
-            }
-
-        </MudText>
-        <br />
-        <MudGrid>
-            <MudItem xs="12">
-                <MudGrid Justify="Justify.SpaceBetween">
-                    <MudItem xs="12" sm="6">
-                        <MudImage Fluid="true" Align="Align.Center" src="@($"data:image/png;base64,{qrCode}")" Alt="QRCode" Elevation="25" Width="250" Height="250" Class="rounded-lg" />
-                    </MudItem>
-                    <MudItem xs="12" sm="6">
-                        <MudTextField T="string" Label="Copia e Cola" Variant="Variant.Text" Text="@stringToQrCode" AutoGrow HelperText="Use no APP pagar PIX Copia e Cola" />
-                    </MudItem>
-                </MudGrid>
-            </MudItem>
-        </MudGrid>
-    </MudListItem>
+            <MudText Typo="Typo.caption" GutterBottom="true" Class="ml-auto">
+                Pix nossa <b>CHAVE CELULAR 35 9753-9341 </b> ou<b> EMAIL HOTELDOSNOBRES@HOTMAIL.COM </b> <br />
+                Nome <b>HOTEL DOS NOBRES LTDA</b><br />
+                Banco <b>PAG SEGURO - PAGBANK </b><br />
+                @if (valordecimal > 0)
+                {
+                    <MudText Typo="Typo.caption">Valor<b> R$ @Valor </b><br /> </MudText>
+                }
+                @if (Reserva is not null && Reserva.IDReserva != "nova")
+                {
+                    <MudText Typo="Typo.caption">Identificador/Reserva <b> @Reserva.IDReserva </b><br /> </MudText>
+                }
+            </MudText>
+            <br />
+            <MudGrid>
+                <MudItem xs="12">
+                    <MudGrid Justify="Justify.SpaceBetween">
+                        <MudItem xs="12" sm="6">
+                            <MudImage Fluid="true" Align="Align.Center" src="@($"data:image/png;base64,{qrCode}")" Alt="QRCode" Elevation="25" Width="250" Height="250" Class="rounded-lg" />
+                        </MudItem>
+                        <MudItem xs="12" sm="6">
+                            <MudTextField T="string" Label="Copia e Cola" Variant="Variant.Text" Text="@stringToQrCode" AutoGrow HelperText="Use no APP pagar PIX Copia e Cola" />
+                        </MudItem>
+                    </MudGrid>
+                </MudItem>
+            </MudGrid>
+        </MudListItem>
+    </MudList>
 </MudPaper>
 <br />
+
 
 
 @code {
@@ -59,14 +68,15 @@
     public string qrCode { get; set; }
     public string stringToQrCode { get; set; }
 
-    protected override void OnInitialized()
-    { 
+    protected override async Task OnInitializedAsync()
+    {
+        Reserva = await cloudbedsAPI.GetReservaAsync(Reserva.IDReserva);
         if (Reserva is not null && Reserva.BalanceDetailed is not null)
         {
             valordecimal = Reserva!.BalanceDetailed!.GrandTotal - Reserva!.BalanceDetailed!.Paid;
             Valor = valordecimal.ToString("N2", new CultureInfo("pt-BR"));
         }
-         
+
         GerarQrcode();
     }
 
@@ -78,7 +88,7 @@
         valordecimal = decimal.Parse(Valor, new CultureInfo("pt-BR"));
         Valor = valordecimal.ToString("N2", new CultureInfo("pt-BR"));
 
-        Cobranca cobranca = new Cobranca(_chave: "35337342000186")
+        Cobranca cobranca = new Cobranca(_chave: "hoteldosnobres@hotmail.com")
             {
                 SolicitacaoPagador = "Pagamento do Reserva " + Reserva!.IDReserva,
                 Valor = new Valor

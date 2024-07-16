@@ -1,0 +1,84 @@
+﻿@page "/logpagseguro"
+@inject AppState appState
+@rendermode InteractiveServer
+@inject NavigationManager NavigationManager3
+@attribute [StreamRendering(true)]
+
+<PageTitle>Log PagSeguro</PageTitle>
+
+<MudPaper Class="px-8 pt-2 pb-4 mx-4 my-4 rounded-xl" Justify="Justify.Center">
+    <h1>Log PagSeguro!</h1>
+    @if (arrayDeLinhas.Length > 0)
+    {
+        @foreach (var linha in arrayDeLinhas)
+        {
+            @linha
+            <br />
+        }
+    }
+    <MudButton Variant="Variant.Filled"
+               Color="Color.Primary"
+               class="btn btn-lg rounded-xl"
+               @onclick="Clear">
+        Limpar
+    </MudButton>
+    <br /><br />
+    @if (listLog != null && listLog.Count > 0)
+    {
+        <MudSimpleTable Hover="true" Striped="true" Style="overflow-x: auto;">
+            <thead>
+                <tr>
+                    <th>Data </th>
+                    <th>IdReserva</th>
+                    <th>Status</th>
+                    <th>Log</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (LogSistema logs in listLog)
+                {
+                    <tr>
+                        <td>@logs.DataLog.ToString("dd/MM/yyyy HH:mm:ss")</td>
+                        <td><a href='@logs.LinkReserva' target='_blank'> @logs.IDReserva</a></td>
+                        <td>@logs.Status</td>
+                        <td>@logs.Log</td>
+                    </tr>
+                }
+            </tbody>
+        </MudSimpleTable>
+    }
+    else
+    {
+        <p role="status">Carregando...</p>
+    }
+</MudPaper>
+
+@code
+{
+    string[] arrayDeLinhas;
+    public List<LogSistema>? listLog;
+    protected override async Task OnInitializedAsync()
+    {
+        listLog = appState.ListLogPagSeguro;
+        arrayDeLinhas = appState.MyMessageLogPagSeguro.Split('\n');
+        StateHasChanged();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        // if (firstRender)
+        // {
+        await Task.Delay(5000);
+
+        listLog = appState.ListLogPagSeguro;
+        arrayDeLinhas = appState.MyMessageLogPagSeguro.Split('\n');
+        StateHasChanged();
+        // }
+    }
+
+    private void Clear()
+    {
+        appState.MyMessageLogPagSeguro = string.Empty;
+        arrayDeLinhas = Array.Empty<string>();
+    }
+} 

@@ -37,10 +37,9 @@
                             <MudText Typo="Typo.caption">NÃO E POSSÍVEL PAGAR NO CHECK-IN !!!</MudText><br />
                             <br />
                             <MudText Typo="Typo.caption" GutterBottom="true" Class="ml-auto">
-                                Reservas não paga no período de  30 minutos sera cancelada, como em nossos Termos e Politicas.<br />
-                                Pix nossa <b>CHAVE CNPJ 35.337.342/0001-86</b><br />
-                                Nome <b>JOSE CARLOS NOBRE</b> ou <b>HOTEL DOS NOBRES LTDA</b><br />
-                                Banco <b>CC AGROCREDI LTDA - SICOOB</b><br />
+                                Pix nossa <b>CHAVE CELULAR 35 9753-9341 </b> ou<b> EMAIL HOTELDOSNOBRES@HOTMAIL.COM </b> <br />
+                                Nome <b>HOTEL DOS NOBRES LTDA</b><br />
+                                Banco <b>PAG SEGURO - PAGBANK </b><br />
                                 @if (valordecimal > 0)
                                 {
                                     <MudText Typo="Typo.caption">Valor<b> R$ @Valor </b><br /> </MudText>
@@ -168,7 +167,7 @@
         valordecimal = decimal.Parse(Valor, new CultureInfo("pt-BR"));
         Valor = valordecimal.ToString("N2", new CultureInfo("pt-BR"));
 
-        Cobranca cobranca = new Cobranca(_chave: "35337342000186")
+        Cobranca cobranca = new Cobranca(_chave: "hoteldosnobres@hotmail.com")
             {
                 SolicitacaoPagador = "Pagamento do Reserva " + ReservationId,
                 Valor = new Valor

@@ -13,12 +13,14 @@ namespace HoteldosNobresBlazor.Services
         public string MyMessageReservation { get; set; } = " ";
         public string MyMessagePagamento { get; set; } = "Pagamento do FNRH";
         public string MyMessageLogWhatsapp { get; set; } = "LogWhatsapp";
+        public string MyMessageLogPagSeguro { get; set; } = "MyMessageLogPagBank";
 
 
         public List<LogSistema> ListLogSistemaFNRH { get; set; } = new List<LogSistema>();
         public List<LogSistema> ListLogSistemaAddReserva { get; set; } = new List<LogSistema>();
         public List<LogSistema> ListLogSistemaPagamentoAirbnb { get; set; } = new List<LogSistema>();
         public List<LogSistema> ListLogWhatsapp { get; set; } = new List<LogSistema>();
+        public List<LogSistema> ListLogPagSeguro { get; set; } = new List<LogSistema>();
 
 
     }

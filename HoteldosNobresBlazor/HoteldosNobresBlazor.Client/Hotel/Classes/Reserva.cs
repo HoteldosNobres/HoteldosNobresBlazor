@@ -257,8 +257,10 @@ public class Reserva
                 if (item.CustomFieldName.Equals("Data de Nascimento"))
                 {
                     try
-                    {
-                        DataNascimento = DateTime.ParseExact(item.CustomFieldValue.Replace("*", "").Replace(" ", "").Replace("-", "").Replace("/", ""), "ddMMyyyy", CultureInfo.InvariantCulture);
+                    { 
+                        DataNascimento = item.CustomFieldValue.Replace("*", "").Replace(" ", "").Replace("-", "").Replace("/", "").Length <= 6
+                            ? DateTime.ParseExact(item.CustomFieldValue.Replace("*", "").Replace(" ", "").Replace("-", "").Replace("/", ""), "ddMMyy", CultureInfo.InvariantCulture)
+                            : DateTime.ParseExact(item.CustomFieldValue.Replace("*", "").Replace(" ", "").Replace("-", "").Replace("/", ""), "ddMMyyyy", CultureInfo.InvariantCulture);
                     }
                     catch (Exception ex)
                     {

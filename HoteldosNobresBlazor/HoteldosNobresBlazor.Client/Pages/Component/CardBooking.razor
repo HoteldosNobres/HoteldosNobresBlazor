@@ -70,13 +70,12 @@
     <CardAcomodacoes Reserva=reserva />
 }
 <br /> 
-@if (reserva is not null && reserva.Origem is not null && reserva.Origem.Contains("Website/Booking Engine"))
+@if (reserva is not null && reserva.Origem is not null 
+   && (reserva.Origem.Contains("Website/Booking Engine") || reserva.Origem.Contains("Booking.com")))
 {
     <CardPix Reserva=reserva />
 }
 <br />
-
-
 
 
 @code {

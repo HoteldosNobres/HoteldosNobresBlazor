@@ -124,6 +124,53 @@ public static class SistemaExtensions
 
         #endregion
 
+        #region Endpoint Whatsapp
+        app.MapPost("/pagseguro", async (HttpContext httpContext) =>
+        {
+            try
+            {
+                using var reader = new StreamReader(httpContext.Request.Body, Encoding.UTF8);
+                string body = await reader.ReadToEndAsync();
+                 
+                sCOPP.MyMessageLogPagSeguro = " -Bodi-  " + body + " -Bodi-  ";
+                CacheHotel cache2 = new CacheHotel(sCOPP);
+                cache2.RecebePagSeguro(body);
+
+                //sCOPP.MyMessage += verify_token + "<verify_token ";
+                //sCOPP.MyMessage += challenge + "<challenge ";
+                //sCOPP.MyMessage += mode + "<mode ";
+
+                //if (string.IsNullOrEmpty(verify_token))
+                //{
+                //    httpContext.Response.StatusCode = 400; // Bad Request
+                //    await httpContext.Response.WriteAsync("Token não fornecido.");
+                //    return;
+                //}
+                //bool isValid = verify_token.Replace("Bearer ", "") == "TOKENHOTELDOSNOBRES19";
+                //if (!isValid)
+                //{
+                //    httpContext.Response.StatusCode = 401; // Unauthorized
+                //    await httpContext.Response.WriteAsync("Token inválido.");
+                //    return;
+                //}
+
+                //sCOPP.MyMessage += token + " ";
+
+                httpContext.Response.StatusCode = 200;
+                //await httpContext.Response.WriteAsync(challenge);
+
+            }
+            catch (Exception ex)
+            {
+                await httpContext.Response.WriteAsync(ex.Message);
+                httpContext.Response.StatusCode = 500;
+            }
+
+        });
+         
+        #endregion
+
+
         app.MapPost("/addreserva", async (HttpContext httpContext) =>
         {
             try

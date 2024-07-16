@@ -2,6 +2,7 @@
 @using System.Globalization
 @using HoteldosNobresBlazor.Classes
 @using HoteldosNobresBlazor.Client.API
+@using HoteldosNobresBlazor.Client.Pages.Component
 @using HoteldosNobresBlazor.Components.Pages.Component
 @using HoteldosNobresBlazor.Funcoes
 @using MosaicoSolutions.ViaCep
@@ -217,6 +218,7 @@ else
                     </MudItem>
                     <MudSpacer />
                     <br />
+
                     @if (reserva is not null && reserva.Notas is not null && reserva.Notas.Count > 0)
                     {
                         <MudPaper Class="rounded-xl">
@@ -247,73 +249,10 @@ else
                     <br />
                     @if (reserva is not null && reserva.ListaQuartos is not null && reserva.ListaQuartos.Count > 0)
                     {
-                        <MudPaper Class="rounded-xl">
-                            <MudExpansionPanels Dense="true" Gutters="false" Class="rounded-xl">
-                                <MudExpansionPanel Dense="true" Gutters="false" Style="background-color: #F5F4F4;" Expanded="true">
-                                    <TitleContent>
-                                        <div class="d-flex">
-                                            @*  <MudIcon Icon="@Icons.Material.Filled.Info" class="mr-3"></MudIcon> *@
-                                            <MudText><strong>Acomodações</strong></MudText>
-                                        </div>
-                                    </TitleContent>
-                                    <ChildContent>
-                                        <MudPaper class="rounded-b-xl">
-                                            @if (reserva is not null && reserva.ListaQuartos is not null)
-                                                @foreach (var item in reserva.ListaQuartos)
-                                                {
-                                                    <MudListItem T="string">
-                                                        <MudGrid Justify="Justify.SpaceBetween">
-                                                            <MudItem xs="12" sm="3">
-                                                                <MudImage Width="50" Height="50" Src="images/logo.png" Alt="Mony the dog" Style="margin-right: 10px" Class="rounded-lg" />
-                                                            </MudItem>
-                                                            <MudItem xs="9" sm="6">
-                                                                <MudText Typo="Typo.caption">@item.Descricao</MudText>
-                                                                <MudChip T="string" Color="Color.Tertiary">
-                                                                    <i class="fa fa-user" aria-hidden="true"></i> @item.Adults.GetValueOrDefault(1).ToString()
-                                                                </MudChip>
-                                                                @if (item.Children.GetValueOrDefault(0) > 0)
-                                                                {
-                                                                    <MudChip T="string" Color="Color.Tertiary">
-                                                                        <i class="fa fa-users" aria-hidden="true"></i> @item.Children.GetValueOrDefault(1).ToString()
-                                                                    </MudChip>
-                                                                }
-                                                            </MudItem>
-                                                            <MudItem xs="3" sm="3">
-                                                                <MudText Typo="Typo.caption">R$ @item.Total.GetValueOrDefault(0).ToString("N2", new CultureInfo("pt-BR"))</MudText>
-                                                            </MudItem>
-                                                        </MudGrid>
-                                                    </MudListItem>
-                                                }
-                                        </MudPaper>
-                                    </ChildContent>
-                                </MudExpansionPanel>
-                            </MudExpansionPanels>
-                        </MudPaper>
-                        <br />
+                        <CardAcomodacoes Reserva=reserva />
                     }
                     <br />
-                    <MudSpacer />
-                    <MudPaper Class="rounded-xl">
-                        <MudListItem T="string" style="background-color: #F5F4F4;" class="rounded-t-xl">
-                            <MudStack Row="true">
-                                <MudText><b>Instruções para a transferência bancária - PIX</b></MudText>
-                                <MudSpacer />
-                                <MudIcon Icon="fa-solid fa-building-columns" Title="Favorite" />
-                            </MudStack>
-                        </MudListItem>
-                        <MudDivider />
-                        <MudListItem T="string">
-                            <MudText Typo="Typo.caption">NÃO E POSSÍVEL PAGAR NO CHECK-IN !!!</MudText><br />
-                            <MudText Typo="Typo.caption" GutterBottom="true" Class="ml-auto">
-                                Reservas não paga no período de  20 minutos sera cancelada, como nossos Termos e Politicas.<br />
-                                Pix nossa chave CNPJ 35.337.342/0001-86<br />
-                                Nome JOSE CARLOS NOBRE<br />
-                                Banco SICOOB<br />
-                                Reservas também sem CPF serão canceladas.
-                            </MudText>
-                        </MudListItem>
-                    </MudPaper>
-
+                     <CardPix Reserva=reserva />
                 </MudPaper>
             </MudItem>
             <MudItem xs="12" sm="4">

@@ -52,14 +52,18 @@
 
             appState.MyMessage += "Passou pela reserva \n";
 
-            if (appState.ListReservas.Count() > 0)
-                listReserva = appState.ListReservas;
-            else
+
+            if (appState.ListReservas is null || appState.ListReservas.Count == 0)
             {
-                listReserva = FunctionAPICLOUDBEDs.getReservationsAsyncGuestDetails().Result;
+                listReserva = await FunctionAPICLOUDBEDs.getReservationsAsyncGuestDetails();
                 // listReserva.AddRange(FunctionAPICLOUDBEDs.getReservationsAsync(null, DateTime.Now.ToString("yyyy-MM-dd")).Result);
                 appState.ListReservas = listReserva;
             }
+            else
+            {
+                listReserva = appState.ListReservas;
+            } 
+
         }
         catch (Exception ex)
         {

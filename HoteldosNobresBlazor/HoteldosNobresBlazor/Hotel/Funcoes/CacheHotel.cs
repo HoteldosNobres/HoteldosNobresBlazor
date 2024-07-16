@@ -175,6 +175,49 @@ namespace HoteldosNobresBlazor.Funcoes
 
         #endregion Whatsapp
 
+        #region Whatsapp 
+
+        public string RecebePagSeguro(string json)
+        {
+            try
+            {
+                Thread thread = new Thread(new ParameterizedThreadStart(RecebePagSeguroMetodo));
+                thread.Start(json);
+
+                return "OK ";
+            }
+            catch (Exception e)
+            {
+                AppState.MyMessageLogWhatsapp = e.Message + "\n";
+                return e.Message;
+            }
+
+        }
+
+        public void RecebePagSeguroMetodo(object objeto)
+        {
+            string json = (string)objeto;
+            try
+            {
+                var log = new LogSistema()
+                {
+                    DataLog = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone),
+                    Log = json,
+                    Status = "PagSeguro"
+                };
+
+                AppState.ListLogPagSeguro.Add(log);
+
+            }
+            catch (Exception e)
+            {
+                AppState.MyMessageLogPagSeguro = "Erro-" + e.Message + "\n" + json + "\n";
+            }
+        }
+
+
+        #endregion Whatsapp
+
         #region CloudBeds 
 
         public async Task<string> CacheCreateReservationAsync(string json)
