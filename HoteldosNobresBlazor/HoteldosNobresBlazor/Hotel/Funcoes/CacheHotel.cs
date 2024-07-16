@@ -70,8 +70,7 @@ namespace HoteldosNobresBlazor.Funcoes
                 // Identificar Texto
                 if (mensagem.Entry[0].Changes[0].Value.Messages != null && mensagem.Entry[0].Changes[0].Value.Messages[0].Text != null)
                 {
-                    texto = " WHATSAPP CHAT - Falou: " + mensagem.Entry[0].Changes[0].Value.Messages[0].Text.Body;
-                    log.Log = texto + "From: " + from;
+                    texto = " WHATSAPP CHAT - Falou: " + mensagem.Entry[0].Changes[0].Value.Messages[0].Text.Body; 
                     log.Status = "texto";
                 }
                 else if (mensagem.Entry[0].Changes[0].Value.Messages != null && mensagem.Entry[0].Changes[0].Value.Messages[0].Interactive != null)
@@ -148,20 +147,23 @@ namespace HoteldosNobresBlazor.Funcoes
                         if (reserva.Notas.Where(x => x.Texto.Contains("WHATSAPP CHAT")).Count() > 0)
                         {
                             Nota nota = reserva.Notas.Where(x => x.Texto.Contains("WHATSAPP CHAT")).FirstOrDefault();
-                            nota.Texto += "  " + TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone).ToString("dd/MM/yyyy HH:mm:ss") + " - " + texto;
-                            log.Log += FunctionAPICLOUDBEDs.putReservationNote(reserva.IDReserva!, nota.Id, nota.Texto).Result;
+                            nota.Texto += log.Log;
+                            AppState.MyMessageLogWhatsapp += FunctionAPICLOUDBEDs.putReservationNote(reserva.IDReserva!, nota.Id, nota.Texto).Result;
                         }
                         else
                         {
                             if (!texto.Contains("WHATSAPP STATUS"))
-                                reserva = FunctionAPICLOUDBEDs.postReservationNote(reserva, " WHATSAPP CHAT - Falou: "
-                             + TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone).ToString("dd/MM/yyyy HH:mm") + " - " + texto).Result;
+                            reserva = FunctionAPICLOUDBEDs.postReservationNote(reserva, log.Log).Result;
 
                         }
 
                     }
 
                 }
+
+
+                if(!string.IsNullOrEmpty(from))
+                    log.Log = texto + " From: " + from;
 
                 AppState.ListLogWhatsapp.Add(log);
 
