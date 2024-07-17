@@ -1,4 +1,5 @@
 ﻿using HoteldosNobresBlazor.Classes;
+using HoteldosNobresBlazor.Components.Pages;
 using Newtonsoft.Json;
 using System.Globalization;
 
@@ -151,12 +152,25 @@ public class FunctionAPICLOUDBEDs
             var request = new HttpRequestMessage(HttpMethod.Post, url);
             request.Headers.Add("Authorization", "Bearer " + KEYs.TOKEN_CLOUDBEDS);
 
-            var collection = new List<KeyValuePair<string, string>>();
+            var collection = new List<KeyValuePair<string, string>>(); 
             collection.Add(new("reservationID", reservationID));
-            collection.Add(new("type", "airbnb"));
-            collection.Add(new("amount", reserva.Balance.ToString("N", new CultureInfo("en-US"))));
-            collection.Add(new("cardType", "airbnb"));
-            collection.Add(new("description", "AirBnB Prepaid Card"));
+            collection.Add(new("amount", reserva.Balance.GetValueOrDefault(0).ToString("N", new CultureInfo("en-US"))));
+
+            if (reserva is not null && reserva.Origem is not null && reserva.Origem.Contains("Airbnb"))
+            {
+                collection.Add(new("type", "airbnb"));
+                collection.Add(new("cardType", "airbnb"));
+                collection.Add(new("description", "AirBnB Prepaid Card"));
+            }
+            else if (reserva is not null && reserva.Origem is not null && reserva.Origem.Contains("Booking.com"))
+            {
+                collection.Add(new("type", "Booking.com"));
+                collection.Add(new("cardType", "Booking.com"));
+                collection.Add(new("description", "Booking.com"));
+            }
+
+
+
             var content = new FormUrlEncodedContent(collection);
             request.Content = content;
             var response = await client.SendAsync(request);
@@ -374,6 +388,48 @@ public class FunctionAPICLOUDBEDs
         {
             Console.WriteLine(e.Message);
             return new List<Reserva>();
+        }
+
+    }
+
+    public static async Task<Reserva> getReservationsWithRateDetailsAsync(Reserva reserva)
+    {
+        try
+        {
+            string url = urlapi + "/getReservationsWithRateDetails?reservationID=" + reserva.IDReserva;
+            HttpResponseMessage response = GetApi(url).Result;
+
+            Reservations resevations = await LerRespostaComoObjetoAsync<Reservations>(response);
+
+            reserva.Converte(resevations);
+
+            url = urlapi + "/getReservationNotes?reservationID=" + reserva.IDReserva;
+
+            response = GetApi(url).Result;
+
+            Notes notes = await LerRespostaComoObjetoAsync<Notes>(response);
+
+            if (notes.Data.Length > 0)
+            {
+                if (reserva.Notas == null)
+                    reserva.Notas = new List<Nota>();
+
+                foreach (var note in notes.Data)
+                {
+                    reserva.Notas.Add(new Nota(note.ReservationNoteId.ToString(), note.ReservationNote));
+                    if (note.ReservationNote.Contains("SNRHos"))
+                    {
+                        reserva.SnNum = note.ReservationNote.Replace("SNRHos-MS0001(", "").Replace("SNRHos-MS0003(", "").Replace(")", "");
+                    }
+
+                }
+            }
+            return reserva;
+        }
+        catch (FileNotFoundException e)
+        {
+            Console.WriteLine(e.Message);
+            return null;
         }
 
     }

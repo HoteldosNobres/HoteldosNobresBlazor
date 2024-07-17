@@ -502,3 +502,19 @@ public partial class GuestData
     [JsonProperty("data")]
     public Guest? Guest { get; set; }
 }
+
+public partial class Source
+{
+    [JsonProperty("name")]
+    public string Name { get; set; }
+
+    [JsonProperty("paymentCollect")]
+    public string PaymentCollect { get; set; }
+
+    [JsonProperty("sourceID")]
+    public string SourceID { get; set; }
+
+    [JsonProperty("category")]
+    public string Category { get; set; }
+
+}

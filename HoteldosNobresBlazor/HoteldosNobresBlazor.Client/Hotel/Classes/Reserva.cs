@@ -1,4 +1,5 @@
-﻿using MosaicoSolutions.ViaCep;
+﻿using Google.Apis.PeopleService.v1.Data;
+using MosaicoSolutions.ViaCep;
 using MosaicoSolutions.ViaCep.Modelos;
 using MudBlazor.Extensions;
 using System.Diagnostics.Metrics;
@@ -23,7 +24,7 @@ public class Reserva
     public string? IDReservaAgencia { get; set; }
     public string? FonteReserva { get; set; }
     public string? Valor { get; set; }
-    public decimal Balance { get; set; }
+    public decimal? Balance { get; set; }
     public string? Status { get; set; }
     public string? SnNum { get; set; }
     public string? Snuhnum { get; set; }
@@ -35,6 +36,8 @@ public class Reserva
     public List<Quarto>? ListaQuartosCancelados { get; set; }
 
     public BalanceDetailed? BalanceDetailed { get; set; }
+
+    public Source? Source { get; set; }
 
     /// Hospede
     public string? GuestID { get; set; }
@@ -91,8 +94,7 @@ public class Reserva
             return Numerotelefone.Replace("+", "").Count() > 11 ? Numerotelefone.Replace("+", "").Substring(4, Numerotelefone.Length - 5) : Numerotelefone.Replace("+", "").Count() <= 9 ? Numerotelefone :  Numerotelefone.Replace("+", "").Substring(2, 9);
         }
     }
-
-
+     
     public string? ProxyCelular
     {
         get
@@ -148,8 +150,7 @@ public class Reserva
                 return "";
         }
     }
-
-
+     
     public string ProxyPais
     {
         get
@@ -270,8 +271,7 @@ public class Reserva
 
             }
         }
-
-
+         
         Genero = guest.GuestGender.Equals("N/A") ? "M" : guest.GuestGender;
         Email = reservation.Data.GuestEmail;
         NumeroCelular = guest.GuestCellPhone;
@@ -325,6 +325,126 @@ public class Reserva
             quarto.ID = item.RoomTypeId.ToString();
             quarto.Descricao = item.RoomTypeName;
             ListaQuartosCancelados.Add(quarto);
+        }
+         
+    }
+
+    public void Converte(Reservations reservationdata)
+    {
+        ReservationsData reservation = reservationdata.Data[0];
+        CustomerID = reservation.ReservationId;
+        DataCheckIn = DateTime.Parse(reservation.StartDate.ToString());
+        // DataCheckInRealizado = reserva.DataCheckInRealizado;
+        DataCheckOut = DateTime.Parse(reservation.EndDate.ToString());
+        //  DataCheckOutRealizado = reserva.DataCheckOutRealizado;
+        //Noites = reserva.Noites;
+        //if (reservation.Assigned.Count() > 0 && reservation.Assigned[0] != null)
+        //    Hospedes = int.Parse(reservation.Assigned[0].Adults.ToString());
+        Origem = reservation.SourceName;
+        IDReserva = reservation.ReservationId;
+        IDReservaAgencia = reservation.ThirdPartyIdentifier;
+        FonteReserva = reservation.SourceName;
+
+        //Pagamento Cobrança
+        //Valor = reservation.Total.ToString();
+        Balance = reservation.Balance;
+        Status = reservation.Status;
+        BalanceDetailed = reservation.BalanceDetailed;
+         
+        //Snuhnum = reservation.Assigned.Length.ToString();
+
+        NomeHospede = reservation.GuestName;
+
+        //if (!string.IsNullOrEmpty(reservation.EstimatedArrivalTime))
+        //    HorarioAproximado = DateTime.Parse(reservation.EstimatedArrivalTime);
+
+        //Guest guest = reservation.GuestLista.First();
+        //GuestID = guest.GuestId.ToString();
+        //if (!string.IsNullOrEmpty(guest.GuestBirthdate.ToString()))
+        //    DataNascimento = DateTime.Parse(guest.GuestBirthdate.ToString());
+
+        //if (guest.CustomFields.Count() > 0)
+        //{
+        //    foreach (var item in guest.CustomFields)
+        //    {
+        //        if (item.CustomFieldName.Equals("CPF"))
+        //            Cpf = Regex.Replace(item.CustomFieldValue, @"[^\d]", "");
+
+        //        if (item.CustomFieldName.Equals("Data de Nascimento"))
+        //        {
+        //            try
+        //            {
+        //                DataNascimento = item.CustomFieldValue.Replace("*", "").Replace(" ", "").Replace("-", "").Replace("/", "").Length <= 6
+        //                    ? DateTime.ParseExact(item.CustomFieldValue.Replace("*", "").Replace(" ", "").Replace("-", "").Replace("/", ""), "ddMMyy", CultureInfo.InvariantCulture)
+        //                    : DateTime.ParseExact(item.CustomFieldValue.Replace("*", "").Replace(" ", "").Replace("-", "").Replace("/", ""), "ddMMyyyy", CultureInfo.InvariantCulture);
+        //            }
+        //            catch (Exception ex)
+        //            {
+        //                Console.WriteLine(IDReserva + "-Erro ao buscar Data de Nascimento: " + ex.Message);
+        //            }
+        //        }
+
+        //    }
+        //}
+
+        //Genero = guest.GuestGender.Equals("N/A") ? "M" : guest.GuestGender;
+        //Email = reservation.GuestEmail;
+        //NumeroCelular = guest.GuestCellPhone;
+        //Numerotelefone = string.IsNullOrEmpty(guest.GuestPhone) ? guest.GuestCellPhone : guest.GuestPhone;
+        //Numerotelefone = !string.IsNullOrEmpty(guest.GuestCellPhone) && string.IsNullOrEmpty(Numerotelefone) ? guest.GuestCellPhone : Numerotelefone;
+
+        //Address = guest.GuestAddress;
+        //Postalcode = guest.GuestZip;
+
+        //Contry = guest.GuestCountry == null || guest.GuestCountry.Contains("BR") ? "BRASIL" : guest.GuestCountry;
+        //CEP = guest.GuestZip.Replace("-", "");
+        //Cidade = guest.GuestCity;
+        //Estado = guest.GuestState;
+
+        //if (!string.IsNullOrEmpty(CEP) && CEP.Length == 8)
+        //{
+        //    try
+        //    {
+        //        Cep cep = CEP;
+        //        var viaCepService = ViaCepService.Default();
+        //        var endereco = viaCepService.ObterEndereco(cep);
+        //        Cidade = endereco.Localidade;
+        //        if (endereco.UF != null)
+        //            UF = (EUF)Enum.Parse(typeof(EUF), endereco.UF);
+        //        Estado = endereco.UF;
+        //        CodigoIBGE = endereco.IBGE;
+        //        Contry = "BRASIL";
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine(" Erro ao buscar CEP: " + CEP + ex.Message);
+        //    }
+        //}
+
+        //ListaQuartos = new List<Quarto>();
+        //foreach (var item in reservation.Assigned)
+        //{
+        //    Quarto quarto = new Quarto();
+        //    quarto.ID = item.RoomTypeId.ToString();
+        //    quarto.Descricao = item.RoomTypeName;
+        //    quarto.Adults = item.Adults;
+        //    quarto.Children = item.Children;
+        //    quarto.Total = item.RoomTotal;
+        //    ListaQuartos.Add(quarto);
+        //}
+
+        //ListaQuartosCancelados = new List<Quarto>();
+        //foreach (var item in reservation.Unassigned)
+        //{
+        //    Quarto quarto = new Quarto();
+        //    quarto.ID = item.RoomTypeId.ToString();
+        //    quarto.Descricao = item.RoomTypeName;
+        //    ListaQuartosCancelados.Add(quarto);
+        //}
+
+        if (reservation.Source is not null)
+        {
+            Source = reservation.Source;
         }
 
     }

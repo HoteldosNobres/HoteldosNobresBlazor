@@ -53,8 +53,15 @@ public partial class ReservationsData
     [JsonProperty("children")]
     public long Children { get; set; }
 
+
     [JsonProperty("balance")]
-    public decimal Balance { get; set; }
+    public decimal? Balance { get; set; }
+
+    [JsonProperty("balanceDetailed")]
+    public BalanceDetailed? BalanceDetailed { get; set; }
+
+    [JsonProperty("source")]
+    public Source? Source { get; set; }
 
     [JsonProperty("sourceName")]
     public string SourceName { get; set; }

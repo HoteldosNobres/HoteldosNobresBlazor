@@ -70,7 +70,8 @@ namespace HoteldosNobresBlazor.Funcoes
                 // Identificar Texto
                 if (mensagem.Entry[0].Changes[0].Value.Messages != null && mensagem.Entry[0].Changes[0].Value.Messages[0].Text != null)
                 {
-                    texto = " WHATSAPP CHAT - Falou: " + mensagem.Entry[0].Changes[0].Value.Messages[0].Text.Body; 
+                    texto = " WHATSAPP CHAT - Falou: " + mensagem.Entry[0].Changes[0].Value.Messages[0].Text.Body;
+                    log.Log = texto;
                     log.Status = "texto";
                 }
                 else if (mensagem.Entry[0].Changes[0].Value.Messages != null && mensagem.Entry[0].Changes[0].Value.Messages[0].Interactive != null)
@@ -177,7 +178,7 @@ namespace HoteldosNobresBlazor.Funcoes
 
         #endregion Whatsapp
 
-        #region Whatsapp 
+        #region Pagseguro 
 
         public string RecebePagSeguro(string json)
         {
@@ -269,12 +270,21 @@ namespace HoteldosNobresBlazor.Funcoes
                         logSistema.Log += FunctionAPICLOUDBEDs.putGuest(novareserva.GuestID, "guestEmail", "reserva@airbnb.com").Result;
                     logSistema.Log += FunctionAPICLOUDBEDs.putGuest(novareserva.GuestID, "guestState", "Minas Gerais").Result;
                     logSistema.Log += FunctionAPICLOUDBEDs.putGuest(novareserva.GuestID, "guestCountry", "BR").Result;
+
+                    logSistema.Log += PagamentoReserva(novareserva);
                 }
 
                 if (novareserva is not null && novareserva.Origem is not null && novareserva.Origem!.ToUpper().Contains("BOOKING.COM"))
                 {
                     logSistema.Log += FunctionWhatsApp.postMensagemTempleteDadosFaltando(novareserva.ProxyCelular!, novareserva.IDReserva!, novareserva.NomeHospede!).Result;
                     FuncoesEmail.EnviarEmailCPF(novareserva.Email, novareserva.IDReserva, novareserva.NomeHospede);
+
+                    var novareservaratedetails = FunctionAPICLOUDBEDs.getReservationsWithRateDetailsAsync(novareserva).Result;
+                    if(novareservaratedetails is not null && novareservaratedetails.Source is not null && novareservaratedetails.Source.PaymentCollect.ToLower().Equals("collect"))
+                    {
+                        logSistema.Log += PagamentoReserva(novareserva);
+                    }
+                    
                 }
 
                 //if (novareserva is not null && novareserva.Origem is not null && novareserva.Origem.Contains("Website/Booking Engine"))
@@ -870,13 +880,20 @@ namespace HoteldosNobresBlazor.Funcoes
                 Payment payment = FunctionAPICLOUDBEDs.getPaymentsAsync(reservapagemtento).Result;
                 if (payment.Success)
                 {
-                    Reserva reservaairbnb1 = FunctionAPICLOUDBEDs.getReservationAsync(reservapagemtento).Result;
-                    if (reservaairbnb1.Balance == 0)
+                    Reserva reserva= FunctionAPICLOUDBEDs.getReservationAsync(reservapagemtento).Result;
+                    if (reserva.Balance == 0)
                         retorno += "Ja tem Pagamento!" + "\n";
                     else
-                        retorno += "Criado: " + FunctionAPICLOUDBEDs.postReservationNote(reservaairbnb1).Result + " \n";
+                        retorno += "Criado: " + FunctionAPICLOUDBEDs.postReservationNote(reserva).Result + " \n";
 
-                }
+                    LogSistema logSistemapagamento = new LogSistema();
+                    logSistemapagamento.IDReserva = reserva.IDReserva!.ToString();
+                    logSistemapagamento.Status = reserva.Status!;
+                    logSistemapagamento.DataLog = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone);
+                    logSistemapagamento.Log += retorno; 
+                    AppState.ListLogSistemaPagamentoAirbnb.Add(logSistemapagamento);
+                } 
+
                 return retorno;
             }
             catch (Exception e)
