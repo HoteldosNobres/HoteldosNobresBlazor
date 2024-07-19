@@ -29,7 +29,8 @@
                 <MudTextField T="string" Label="Celular ou Telefone Principal" Disabled="true" @bind-Value="guest.Phone" />
                 <MudTextField T="string" Label="Celular ou Telefone Secundario" Disabled="true" @bind-Value="guest.CellPhone" />
                 <MudTextField T="string" Label="CPF" Disabled="@DisabledCPF" @bind-Value="CPF" />
-                <MudDatePicker Label="Data de Nascimento" PickerVariant="PickerVariant.Dialog" Editable="@(!Disabled)" Elevation="12" Disabled="@Disabled" @bind-Date="guest.Birthdate" DateFormat="dd/MM/yyyy" />
+               @*  <MudDatePicker Label="Data de Nascimento" PickerVariant="PickerVariant.Dialog" Editable="@(!Disabled)" Elevation="12" Disabled="@Disabled" @bind-Date="guest.Birthdate" DateFormat="dd/MM/yyyy" /> *@
+                <MudTextField Label="Data de Nascimento*" @bind-Value="guest.Birthdate" Placeholder="dd/MM/aaaa" Format="dd/MM/yyyy" Variant="@Variant.Outlined" Clearable />
                 <MudDivider />
                 <MudListItem Icon="@Icons.Material.Filled.House"> Endereço </MudListItem>
                 <MudTextField T="string" Label="CEP" @bind-Value="guest.Zip" TextChanged="@SearchCEP" Editable="@Disabled"

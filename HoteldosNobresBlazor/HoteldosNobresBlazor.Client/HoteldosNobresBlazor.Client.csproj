@@ -25,7 +25,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.7" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
     <PackageReference Include="MosaicoSolutions.ViaCep" Version="5.0.0" />
-    <PackageReference Include="MudBlazor" Version="7.1.1" />
+    <PackageReference Include="MudBlazor" Version="7.3.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="OpenAC.Net.NFSe" Version="1.5.0.2" />
     <PackageReference Include="OpenAI" Version="1.11.0" />

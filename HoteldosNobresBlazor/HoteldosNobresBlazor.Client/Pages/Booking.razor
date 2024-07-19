@@ -25,21 +25,19 @@
     {
         <MudForm>
             <MudList T="string" ReadOnly="true">
-                <MudListItem T="string" ReadOnly="true" IconColor="Color.Primary" Class="deep-purple-text mt-2" Icon="@Icons.Material.Filled.Info">Dados do Hóspede Principal</MudListItem>
+                <MudListItem T="string" IconColor="Color.Primary" Class="deep-purple-text mt-2" Icon="@Icons.Material.Filled.Info">Dados do Hóspede Principal</MudListItem>
                 <MudListItem T="string">
                     <div class="d-flex">
                         <MudTextField T="string" Label="Nome" Class="deep-purple-text mt-2"  Disabled="true" @bind-Value="guest.FirstName" />
                         <MudTextField T="string" Label="Celular/Telefone" Class="deep-purple-text mt-2" Disabled="true" @bind-Value="CellPhone" />
                     </div>
-                </MudListItem> 
-                <MudTextField Label="CPF*" 
-                Editable="@(!Disabled)" Disabled="@DisabledCPF" Placeholder="000.000.000-00" @bind-Value="CPF" Variant="@Variant.Outlined" Clearable />
-                <MudDatePicker Label="Data de Nascimento*" Editable="@(!Disabled)" @bind-Date="guest.Birthdate" Placeholder="dd/MM/aaaa" Variant="Variant.Outlined" DateFormat="dd/MM/yyyy" />
-                <MudTextField T="string" Label="E-mail" Editable="@(!Disabled)" Elevation="12" Disabled="@Disabled" @bind-Value="guest.Email" Variant="Variant.Outlined" />
-                <MudDivider />
+                </MudListItem>
+                <MudTextField Label="CPF*" Disabled="@DisabledCPF" Placeholder="000.000.000-00" @bind-Value="CPF" Variant="@Variant.Outlined" Clearable />
+                <MudTextField T="DateTime?" Label="Data de Nascimento*" @bind-Value="guest.Birthdate" Placeholder="dd/MM/aaaa" Format="dd/MM/yyyy" Variant="@Variant.Outlined" Clearable />
+                <MudTextField T="string" Label="E-mail"  Disabled="@Disabled" @bind-Value="guest.Email" Variant="Variant.Outlined" />
                 <MudListItem Class="deep-purple-text mt-2" IconColor="Color.Primary" Icon="@Icons.Material.Filled.House"> Endereço </MudListItem>
-                <MudTextField T="string" Label="CEP" @bind-Value="guest.Zip" TextChanged="@SearchCEP" Editable="@Disabled"
-                             Disabled="@Disabled" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary" Variant="Variant.Outlined" />  
+                <MudTextField T="string" Label="CEP" @bind-Value="guest.Zip" TextChanged="@SearchCEP"
+                              Disabled="@Disabled" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary" Variant="Variant.Outlined" />
                 <MudTextField T="string" Label="Endereço - Rua/Avenida + Número + Compl." Disabled="DisableEndereco" @bind-Value="guest.Address" Variant="Variant.Outlined" />
                 <MudListItem T="string">
                     <div class="d-flex">
@@ -53,8 +51,7 @@
                         <MudTextField T="string" Label="Pais" Disabled="true" @bind-Value="guest.GuestCountry" />
                     </div>
                 </MudListItem>
-                @*  <MudCheckBox @bind-Value="@guest.GuestOptIn" hidden="@(true)" Editable="@(!Disabled)" Elevation="12" Disabled="@Disabled" Label="Aceito receber informações/martking" Color="Color.Primary"></MudCheckBox> *@
-            </MudList>
+             </MudList>
             <div class="mt-4">
                 <MudButton Variant="Variant.Filled"
                            Color="Color.Primary"
