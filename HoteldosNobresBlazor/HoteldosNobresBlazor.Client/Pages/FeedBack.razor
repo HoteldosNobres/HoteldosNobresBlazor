@@ -1,4 +1,4 @@
-﻿@page "/feedback/{ReservationId}"
+﻿@page "/feedback"
 @using System.Security.Claims
 @using System.Net.NetworkInformation
 @using HoteldosNobresBlazor.Client.Pages.Component
@@ -83,8 +83,9 @@
 </MudText>
 
 @code {
-    [Parameter]
-    public string ReservationId { get; set; }
+
+    [SupplyParameterFromQuery]
+    public string numero { get; set; }
 
     public Reserva reserva { get; set; }
 
@@ -123,13 +124,13 @@
 
             if (lista is not null)
             {
-                reserva = lista.FirstOrDefault(x => x.IDReservaAgencia is not null && x.IDReservaAgencia.Equals(ReservationId));
+                reserva = lista.FirstOrDefault(x => x.IDReservaAgencia is not null && x.IDReservaAgencia.Equals(numero));
 
                 if (reserva is null)
-                    reserva = lista.FirstOrDefault(x => x.IDReserva is not null && x.IDReserva.Equals(ReservationId));
+                    reserva = lista.FirstOrDefault(x => x.IDReserva is not null && x.IDReserva.Equals(numero));
 
                 if (reserva is null)
-                    reserva = await cloudbedsAPI.GetReservaAsync(ReservationId);
+                    reserva = await cloudbedsAPI.GetReservaAsync(numero);
 
                 if (reserva is not null)
                 {

@@ -20,9 +20,9 @@ public class FuncoesEmail
     public static void EnviarEmailCPF(string from, string id, string nome)
     {
         string body = nome + ", Recebemos sua reserva! Para completar seu cadastro no Ministério do Turismo (MTur), precisamos do seu CPF e data de nascimento. Essas informações são exigidas pela Lei 11.771/2008 e pelo Decreto 7.381/2010.  ";
-        body += @" 
+        body += @" <br>
                 Clique no link abaixo para enviar seus dados de forma segura. 
-                https://hoteldosnobres.azurewebsites.net/booking/" + id;
+                https://hoteldosnobres.com.br/reserva?" + id;
         string subject = "Informações pendentes para completar sua reserva";
 
         EnviarEmail( from, body, subject);
@@ -45,7 +45,7 @@ public class FuncoesEmail
         {
             Subject = subject,
             Body = body,
-
+            IsBodyHtml = true
         })
         {
             smtp.Send(message);

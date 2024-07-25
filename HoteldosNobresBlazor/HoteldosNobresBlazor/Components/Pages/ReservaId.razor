@@ -29,12 +29,12 @@
                 <MudTextField T="string" Label="Nome" @bind-Value="guest.FirstName" TextChanged="TextChangedName" />
                 <MudTextField T="string" Label="Sobrenome" @bind-Value="guest.LastName" TextChanged="TextChangedLastName" />
                 <MudTextField T="string" Label="E-mail" @bind-Value="guest.Email" TextChanged="TextChangedEmail" />
-                <MudTextField T="string" Label="Celular ou Telefone Principal" Disabled="true" @bind-Value="guest.Phone" />
-                <MudSelect T="string" Label="Genero" Variant="Variant.Text" @bind-Value="guest.Gender" class="mr-1">
-                    <MudSelectItem Value="@("M")">Masculino</MudSelectItem>
-                    <MudSelectItem Value="@("F")">Feminino</MudSelectItem>
-                    <MudSelectItem Value="@("N/A")">Nada</MudSelectItem> 
-                </MudSelect>
+                <MudTextField T="string" Label="Celular ou Telefone Principal" Disabled="true" @bind-Value="guest.Phone" />                
+                @* <MudSelect T="string" Label="Genero" AnchorOrigin="Origin.BottomCenter">
+                    <MudSelectItem T="string" Value="@("M")" />
+                    <MudSelectItem T="string" Value="@("F")" />
+                    <MudSelectItem T="string" Value="@("N/A")" />
+                </MudSelect> *@
                 <div>
                     <select class="form-select" aria-label="Genero" disabled="@Disabled" @bind="guest.Gender">
                         <option value="N/A"> </option>
@@ -487,6 +487,7 @@ else
         try
         {
             var retorno = await FunctionWhatsApp.postMensagemTempleteDadosFaltando(reserva.ProxyCelular!, reserva.IDReserva, reserva.NomeHospede);
+            FuncoesEmail.EnviarEmailCPF(reserva.Email, reserva.IDReserva, reserva.NomeHospede);
             Snackbar.Add("Encaminhado com sucesso", Severity.Success);
         }
         catch (Exception ex)

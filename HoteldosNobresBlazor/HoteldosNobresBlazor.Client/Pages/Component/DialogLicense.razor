@@ -29,7 +29,7 @@
     {
         await base.OnInitializedAsync();
         Loading = true;
-        var response = await HttpClient.GetAsync("https://hoteldosnobres.azurewebsites.net/LICENSEHOTEL.txt");
+        var response = await HttpClient.GetAsync("https://apihoteldosnobres.azurewebsites.net/LICENSEHOTEL.txt");
         LicenseText = await response.Content.ReadAsStringAsync();
         Loading = false;
     }
