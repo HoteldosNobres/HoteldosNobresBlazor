@@ -15,6 +15,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Itens de Solução", "Itens de Solução", "{60C0895E-053F-4244-AB07-E726751094AC}"
 	ProjectSection(SolutionItems) = preProject
 		LICENSE.txt = LICENSE.txt
+		SECURITY.md = SECURITY.md
 	EndProjectSection
 EndProject
 Global
