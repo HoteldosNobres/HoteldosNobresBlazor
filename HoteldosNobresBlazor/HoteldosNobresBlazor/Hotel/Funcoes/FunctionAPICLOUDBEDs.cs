@@ -267,7 +267,7 @@ public class FunctionAPICLOUDBEDs
                 url += "?checkInFrom=" + checkInFrom;
 
             url += "&checkInTo=" + checkInFrom;
-            url += "&status=confirmed";
+            url += "&status=confirmed&includeGuestsDetails=true";
 
 
             HttpResponseMessage response = GetApi(url).Result;
@@ -301,9 +301,8 @@ public class FunctionAPICLOUDBEDs
 
             url += "?checkOutFrom=" + checkOutFrom;
             url += "&checkOutTo=" + checkOutFrom;
-            url += "&status=checked_in";
-
-
+            url += "&status=checked_in&includeGuestsDetails=true";
+             
             HttpResponseMessage response = GetApi(url).Result;
 
             Reservations resevations = await LerRespostaComoObjetoAsync<Reservations>(response);
