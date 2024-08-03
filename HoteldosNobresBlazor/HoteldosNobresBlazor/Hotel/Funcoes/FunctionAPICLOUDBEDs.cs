@@ -122,7 +122,7 @@ public class FunctionAPICLOUDBEDs
     #endregion RatePlan
 
     #region Payment
-    public static async Task<Payment> getPaymentsAsync(Reserva reserva)
+    public static async Task<Payment> GetPaymentsAsync(Reserva reserva)
     {
         try
         {
@@ -141,7 +141,41 @@ public class FunctionAPICLOUDBEDs
 
     }
 
-    public static async Task<String> postReservationNote(Reserva reserva)
+    public static async Task<String> PostVoidPayment(string reservationID, string paymentID)
+    {
+        try
+        {
+            string url = urlapi + @"/postVoidPayment";
+
+            var client = new HttpClient();
+            var request = new HttpRequestMessage(HttpMethod.Post, url);
+            request.Headers.Add("Authorization", "Bearer " + KEYs.TOKEN_CLOUDBEDS);
+
+            var collection = new List<KeyValuePair<string, string>>();
+            collection.Add(new("reservationID", reservationID));
+            collection.Add(new("paymentID", paymentID));
+
+
+            var content = new FormUrlEncodedContent(collection);
+            request.Content = content;
+            var response = await client.SendAsync(request);
+
+            RespostPayment responsepayment = await LerRespostaComoObjetoAsync<RespostPayment>(response);
+
+            if (responsepayment.Message != null)
+                return responsepayment.Message.ToString();
+            else
+                return responsepayment.TransactionId;
+        }
+        catch (FileNotFoundException e)
+        {
+            Console.WriteLine(e.Message);
+            return null;
+        }
+
+    }
+
+    public static async Task<String> PostReservationPagamento(Reserva reserva)
     {
         try
         {
@@ -152,7 +186,7 @@ public class FunctionAPICLOUDBEDs
             var request = new HttpRequestMessage(HttpMethod.Post, url);
             request.Headers.Add("Authorization", "Bearer " + KEYs.TOKEN_CLOUDBEDS);
 
-            var collection = new List<KeyValuePair<string, string>>(); 
+            var collection = new List<KeyValuePair<string, string>>();
             collection.Add(new("reservationID", reservationID));
             collection.Add(new("amount", reserva.Balance.GetValueOrDefault(0).ToString("N", new CultureInfo("en-US"))));
 
@@ -302,7 +336,7 @@ public class FunctionAPICLOUDBEDs
             url += "?checkOutFrom=" + checkOutFrom;
             url += "&checkOutTo=" + checkOutFrom;
             url += "&status=checked_in&includeGuestsDetails=true";
-             
+
             HttpResponseMessage response = GetApi(url).Result;
 
             Reservations resevations = await LerRespostaComoObjetoAsync<Reservations>(response);
@@ -334,7 +368,7 @@ public class FunctionAPICLOUDBEDs
             string url = urlapi + "/getReservations";
 
             url += "?resultsFrom=" + checkInFrom;
-             
+
             HttpResponseMessage response = GetApi(url).Result;
 
             Reservations resevations = await LerRespostaComoObjetoAsync<Reservations>(response);

@@ -492,43 +492,54 @@ namespace HoteldosNobresBlazor.Funcoes
                     bool voltar = false;
                     if (reserva != null && reserva.Origem != null
                         && (reserva.Origem.ToUpper().Contains("AIRBNB") || reserva.Origem.ToUpper().Contains("BOOKING.COM")))
-                    {
-                        if (string.IsNullOrEmpty(reserva.Cpf) && !reserva.ProxyCelular!.Equals("553537150180"))
-                        {
-                            voltar = true; 
-                            logSistema.Log += FunctionWhatsApp.postMensagemTempleteDadosFaltando(reserva.ProxyCelular!, reserva.IDReserva!, reserva.NomeHospede!).Result; 
+                    { 
+                        if (string.IsNullOrEmpty(reserva.Cpf) || (reserva.Cpf != null && !ValidarCPF(reserva.Cpf)))
+                        { 
+                            logSistema.Log += FunctionAPICLOUDBEDs.postReservationNote(reserva.IDReserva, "CPF inválido").Result;
+                            voltar = true;
                         }
-
-                        if (reserva.Cpf != null && !ValidarCPF(reserva.Cpf) && !reserva.ProxyCelular!.Equals("553537150180"))
-                        {
-                            voltar = true; 
-                            logSistema.Log += FunctionWhatsApp.postMensagemTempleteDadosFaltando(reserva.ProxyCelular!, reserva.IDReserva!, reserva.NomeHospede!).Result; 
-                        }
+                           
                     }
 
                     if (reserva!.ProxyCelular is null || reserva.ProxyCelular.Equals("5535999429553")
                         || reserva.ProxyCelular.Equals("553537150180"))
                     {
+                        logSistema.Log += FunctionAPICLOUDBEDs.postReservationNote(reserva.IDReserva, "Reserva sem telefone").Result; 
                         voltar = true;
-                        logSistema.Log += FunctionWhatsApp.postMensagem("553537150180", "Reserva sem Telefone  - " + reserva.NomeHospede).Result;
                     }
 
                     if (reserva.Email is not null && reserva.Email.Equals("hoteldosnobres@hotmail.com"))
-                    {
+                    { 
+                        logSistema.Log += FunctionAPICLOUDBEDs.postReservationNote(reserva.IDReserva, "Reserva e-mail do hotel").Result;
                         voltar = true;
-                        logSistema.Log += FunctionWhatsApp.postMensagem("553537150180", "Reserva e-mail do hotel  - " + reserva.NomeHospede).Result;
                     }
 
                     if (voltar)
                     {
-                        logSistema.Log += FunctionAPICLOUDBEDs.postReservationNote(reserva.IDReserva, "CPF inválido").Result; 
+                        if (!reserva.ProxyCelular!.Equals("553537150180"))
+                            logSistema.Log += FunctionWhatsApp.postMensagemTempleteDadosFaltando(reserva.ProxyCelular!, reserva.IDReserva!, reserva.NomeHospede!).Result;
+
+
                         logSistema.Log += FunctionAPICLOUDBEDs.putReservation(reserva.IDReserva, "confirmed").Result;
                     }
                       
                 }
 
                 if (reserva.Status != null && reserva.Status.ToUpper() == "CANCELED")
+                {
                     logSistema.Log += AjusteRate(reserva.IDReserva);
+
+                    if (reserva is not null && reserva.Origem is not null && reserva.Origem!.ToUpper().Contains("BOOKING.COM"))
+                    { 
+                        var novareservaratedetails = FunctionAPICLOUDBEDs.getReservationsWithRateDetailsAsync(reserva).Result;
+                        if (novareservaratedetails is not null && novareservaratedetails.Source is not null && novareservaratedetails.Source.PaymentCollect.ToLower().Equals("collect"))
+                        {
+                            logSistema.Log += RemovePagamentoReserva(reserva);
+                        }
+
+                    }
+                }
+                   
 
                 logSistema.Log += CheckInOrCheckOutFNRH(reserva);
 
@@ -900,14 +911,14 @@ namespace HoteldosNobresBlazor.Funcoes
             try
             {
                 string retorno = "";
-                Payment payment = FunctionAPICLOUDBEDs.getPaymentsAsync(reservapagemtento).Result;
+                Payment payment = FunctionAPICLOUDBEDs.GetPaymentsAsync(reservapagemtento).Result;
                 if (payment.Success)
                 {
                     Reserva reserva= FunctionAPICLOUDBEDs.getReservationAsync(reservapagemtento).Result;
                     if (reserva.Balance == 0)
                         retorno += "Ja tem Pagamento!" + "\n";
                     else
-                        retorno += "Criado: " + FunctionAPICLOUDBEDs.postReservationNote(reserva).Result + " \n";
+                        retorno += "Criado: " + FunctionAPICLOUDBEDs.PostReservationPagamento(reserva).Result + " \n";
 
                     LogSistema logSistemapagamento = new LogSistema();
                     logSistemapagamento.IDReserva = reserva.IDReserva!.ToString();
@@ -916,6 +927,36 @@ namespace HoteldosNobresBlazor.Funcoes
                     logSistemapagamento.Log += retorno; 
                     AppState.ListLogSistemaPagamentoAirbnb.Add(logSistemapagamento);
                 } 
+
+                return retorno;
+            }
+            catch (Exception e)
+            {
+                return e.Message + "\n";
+            }
+        }
+
+        private static string RemovePagamentoReserva(Reserva reservapagemtento)
+        {
+            try
+            {
+                string retorno = "";
+                Payment payment = FunctionAPICLOUDBEDs.GetPaymentsAsync(reservapagemtento).Result;
+                if (payment.Success)
+                { 
+                    Reserva reserva = FunctionAPICLOUDBEDs.getReservationAsync(reservapagemtento).Result;
+                    if (reserva.Balance > 0) 
+                        retorno += "Removeu o pagamento" + "\n";
+                    else
+                        retorno += "Removeu o pagamento: " + FunctionAPICLOUDBEDs.PostVoidPayment(reserva.IDReserva!, payment.Data[0].PaymentId).Result + " \n";
+
+                    LogSistema logSistemapagamento = new LogSistema();
+                    logSistemapagamento.IDReserva = reserva.IDReserva!.ToString();
+                    logSistemapagamento.Status = reserva.Status!;
+                    logSistemapagamento.DataLog = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone);
+                    logSistemapagamento.Log += retorno;
+                    AppState.ListLogSistemaPagamentoAirbnb.Add(logSistemapagamento);
+                }
 
                 return retorno;
             }

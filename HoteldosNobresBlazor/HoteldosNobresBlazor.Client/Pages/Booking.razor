@@ -6,6 +6,7 @@
 @using MosaicoSolutions.ViaCep
 @using MosaicoSolutions.ViaCep.Modelos
 @using Newtonsoft.Json
+@using System.Globalization
 @inject APICloudbeds cloudbedsAPI
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject AppState appState
@@ -28,13 +29,14 @@
                 <MudListItem T="string" IconColor="Color.Primary" Class="deep-purple-text mt-2" Icon="@Icons.Material.Filled.Info">Dados do Hóspede Principal</MudListItem>
                 <MudListItem T="string">
                     <div class="d-flex">
-                        <MudTextField T="string" Label="Nome" Class="deep-purple-text mt-2"  Disabled="true" @bind-Value="guest.FirstName" />
+                        <MudTextField T="string" Label="Nome" Class="deep-purple-text mt-2" Disabled="true" @bind-Value="guest.FirstName" />
                         <MudTextField T="string" Label="Celular/Telefone" Class="deep-purple-text mt-2" Disabled="true" @bind-Value="CellPhone" />
                     </div>
                 </MudListItem>
-                <MudTextField Label="CPF*" Disabled="@DisabledCPF" Placeholder="000.000.000-00" @bind-Value="CPF" Variant="@Variant.Outlined" Clearable />
-                <MudTextField T="DateTime?" Label="Data de Nascimento*" @bind-Value="guest.Birthdate" Placeholder="dd/MM/aaaa" Format="dd/MM/yyyy" Variant="@Variant.Outlined" Clearable />
-                <MudTextField T="string" Label="E-mail"  Disabled="@Disabled" @bind-Value="guest.Email" Variant="Variant.Outlined" />
+                <MudTextField Label="CPF*" Disabled="@DisabledCPF" Placeholder="000.000.000-00" @bind-Value="CPF" Variant="@Variant.Outlined" Focu Clearable TextChanged="TextChangedCPF" />
+                <MudDatePicker Label="Data de Nascimento*" Editable="true" Date="guest.Birthdate" ImmediateText="true" Placeholder="dia/mes/ano" DateFormat="dd/MM/yyyy" TextChanged="DatePickerTextChanged" Variant="@Variant.Outlined" Clearable="true" />
+
+                <MudTextField T="string" Label="E-mail" Disabled="@Disabled" @bind-Value="guest.Email" Variant="Variant.Outlined" />
                 <MudListItem Class="deep-purple-text mt-2" IconColor="Color.Primary" Icon="@Icons.Material.Filled.House"> Endereço </MudListItem>
                 <MudTextField T="string" Label="CEP" @bind-Value="guest.Zip" TextChanged="@SearchCEP"
                               Disabled="@Disabled" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary" Variant="Variant.Outlined" />
@@ -51,7 +53,7 @@
                         <MudTextField T="string" Label="Pais" Disabled="true" @bind-Value="guest.GuestCountry" />
                     </div>
                 </MudListItem>
-             </MudList>
+            </MudList>
             <div class="mt-4">
                 <MudButton Variant="Variant.Filled"
                            Color="Color.Primary"
@@ -200,7 +202,7 @@
     }
 
     async Task OpenDialog()
-    { 
+    {
         if (Validacao())
             return;
 
@@ -299,7 +301,7 @@
             if (listaparametros.Count > 2)
                 cloudbedsAPI.PutGuestMaisAsync(guest.GuestId.ToString(), listaparametros);
 
-            if(!string.IsNullOrEmpty(emailota))
+            if (!string.IsNullOrEmpty(emailota))
             {
                 string mensagem = " Foi informado o CPF: " + reserva.ProxyCPF + " e Data de Nascimento: " + guest.Birthdate!.Value.ToString("dd/MM/yyyy");
                 FuncoesEmail.EnviarEmail(emailota, mensagem, "Mensagem do Hotel dos Nobres");
@@ -348,7 +350,6 @@
 
     }
 
-
     private void SearchCEP(string value)
     {
         if (value.Length >= 8)
@@ -375,5 +376,42 @@
 
     }
 
- 
+    private void DatePickerTextChanged(string newValue)
+    { 
+        if (!string.IsNullOrEmpty(newValue))
+        {
+            newValue = new string(newValue.Where(char.IsDigit).ToArray()); 
+            if (!string.IsNullOrEmpty(newValue) && (newValue.Length == 6 || newValue.Length == 8))
+            {
+                string[] formats = { "ddMMyy", "ddMMyyyy", "dd/MM/yyyy", "dd/M/yyyy", "d/MM/yyyy", "d/M/yyyy", "dd/MM/yy", "dd/M/yy", "d/MM/yy", "d/M/yy" };
+                if (DateTime.TryParseExact(newValue, formats, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime validDate))
+                {
+                    guest.Birthdate = validDate;
+                }
+            }
+            
+        }
+
+    }
+
+    protected async Task TextChangedCPF(string newValue)
+    {
+        try
+        {
+            if (!string.IsNullOrEmpty(newValue))
+            {
+                newValue = new string(newValue.Where(char.IsDigit).ToArray());
+
+                if (!string.IsNullOrEmpty(newValue) && newValue.Length == 11)
+                    CPF = Convert.ToUInt64(newValue.Replace(" ", "").Replace(".", "").Replace("-", "")).ToString(@"000\.000\.000\-00");
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("Erro atualizar o nome.", Severity.Error);
+            Console.WriteLine(ex.Message);
+        }
+    }
+
+
 }

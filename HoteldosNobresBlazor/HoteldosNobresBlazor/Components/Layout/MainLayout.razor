@@ -2,7 +2,7 @@
 @inherits LayoutComponentBase
 
 <MudThemeProvider Theme="MyCustomTheme" @ref="@_mudThemeProvider" @bind-IsDarkMode="@_isDarkMode" />
-<MudPopoverProvider />
+<MudPopoverProvider @rendermode="InteractiveServer" />
 <MudDialogProvider @rendermode="InteractiveServer" />
 <MudSnackbarProvider @rendermode="InteractiveServer" />
   
