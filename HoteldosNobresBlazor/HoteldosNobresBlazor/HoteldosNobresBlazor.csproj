@@ -28,7 +28,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.7" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.7" />
     <PackageReference Include="MosaicoSolutions.ViaCep" Version="5.0.0" />
-    <PackageReference Include="MudBlazor" Version="7.4.0" />
+    <PackageReference Include="MudBlazor" Version="7.6.0" />
     <PackageReference Include="MudBlazor.ThemeManager" Version="2.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="OpenAC.Net.NFSe" Version="1.5.0.2" />
