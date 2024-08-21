@@ -3,6 +3,7 @@ using System.Text;
 using System.Xml.Serialization;
 using System.Xml.Linq;
 using HoteldosNobresBlazor.Classes;
+using HoteldosNobresBlazor.Client.FuncoesClient;
 
 namespace HoteldosNobresBlazor.Funcoes
 {

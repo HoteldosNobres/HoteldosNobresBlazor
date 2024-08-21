@@ -1,4 +1,5 @@
 ﻿using HoteldosNobresBlazor.Classes;
+using HoteldosNobresBlazor.Client.FuncoesClient;
 using HoteldosNobresBlazor.Components.Pages;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -27,8 +28,6 @@ namespace HoteldosNobresBlazor.Funcoes
         {
             try
             {
-
-
                 var client = new HttpClient();
                 var request = new HttpRequestMessage(HttpMethod.Post, urlapi);
                 request.Headers.Add("Authorization", "Bearer " + KEYs.TOKEN_WHATSAPP);

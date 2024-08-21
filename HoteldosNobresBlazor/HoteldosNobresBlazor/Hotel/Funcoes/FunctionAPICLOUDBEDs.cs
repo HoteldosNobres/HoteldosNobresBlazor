@@ -1,5 +1,7 @@
 ﻿using HoteldosNobresBlazor.Classes;
+using HoteldosNobresBlazor.Client.FuncoesClient;
 using HoteldosNobresBlazor.Components.Pages;
+using HoteldosNobresBlazor.FuncoesClient;
 using Newtonsoft.Json;
 using System.Globalization;
 
