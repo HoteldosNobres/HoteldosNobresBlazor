@@ -3,12 +3,12 @@ using HoteldosNobresBlazor.Funcoes;
 using HoteldosNobresBlazor.Services;
 using System.Text;
 using Blazored.LocalStorage;
-using KEYs = HoteldosNobresBlazor.Client.Funcoes.KEYs; 
 using Microsoft.AspNetCore.Components.Authorization;
 using HoteldosNobresBlazor.Modelo;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
+using HoteldosNobresBlazor.Client.FuncoesClient;
 
 var builder = WebApplication.CreateBuilder(args);
 
