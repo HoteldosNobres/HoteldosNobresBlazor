@@ -1,7 +1,6 @@
 using HoteldosNobresBlazor.Components;
 using HoteldosNobresBlazor.Services;
-using Blazored.LocalStorage;
-using KEYs = HoteldosNobresBlazor.Funcoes.KEYs;
+using Blazored.LocalStorage; 
 using Microsoft.AspNetCore.Components.Authorization;
 using HoteldosNobresBlazor.Modelo;
 using Microsoft.AspNetCore.Authorization;
@@ -10,6 +9,7 @@ using MudBlazor.Services;
 using Microsoft.AspNetCore.Identity;
 using HoteldosNobresBlazor;
 using MudBlazor;
+using HoteldosNobresBlazor.Client.FuncoesClient;
 
 var builder = WebApplication.CreateBuilder(args);
 
