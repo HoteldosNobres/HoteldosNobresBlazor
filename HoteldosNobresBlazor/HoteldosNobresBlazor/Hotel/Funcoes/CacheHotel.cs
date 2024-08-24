@@ -264,6 +264,28 @@ namespace HoteldosNobresBlazor.Funcoes
                 logSistema.DataLog = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone);
                 novareserva = FunctionAPICLOUDBEDs.getReservationAsync(novareserva).Result;
 
+                if (!novareserva.Equals(null) && novareserva.Origem is not null && novareserva.Origem.Contains("Despegar/Decolar"))
+                {
+                    logSistema.Log += AjustarEndereco(novareserva);
+                    if (novareserva.GuestID != null)
+                        logSistema.Log += FunctionAPICLOUDBEDs.putGuest(novareserva.GuestID, "guestEmail", "reserva@cvc.com").Result;
+                    logSistema.Log += FunctionAPICLOUDBEDs.putGuest(novareserva.GuestID, "guestState", "Minas Gerais").Result;
+                    logSistema.Log += FunctionAPICLOUDBEDs.putGuest(novareserva.GuestID, "guestCountry", "BR").Result;
+
+                    logSistema.Log += PagamentoReserva(novareserva);
+                }
+
+                if (!novareserva.Equals(null) && novareserva.Origem is not null && novareserva.Origem.Contains("CVC"))
+                {
+                    logSistema.Log += AjustarEndereco(novareserva);
+                    if (novareserva.GuestID != null)
+                        logSistema.Log += FunctionAPICLOUDBEDs.putGuest(novareserva.GuestID, "guestEmail", "reserva@cvc.com").Result;
+                    logSistema.Log += FunctionAPICLOUDBEDs.putGuest(novareserva.GuestID, "guestState", "Minas Gerais").Result;
+                    logSistema.Log += FunctionAPICLOUDBEDs.putGuest(novareserva.GuestID, "guestCountry", "BR").Result;
+
+                    logSistema.Log += PagamentoReserva(novareserva);
+                }
+
                 if (!novareserva.Equals(null) && novareserva.Origem is not null && novareserva.Origem.Contains("Airbnb"))
                 {
                     logSistema.Log += AjustarEndereco(novareserva);
@@ -287,11 +309,7 @@ namespace HoteldosNobresBlazor.Funcoes
                     }
                     
                 }
-
-                if (novareserva is not null && novareserva.Origem is not null && novareserva.Origem.Contains("Website/Booking Engine"))
-                {
-                    FuncoesEmail.EnviarEmaiSuporte(novareserva!.NomeHospede);
-                }
+                 
 
                 if (novareserva != null && novareserva.Estado != null && novareserva.CEP != null)
                 {

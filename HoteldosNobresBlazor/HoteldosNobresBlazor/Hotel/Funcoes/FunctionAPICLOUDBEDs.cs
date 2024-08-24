@@ -204,6 +204,18 @@ public class FunctionAPICLOUDBEDs
                 collection.Add(new("cardType", "Booking.com"));
                 collection.Add(new("description", "Booking.com"));
             }
+            else if (reserva is not null && reserva.Origem is not null && reserva.Origem.Contains("CVC"))
+            {
+                collection.Add(new("type", "CVC"));
+                collection.Add(new("cardType", "CVC"));
+                collection.Add(new("description", "CVC"));
+            }
+            else if (reserva is not null && reserva.Origem is not null && reserva.Origem.Contains("Despegar/Decolar"))
+            {
+                collection.Add(new("type", "Despegar/Decolar"));
+                collection.Add(new("cardType", "Despegar/Decolar"));
+                collection.Add(new("description", "Despegar/Decolar"));
+            }
 
 
 
