@@ -310,7 +310,6 @@ namespace HoteldosNobresBlazor.Funcoes
                     
                 }
                  
-
                 if (novareserva != null && novareserva.Estado != null && novareserva.CEP != null)
                 {
                     logSistema.Log += AjustarEndereco(novareserva);
