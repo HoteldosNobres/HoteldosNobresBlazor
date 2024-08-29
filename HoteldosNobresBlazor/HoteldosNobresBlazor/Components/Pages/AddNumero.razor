@@ -1,21 +1,21 @@
-﻿@page "/Addnumero"  
+﻿@page "/Addnumero"
 @using System.Threading
 @using HoteldosNobresBlazor.FuncoesClient
 @rendermode InteractiveAuto
-@inject NavigationManager NavigationManager 
+@inject NavigationManager NavigationManager
 
 <PageTitle>Numero</PageTitle>
 
 <h1>Add contato no Google</h1>
- 
-<InputText id="NomePhone" @bind-Value="nome" />
 
-<InputText id="OrigemPhone" @bind-Value="origem" /> 
+<MudTextField T="string" Label="Nome" @bind-Value="nome" />
 
-<InputText id="NumeroPhone" @bind-Value="numero" />
+<MudTextField T="string" Label="OrigemPhone" @bind-Value="origem" />
 
-<InputText id="emailPhone" @bind-Value="email" />
- 
+<MudTextField T="string" Label="NumeroPhone" @bind-Value="numero" />
+
+<MudTextField T="string" Label="email" @bind-Value="email" />
+
 <button class="btn btn-primary" @onclick="GotoAddNumber">Adicionar</button>
 
 <br />
@@ -32,24 +32,12 @@
 
 
     public async Task GotoAddNumber()
-    {
-        // var tarefadeespera = Task.Delay(1000);
-        var tarefadecriar = FunctionGoogle.AddPeopleAsync(nome, origem, numero, email);
+    { 
+        string tarefadecriar = await FunctionGoogle.AddPeopleAsync(nome, origem, numero, email);
 
-        // var tarefa = await Task.WhenAny(tarefadecriar, tarefadeespera);
-        // if (tarefa == tarefadeespera)
-        //     if (resultado == "OK")
-         NavigationManager.NavigateTo("/counter");
+        if (tarefadecriar == "OK")
+            NavigationManager.NavigateTo("/");
     }
-
-    // public void ThreadMethod()
-    // {
-    //     string nomet = nome;
-    //     string origemt = origem;
-    //     string numerot = numero;
-    //     string emailt = email;
-
-       
-    // }
+     
 
 }

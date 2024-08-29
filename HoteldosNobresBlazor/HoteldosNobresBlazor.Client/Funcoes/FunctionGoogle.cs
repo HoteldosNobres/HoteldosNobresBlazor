@@ -92,6 +92,11 @@ namespace HoteldosNobresBlazor.FuncoesClient
                 Console.WriteLine(e.Message);
                 return "ERRO: " + e.Message;    
             }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return "ERRO: " + e.Message;
+            }
         }
     }
 }
