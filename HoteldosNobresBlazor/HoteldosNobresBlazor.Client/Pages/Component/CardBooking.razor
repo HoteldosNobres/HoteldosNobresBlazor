@@ -1,5 +1,6 @@
 ﻿@using System.Globalization
 @inject APICloudbeds cloudbedsAPI
+@inject ISnackbar Snackbar
 
 <MudGrid Justify="Justify.Center" Class="align-items-center">
     <MudItem>
@@ -51,6 +52,12 @@
 <MudSpacer />
 <MudText Align="Align.Center"> Nome do Hospede Principal: @reserva.NomeHospede  </MudText>
 <MudText Align="Align.Center"> Origem: @reserva.Origem  </MudText>
+
+<MudItem Align="Align.Center">
+    <MudTextField T="string" Label="Horário previsto de chegada" HelperText="Horário tem que ser entre 14:00 e 23:00 (Brasilia)"
+                  @bind-Value="HorarioAproximado" InputType="InputType.Time" TextChanged="HorarioOnValueChangeHandler" />
+</MudItem>
+
 @if (!string.IsNullOrEmpty(reserva.IDReservaAgencia))
 {
     <MudText Align="Align.Center"> Número da reserva via agência: @reserva.IDReservaAgencia  </MudText>
@@ -83,12 +90,17 @@
     public Reserva? reserva { get; set; }
 
     public string? Imagem { get; set; }
-
+    public string HorarioAproximado { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         // Imagem = Reserva!.FotoPerfil!.Contains("Foto") ? $"https://localhost:7089/{Artista!.FotoPerfil}" : "images/cardArtista.png";
         reserva = await cloudbedsAPI.GetReservaAsync(reserva.IDReserva!);
+
+        if (reserva is not null && reserva.HorarioAproximado is not null)
+        {
+            HorarioAproximado = reserva.HorarioAproximado.GetValueOrDefault().ToString("HH:mm");
+        }
 
     }
 
@@ -96,5 +108,27 @@
     {
         tamanhoMaximo -= 3;
         return (texto.Length >= tamanhoMaximo) ? $"{texto.Substring(0, tamanhoMaximo)}..." : texto;
+    }
+
+    private async Task HorarioOnValueChangeHandler(string newValue)
+    {
+        try
+        {
+            DateTime horario = DateTime.Parse(newValue);
+            if (horario.Hour >= 14 && horario.Hour <= 23)
+            {
+                cloudbedsAPI.PutReservaAsync(reserva.IDReserva.ToString(), "estimatedArrivalTime", horario.ToString("HH:mm"));
+            }
+            else
+            {
+                Snackbar.Add("O horário previsão de chegada está fora 14 horas e 23 horas.", Severity.Warning);
+            }
+
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("Erro autualizar horario", Severity.Error);
+            Console.WriteLine(ex.Message);
+        }
     }
 }

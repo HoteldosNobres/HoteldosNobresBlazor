@@ -29,19 +29,12 @@
                 <MudTextField T="string" Label="Nome" @bind-Value="guest.FirstName" TextChanged="TextChangedName" />
                 <MudTextField T="string" Label="Sobrenome" @bind-Value="guest.LastName" TextChanged="TextChangedLastName" />
                 <MudTextField T="string" Label="E-mail" @bind-Value="guest.Email" TextChanged="TextChangedEmail" />
-                <MudTextField T="string" Label="Celular ou Telefone Principal" Disabled="true" @bind-Value="guest.Phone" />                
-                @* <MudSelect T="string" Label="Genero" AnchorOrigin="Origin.BottomCenter">
-                    <MudSelectItem T="string" Value="@("M")" />
-                    <MudSelectItem T="string" Value="@("F")" />
-                    <MudSelectItem T="string" Value="@("N/A")" />
-                </MudSelect> *@
-                <div>
-                    <select class="form-select" aria-label="Genero" disabled="@Disabled" @bind="guest.Gender">
-                        <option value="N/A"> </option>
-                        <option value="M">Masculino</option>
-                        <option value="F">Feminino</option>
-                    </select>
-                </div>
+                <MudTextField T="string" Label="Celular ou Telefone Principal" Disabled="true" @bind-Value="guest.Phone" />  
+                <MudSelect T="string" Label="Genero" disabled="@Disabled" @bind-Value="guest.Gender">
+                    <MudSelectItem Value="@("N/A")"></MudSelectItem>
+                    <MudSelectItem Value="@("M")">Masculino</MudSelectItem>
+                    <MudSelectItem Value="@("F")">Feminino</MudSelectItem>
+                </MudSelect>
                 <MudTextField T="string" Label="CPF" Disabled="@DisabledCPF" @bind-Value="CPF" />
                 @*  <MudDatePicker Label="Data de Nascimento" PickerVariant="PickerVariant.Dialog" Format="dd/MM/yyyy"  Editable="@(!Disabled)" Elevation="12" Disabled="@Disabled" @bind-Date="guest.Birthdate" DateFormat="dd/MM/yyyy" /> *@
                 <MudTextField Label="Data de Nascimento*" @bind-Value="guest.Birthdate" Placeholder="dd/MM/aaaa" Variant="@Variant.Outlined" Clearable />
