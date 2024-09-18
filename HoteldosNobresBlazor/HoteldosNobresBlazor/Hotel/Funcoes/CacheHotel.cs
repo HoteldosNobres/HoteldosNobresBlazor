@@ -511,8 +511,13 @@ namespace HoteldosNobresBlazor.Funcoes
                         && (reserva.Origem.ToUpper().Contains("AIRBNB") || reserva.Origem.ToUpper().Contains("BOOKING.COM")))
                     { 
                         if (string.IsNullOrEmpty(reserva.Cpf) || (reserva.Cpf != null && !ValidarCPF(reserva.Cpf)))
-                        { 
-                            logSistema.Log += FunctionAPICLOUDBEDs.postReservationNote(reserva.IDReserva, "CPF inválido").Result;
+                        {
+                            if (reserva.Notas is not null && reserva.Notas.Where(x => x.Texto == "CPF inválido").Count() > 0)
+                            {
+                                retorno += FunctionAPICLOUDBEDs.putReservationNote(reserva.IDReserva!, reserva.Notas.FirstOrDefault(x => x.Texto == "CPF inválido").Id!, retorno).Result;
+                            }
+                            else  
+                                logSistema.Log += FunctionAPICLOUDBEDs.postReservationNote(reserva.IDReserva, "CPF inválido").Result;
                             voltar = true;
                         }
                            
