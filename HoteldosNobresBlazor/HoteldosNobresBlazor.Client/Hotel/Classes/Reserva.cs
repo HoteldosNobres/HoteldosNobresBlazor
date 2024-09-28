@@ -69,9 +69,9 @@ public class Reserva
     {
         get
         {
-            if (string.IsNullOrEmpty(Numerotelefone))
+            if (string.IsNullOrEmpty(ProxyCelular))
                 return "55";
-            return Numerotelefone.Count() >= 13 ? Numerotelefone.Replace("+", "").Substring(0, 2) : "55";
+            return ProxyCelular.Count() >= 13 ? ProxyCelular.Replace("+", "").Substring(0, 2) : "55";
         }
     }
 
@@ -79,9 +79,9 @@ public class Reserva
     {
         get
         {
-            if (string.IsNullOrEmpty(Numerotelefone))
+            if (string.IsNullOrEmpty(ProxyCelular))
                 return "35";
-            return Numerotelefone.Replace("+", "").Count() > 11 ? Numerotelefone.Replace("+", "").Substring(2, 2) : Numerotelefone.Replace("+", "").Substring(0, 2);
+            return ProxyCelular.Replace("+", "").Count() > 11 ? ProxyCelular.Replace("+", "").Substring(2, 2) : ProxyCelular.Replace("+", "").Substring(0, 2);
         }
     }
 
@@ -89,9 +89,9 @@ public class Reserva
     {
         get
         {
-            if (string.IsNullOrEmpty(Numerotelefone))
+            if (string.IsNullOrEmpty(ProxyCelular))
                 return "37150180";
-            return Numerotelefone.Replace("+", "").Count() > 11 ? Numerotelefone.Replace("+", "").Substring(4, Numerotelefone.Length - 5) : Numerotelefone.Replace("+", "").Count() <= 9 ? Numerotelefone :  Numerotelefone.Replace("+", "").Substring(2, 9);
+            return ProxyCelular.Replace("+", "").Count() > 11 ? ProxyCelular.Replace("+", "").Substring(4, ProxyCelular.Length - 5) : ProxyCelular.Replace("+", "").Count() <= 9 ? ProxyCelular : ProxyCelular.Replace("+", "").Substring(2, 9);
         }
     }
      
@@ -103,7 +103,7 @@ public class Reserva
                 return "553537150180";
             string cellphone = string.Empty;
             if ( Numerotelefone != null)
-                cellphone =  !string.IsNullOrEmpty(NumeroCelular) ? NumeroCelular.Replace("+", "").Replace("-", "").Replace(".", "").Replace(" ", "").ToString() : Numerotelefone.Replace("+", "").Replace(".", "").Replace(" ", "").ToString();
+                cellphone = !string.IsNullOrEmpty(NumeroCelular) ? Regex.Replace(NumeroCelular, @"[^\d]", "") : Regex.Replace(Numerotelefone, @"[^\d]", ""); 
             return cellphone.Length <= 10 ? "55" + cellphone : cellphone;
         }
     }

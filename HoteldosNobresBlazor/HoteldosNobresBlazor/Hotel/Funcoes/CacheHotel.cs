@@ -357,50 +357,58 @@ namespace HoteldosNobresBlazor.Funcoes
         {
             try
             {
+                int desconto = 2;
                 string retorno = "";
                 Reserva reservalocal = new Reserva();
                 reservalocal.IDReserva = reservaId;
                 reservalocal = FunctionAPICLOUDBEDs.getReservationAsync(reservalocal).Result;
-                if (reservalocal.ListaQuartos != null && (reservalocal.ListaQuartos.Count() > 0))
+
+                if (!reservalocal.Equals(null) && reservalocal.Origem is not null 
+                    && !reservalocal.Origem.Contains("Phone")
+                    && !reservalocal.Origem.Contains("Walk-In"))
                 {
-                    foreach (Quarto quarto in reservalocal.ListaQuartos)
+                    if (reservalocal.ListaQuartos != null && (reservalocal.ListaQuartos.Count() > 0))
                     {
-                        Rate rate = FunctionAPICLOUDBEDs.getRatesAsync(quarto.ID.ToString(), reservalocal.DataCheckIn.GetValueOrDefault(), reservalocal.DataCheckOut.GetValueOrDefault()).Result;
-                        if (rate.Success)
+                        foreach (Quarto quarto in reservalocal.ListaQuartos)
                         {
-                            foreach (RoomRateDetailed roomRateDetailed in rate.Data.RoomRateDetailed)
+                            Rate rate = FunctionAPICLOUDBEDs.getRatesAsync(quarto.ID.ToString(), reservalocal.DataCheckIn.GetValueOrDefault(), reservalocal.DataCheckOut.GetValueOrDefault()).Result;
+                            if (rate.Success)
                             {
-                                decimal valornovo = roomRateDetailed.Rate;
-                                valornovo += (roomRateDetailed.Rate * 5 / 100);
-                                string stringvalor = valornovo.ToString("N", new CultureInfo("en-US"));
-                                retorno = FunctionAPICLOUDBEDs.postRateAsync(rate.Data.RateId, roomRateDetailed.Date.DateTime, roomRateDetailed.Date.DateTime, stringvalor).Result + " \n";
-
-                            }
-
-                        }
-                    }
-                }
-
-                if (reservalocal.ListaQuartosCancelados != null && (reservalocal.ListaQuartosCancelados.Count() > 0))
-                {
-                    foreach (Quarto quarto in reservalocal.ListaQuartosCancelados)
-                    {
-                        Rate rate = FunctionAPICLOUDBEDs.getRatesAsync(quarto.ID.ToString(), reservalocal.DataCheckIn.GetValueOrDefault(), reservalocal.DataCheckOut.GetValueOrDefault()).Result;
-                        if (rate.Success)
-                        {
-                            foreach (RoomRateDetailed roomRateDetailed in rate.Data.RoomRateDetailed)
-                            {
-                                decimal valornovo = roomRateDetailed.Rate;
-                                valornovo -= (roomRateDetailed.Rate * 5 / 100);
-                                string stringvalor = valornovo.ToString("N", new CultureInfo("en-US"));
-                                if (reservalocal.Status != null && reservalocal.Status.ToUpper() == "CANCELED")
+                                foreach (RoomRateDetailed roomRateDetailed in rate.Data.RoomRateDetailed)
+                                {
+                                    decimal valornovo = roomRateDetailed.Rate;
+                                    valornovo += (roomRateDetailed.Rate * desconto / 100);
+                                    string stringvalor = valornovo.ToString("N", new CultureInfo("en-US"));
                                     retorno = FunctionAPICLOUDBEDs.postRateAsync(rate.Data.RateId, roomRateDetailed.Date.DateTime, roomRateDetailed.Date.DateTime, stringvalor).Result + " \n";
 
-                            }
+                                }
 
+                            }
+                        }
+                    }
+
+                    if (reservalocal.ListaQuartosCancelados != null && (reservalocal.ListaQuartosCancelados.Count() > 0))
+                    {
+                        foreach (Quarto quarto in reservalocal.ListaQuartosCancelados)
+                        {
+                            Rate rate = FunctionAPICLOUDBEDs.getRatesAsync(quarto.ID.ToString(), reservalocal.DataCheckIn.GetValueOrDefault(), reservalocal.DataCheckOut.GetValueOrDefault()).Result;
+                            if (rate.Success)
+                            {
+                                foreach (RoomRateDetailed roomRateDetailed in rate.Data.RoomRateDetailed)
+                                {
+                                    decimal valornovo = roomRateDetailed.Rate;
+                                    valornovo -= (roomRateDetailed.Rate * desconto / 100);
+                                    string stringvalor = valornovo.ToString("N", new CultureInfo("en-US"));
+                                    if (reservalocal.Status != null && reservalocal.Status.ToUpper() == "CANCELED")
+                                        retorno = FunctionAPICLOUDBEDs.postRateAsync(rate.Data.RateId, roomRateDetailed.Date.DateTime, roomRateDetailed.Date.DateTime, stringvalor).Result + " \n";
+
+                                }
+
+                            }
                         }
                     }
                 }
+                   
 
                 return retorno;
             }
@@ -828,7 +836,9 @@ namespace HoteldosNobresBlazor.Funcoes
             {
                 retorno += " SnNum: " + reserva.SnNum + " ";
                 CheckInFNRH(reserva);
-                CheckOutFNRH(reserva);
+
+                if ((reserva.Status!.ToUpper() == "CHECK OUT FEITO" || reserva.Status.ToUpper() == "CHECKED_OUT"))
+                    CheckOutFNRH(reserva);
 
             }
 

@@ -225,7 +225,6 @@
         try
         {
 
-
             List<string> listaparametros = new List<string>();
 
             if (guest.Birthdate is not null)
@@ -302,10 +301,7 @@
                 cloudbedsAPI.PutGuestMaisAsync(guest.GuestId.ToString(), listaparametros);
 
             if (!string.IsNullOrEmpty(emailota))
-            {
-                string mensagem = " Foi informado o CPF: " + reserva.ProxyCPF + " e Data de Nascimento: " + guest.Birthdate!.Value.ToString("dd/MM/yyyy");
-                FuncoesEmail.EnviarEmail(emailota, mensagem, "Mensagem do Hotel dos Nobres");
-            }
+                MandarEmail();
 
             Snackbar.Add("Cadastrado alterado com sucesso!", Severity.Success);
 
@@ -317,11 +313,23 @@
             if (!DisableEndereco)
                 DisableEndereco = true;
 
-
         }
         catch (Exception ex)
         {
             Snackbar.Add("Erro ao alterar o cadastro!", Severity.Error);
+        }
+    }
+
+    private void MandarEmail()
+    {
+        try
+        {
+            string mensagem = " Foi informado o CPF: " + reserva.ProxyCPF + " e Data de Nascimento: " + guest.Birthdate!.Value.ToString("dd/MM/yyyy");
+            FuncoesEmail.EnviarEmail(emailota, mensagem, "Mensagem do Hotel dos Nobres");
+        }
+        catch (Exception ex)
+        { 
+            Console.WriteLine(ex.Message);
         }
     }
 
@@ -377,10 +385,10 @@
     }
 
     private void DatePickerTextChanged(string newValue)
-    { 
+    {
         if (!string.IsNullOrEmpty(newValue))
         {
-            newValue = new string(newValue.Where(char.IsDigit).ToArray()); 
+            newValue = new string(newValue.Where(char.IsDigit).ToArray());
             if (!string.IsNullOrEmpty(newValue) && (newValue.Length == 6 || newValue.Length == 8))
             {
                 string[] formats = { "ddMMyy", "ddMMyyyy", "dd/MM/yyyy", "dd/M/yyyy", "d/MM/yyyy", "d/M/yyyy", "dd/MM/yy", "dd/M/yy", "d/MM/yy", "d/M/yy" };
@@ -389,7 +397,7 @@
                     guest.Birthdate = validDate;
                 }
             }
-            
+
         }
 
     }

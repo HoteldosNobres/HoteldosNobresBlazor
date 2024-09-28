@@ -5,18 +5,9 @@ using System.Net.Mail;
 namespace HoteldosNobresBlazor;
 
 public class FuncoesEmail
-{
-    static MailAddress fromAddress = new MailAddress("hoteldosnobres@hotmail.com", "Hotel dos Nobres");
-   
-
-    private static SmtpClient smtp = new SmtpClient
-    {
-        Host = "smtp-mail.outlook.com",
-        Port = 587,
-        EnableSsl = true,
-        Credentials = new NetworkCredential(fromAddress.Address, KEYs.KEY_EMAILSENHA)
-    };
-
+{ 
+    static MailAddress fromAddress = new MailAddress("fabiohcnobre@hotmail.com");
+     
     public static void EnviarEmailCPF(string from, string id, string nome)
     {
         string body = nome + ", Recebemos sua reserva porem precisamos do seu CPF e data de nascimento para fazer o cadastro no Ministério do Turismo(MTur) informações exigidas pela  pela Lei 11.771 de 2008 e Decreto 7.381  de 2010";
@@ -30,6 +21,8 @@ public class FuncoesEmail
     public static void EnviarEmail(string from, string body, string subject)
     {
         MailAddress toAddress = new MailAddress(from, "");
+        SmtpClient smtp = new SmtpClient();
+        smtp.Host = "smtp-mail.outlook.com";
         using (var message = new MailMessage(fromAddress, toAddress)
         {
             Subject = subject,
@@ -37,6 +30,9 @@ public class FuncoesEmail
 
         })
         {
+            smtp.Credentials = new NetworkCredential("hoteldosnobres@hotmail.com", KEYs.KEY_EMAILSENHA);
+            smtp.Port = 587;
+            smtp.EnableSsl = true; 
             smtp.Send(message);
         }
 

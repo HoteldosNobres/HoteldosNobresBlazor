@@ -37,7 +37,7 @@
                 </MudSelect>
                 <MudTextField T="string" Label="CPF" Disabled="@DisabledCPF" @bind-Value="CPF" />
                 @*  <MudDatePicker Label="Data de Nascimento" PickerVariant="PickerVariant.Dialog" Format="dd/MM/yyyy"  Editable="@(!Disabled)" Elevation="12" Disabled="@Disabled" @bind-Date="guest.Birthdate" DateFormat="dd/MM/yyyy" /> *@
-                <MudTextField Label="Data de Nascimento*" @bind-Value="guest.Birthdate" Placeholder="dd/MM/aaaa" Variant="@Variant.Outlined" Clearable />
+                <MudDatePicker Label="Data de Nascimento*" Editable="true" Date="guest.Birthdate" ImmediateText="true" Placeholder="dia/mes/ano" DateFormat="dd/MM/yyyy" TextChanged="DatePickerTextChanged" Variant="@Variant.Outlined" Clearable="true" /> 
                 <MudText Typo="Typo.subtitle1" Class="deep-purple-text mt-2">Foi informado o CPF @reserva.ProxyCPF e Data de Nascimento @reserva.DataNascimento.ToString("dd/MM/yyyy") </MudText>
                 <MudDivider />
                 <MudListItem Icon="@Icons.Material.Filled.House"> Endereço </MudListItem>
@@ -682,6 +682,24 @@ else
             Snackbar.Add("Erro atualizar o e-mail.", Severity.Error);
             Console.WriteLine(ex.Message);
         }
+    }
+
+    private void DatePickerTextChanged(string newValue)
+    {
+        if (!string.IsNullOrEmpty(newValue))
+        {
+            newValue = new string(newValue.Where(char.IsDigit).ToArray());
+            if (!string.IsNullOrEmpty(newValue) && (newValue.Length == 6 || newValue.Length == 8))
+            {
+                string[] formats = { "ddMMyy", "ddMMyyyy", "dd/MM/yyyy", "dd/M/yyyy", "d/MM/yyyy", "d/M/yyyy", "dd/MM/yy", "dd/M/yy", "d/MM/yy", "d/M/yy" };
+                if (DateTime.TryParseExact(newValue, formats, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime validDate))
+                {
+                    guest.Birthdate = validDate;
+                }
+            }
+
+        }
+
     }
 
 } 
