@@ -282,7 +282,7 @@ public class Reserva
         Postalcode = guest.GuestZip;
 
         Contry = guest.GuestCountry == null || guest.GuestCountry.Contains("BR")  ? "BRASIL" : guest.GuestCountry;
-        CEP = guest.GuestZip.Replace("-", "");
+        CEP = guest.GuestZip.Replace("-", "").Replace(" ", "");
         Cidade = guest.GuestCity;
         Estado = guest.GuestState;
 
