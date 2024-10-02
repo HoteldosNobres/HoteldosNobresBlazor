@@ -1,6 +1,8 @@
-﻿using HoteldosNobresBlazor.Client.FuncoesClient;
+﻿using Google.Apis.PeopleService.v1.Data;
+using HoteldosNobresBlazor.Client.FuncoesClient;
 using System.Net;
 using System.Net.Mail;
+using static QRCoder.PayloadGenerator;
 
 namespace HoteldosNobresBlazor;
 
@@ -21,18 +23,18 @@ public class FuncoesEmail
     public static void EnviarEmail(string from, string body, string subject)
     {
         MailAddress toAddress = new MailAddress(from, "");
-        SmtpClient smtp = new SmtpClient();
-        smtp.Host = "smtp-mail.outlook.com";
+        SmtpClient smtp = new SmtpClient("smtp-mail.outlook.com", 587);
         using (var message = new MailMessage(fromAddress, toAddress)
         {
             Subject = subject,
             Body = body,
-
+            
         })
-        {
-            smtp.Credentials = new NetworkCredential("hoteldosnobres@hotmail.com", KEYs.KEY_EMAILSENHA);
-            smtp.Port = 587;
+        {   
             smtp.EnableSsl = true; 
+            smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
+            smtp.Credentials = new System.Net.NetworkCredential("hoteldosnobres@hotmail.com", "rrcdjpyqdcdqvgjb");  
+             
             smtp.Send(message);
         }
 
