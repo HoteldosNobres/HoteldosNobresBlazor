@@ -28,10 +28,12 @@
     <PackageReference Include="MudBlazor" Version="7.8.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="OpenAC.Net.NFSe" Version="1.6.0.1" />
-    <PackageReference Include="OpenAI" Version="1.11.0" />
     <PackageReference Include="pix-payload-generator.net" Version="1.0.21" />
     <PackageReference Include="QRCoder" Version="1.6.0" />
+    <PackageReference Include="System.Formats.Asn1" Version="8.0.1" />
     <PackageReference Include="System.Net.NetworkInformation" Version="4.3.0" />
+    <PackageReference Include="System.Private.Uri" Version="4.3.2" />
+    <PackageReference Include="System.Text.Json" Version="8.0.4" />
     <PackageReference Include="WhatsappBusiness.CloudApi" Version="1.0.37" />
   </ItemGroup>
 
