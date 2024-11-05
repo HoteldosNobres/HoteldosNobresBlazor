@@ -39,7 +39,7 @@
                 <MudTextField T="string" Label="E-mail" Disabled="@Disabled" @bind-Value="guest.Email" Variant="Variant.Outlined" />
                 <MudListItem Class="deep-purple-text mt-2" IconColor="Color.Primary" Icon="@Icons.Material.Filled.House"> Endereço </MudListItem>
                 <MudTextField T="string" Label="CEP" @bind-Value="guest.Zip" TextChanged="@SearchCEP"
-                              Disabled="@Disabled" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary" Variant="Variant.Outlined" />
+                Disabled="@Disabled" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary" Variant="Variant.Outlined" />
                 <MudTextField T="string" Label="Endereço - Rua/Avenida + Número + Compl." Disabled="DisableEndereco" @bind-Value="guest.Address" Variant="Variant.Outlined" />
                 <MudListItem T="string">
                     <div class="d-flex">
@@ -56,10 +56,10 @@
             </MudList>
             <div class="mt-4">
                 <MudButton Variant="Variant.Filled"
-                           Color="Color.Primary"
-                           Class="ml-auto rounded-xl"
-                           Disabled="@DisabledSave"
-                           @onclick="OpenDialog">
+                Color="Color.Primary"
+                Class="ml-auto rounded-xl"
+                Disabled="@DisabledSave"
+                @onclick="OpenDialog">
                     Salvar
                 </MudButton>
             </div>
@@ -362,20 +362,26 @@
     {
         if (value.Length >= 8)
         {
-            Cep cep = value;
-            var viaCepService = ViaCepService.Default();
-            var endereco = viaCepService.ObterEndereco(cep);
-            string Cidade = endereco.Localidade;
-            guest.City = Cidade;
-            if (string.IsNullOrEmpty(guest.Address))
-                guest.Address = endereco.Logradouro;
-            guest.State = endereco.UF;
-            guest.Country = "BRASIL";
-            guest.Address2 = endereco.Bairro;
-            guest.Zip = endereco.Cep;
+            try{
+                Cep cep = value;
+                var viaCepService = ViaCepService.Default();
+                var endereco = viaCepService.ObterEndereco(cep);
+                string Cidade = endereco.Localidade;
+                guest.City = Cidade;
+                if (string.IsNullOrEmpty(guest.Address))
+                    guest.Address = endereco.Logradouro;
+                guest.State = endereco.UF;
+                guest.Country = "BRASIL";
+                guest.Address2 = endereco.Bairro;
+                guest.Zip = endereco.Cep;
 
-            if (!Disabled && DisableEndereco)
-                DisableEndereco = false;
+                if (!Disabled && DisableEndereco)
+                    DisableEndereco = false;
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add("CEP não encontrado!", Severity.Error);
+            }
 
         }
         else

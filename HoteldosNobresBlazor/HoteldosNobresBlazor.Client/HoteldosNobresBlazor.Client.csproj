@@ -19,13 +19,13 @@
   <ItemGroup>
     <PackageReference Include="Google.Apis.Auth" Version="1.68.0" />
     <PackageReference Include="Google.Apis.PeopleService.v1" Version="1.68.0.3359" />
-    <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="8.0.8" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.8" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="8.0.8" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.8" />
-    <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="8.0.10" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.10" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="8.0.10" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.10" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.1" />
     <PackageReference Include="MosaicoSolutions.ViaCep" Version="5.0.0" />
-    <PackageReference Include="MudBlazor" Version="7.8.0" />
+    <PackageReference Include="MudBlazor" Version="7.15.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="OpenAC.Net.NFSe" Version="1.6.0.1" />
     <PackageReference Include="pix-payload-generator.net" Version="1.0.21" />
@@ -33,8 +33,8 @@
     <PackageReference Include="System.Formats.Asn1" Version="8.0.1" />
     <PackageReference Include="System.Net.NetworkInformation" Version="4.3.0" />
     <PackageReference Include="System.Private.Uri" Version="4.3.2" />
-    <PackageReference Include="System.Text.Json" Version="8.0.4" />
-    <PackageReference Include="WhatsappBusiness.CloudApi" Version="1.0.37" />
+    <PackageReference Include="System.Text.Json" Version="8.0.5" />
+    <PackageReference Include="WhatsappBusiness.CloudApi" Version="1.0.39" />
   </ItemGroup>
 
   <ItemGroup>
