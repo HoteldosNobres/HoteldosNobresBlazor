@@ -3,6 +3,8 @@
         <MudTextField T="string" Label="Mensagem" Variant="Variant.Text" Text="@mensagem" @bind-Value="mensagem" Lines="7" /> 
     </DialogContent>
     <DialogActions>
+        <MudCheckBox @bind-Value="CheckBoxEmail" Label="E-mail"></MudCheckBox>
+        <MudCheckBox @bind-Value="CheckBoxWhatsapp" Label="Whatsapp"></MudCheckBox>
         <MudButton OnClick="Clear">Limpar</MudButton>
         <MudButton OnClick="Cancel">Cancel</MudButton>
         <MudButton Color="Color.Primary" OnClick="Submit">Ok</MudButton>
@@ -12,7 +14,11 @@
     [CascadingParameter] MudDialogInstance MudDialog { get; set; }
     string mensagem = "Olá, seja bem vindo ao Hotel dos Nobres, estamos aguardando sua chegada, qualquer dúvida ou informação estamos a disposição. Lembrando que a recepção esta pronta para te atender qualquer duvida pode chamar. Se precisar de mais coberta ou troca de algum item pode solicitar. Obrigado ";
 
-    void Submit() => MudDialog.Close<string>(mensagem);
+    public bool CheckBoxEmail { get; set; } = true;
+
+    public bool CheckBoxWhatsapp { get; set; } = true;
+     
+    void Submit() => MudDialog.Close<object[]>(new object[] { mensagem, CheckBoxEmail, CheckBoxWhatsapp });
      
     void Cancel() => MudDialog.Cancel();
 

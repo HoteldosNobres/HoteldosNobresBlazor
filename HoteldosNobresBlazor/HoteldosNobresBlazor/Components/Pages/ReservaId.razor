@@ -42,7 +42,7 @@
                 <MudDivider />
                 <MudListItem Icon="@Icons.Material.Filled.House"> Endereço </MudListItem>
                 <MudTextField T="string" Label="CEP" @bind-Value="guest.Zip" TextChanged="@SearchCEP" Editable="@Disabled"
-                              Disabled="@Disabled" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary" />
+                Disabled="@Disabled" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary" />
                 <MudTextField T="string" Label="Endereço" Disabled="DisableEndereco" @bind-Value="guest.Address" />
                 <MudTextField T="string" Label="Bairro" Disabled="true" @bind-Value="guest.Address2" />
                 <MudTextField T="string" Label="Cidade" Disabled="true" @bind-Value="guest.City" />
@@ -52,66 +52,66 @@
             <div class="mt-4">
                 <MudList T="string">
                     <MudButton Variant="Variant.Filled"
-                               Color="Color.Primary"
-                               Class="ml-auto rounded-xl"
-                               Disabled="@(!Disabled)"
-                               @onclick="Editar">
+                    Color="Color.Primary"
+                    Class="ml-auto rounded-xl"
+                    Disabled="@(!Disabled)"
+                    @onclick="Editar">
                         Editar
                     </MudButton>
                     <MudButton Variant="Variant.Filled"
-                               Color="Color.Primary"
-                               Class="ml-auto rounded-xl"
-                               Disabled="@DisabledSave"
-                               @onclick="Salvar">
+                    Color="Color.Primary"
+                    Class="ml-auto rounded-xl"
+                    Disabled="@DisabledSave"
+                    @onclick="Salvar">
                         Salvar
                     </MudButton>
                     <MudButton Variant="Variant.Filled"
-                               Color="Color.Primary"
-                               Class="ml-auto rounded-xl"
-                               Disabled="@(!Disabled)"
-                               @onclick="SendCPF">
+                    Color="Color.Primary"
+                    Class="ml-auto rounded-xl"
+                    Disabled="@(!Disabled)"
+                    @onclick="SendCPF">
                         Envia CPF
                     </MudButton>
                     <MudButton Variant="Variant.Filled"
-                               Color="Color.Primary"
-                               Class="ml-auto rounded-xl"
-                               Disabled="@(!Disabled)"
-                               @onclick="SendMtur">
+                    Color="Color.Primary"
+                    Class="ml-auto rounded-xl"
+                    Disabled="@(!Disabled)"
+                    @onclick="SendMtur">
                         Envia MTur
                     </MudButton>
                     <MudButton Variant="Variant.Filled"
-                               Color="Color.Primary"
-                               Class="ml-auto rounded-xl"
-                               Disabled="@(!Disabled)"
-                               @onclick="SendRecepcao">
+                    Color="Color.Primary"
+                    Class="ml-auto rounded-xl"
+                    Disabled="@(!Disabled)"
+                    @onclick="SendRecepcao">
                         Envia Recepcao
                     </MudButton>
                     <MudButton Variant="Variant.Filled"
-                               Color="Color.Primary"
-                               Class="ml-auto rounded-xl"
-                               Disabled="@(!Disabled)"
-                               @onclick="SendInf">
+                    Color="Color.Primary"
+                    Class="ml-auto rounded-xl"
+                    Disabled="@(!Disabled)"
+                    @onclick="SendInf">
                         Envia Inf
                     </MudButton>
                     <MudButton Variant="Variant.Filled"
-                               Color="Color.Primary"
-                               Class="ml-auto rounded-xl"
-                               Disabled="@(!Disabled)"
-                               @onclick="SendCloubeds">
+                    Color="Color.Primary"
+                    Class="ml-auto rounded-xl"
+                    Disabled="@(!Disabled)"
+                    @onclick="SendCloubeds">
                         Cloudbeds
                     </MudButton>
                     <MudButton Variant="Variant.Filled"
-                               Color="Color.Primary"
-                               Class="ml-auto rounded-xl"
-                               Disabled="@(!Disabled)"
-                               @onclick="SendOrigem">
+                    Color="Color.Primary"
+                    Class="ml-auto rounded-xl"
+                    Disabled="@(!Disabled)"
+                    @onclick="SendOrigem">
                         Origem
                     </MudButton>
                     <MudButton Variant="Variant.Filled"
-                               Color="Color.Primary"
-                               Class="ml-auto rounded-xl"
-                               Disabled="@(!Disabled)"
-                               @onclick="SendEmail">
+                    Color="Color.Primary"
+                    Class="ml-auto rounded-xl"
+                    Disabled="@(!Disabled)"
+                    @onclick="SendEmail">
                         Envia Email
                     </MudButton>
                 </MudList>
@@ -208,7 +208,7 @@ else
                     }
                     <MudItem Align="Align.Center">
                         <MudTextField T="string" Label="Horário previsto de chegada" HelperText="Horário tem que ser entre 14:00 e 23:00 (Brasilia)"
-                                      @bind-Value="HorarioAproximado" InputType="InputType.Time" TextChanged="OnValueChangeHandler" />
+                        @bind-Value="HorarioAproximado" InputType="InputType.Time" TextChanged="OnValueChangeHandler" />
                     </MudItem>
                     <MudSpacer />
                     <br />
@@ -223,7 +223,7 @@ else
                         <CardAcomodacoes Reserva=reserva />
                     }
                     <br />
-                     <CardPix Reserva=reserva />
+                    <CardPix Reserva=reserva />
                 </MudPaper>
             </MudItem>
             <MudItem xs="12" sm="4">
@@ -283,7 +283,7 @@ else
         </MudGrid>
     </MudContainer>
 }
- 
+
 
 @code {
     [Parameter]
@@ -322,7 +322,7 @@ else
                 if (item.CustomFieldName.Equals("CPF"))
                 {
                     string cpfstring = Regex.Replace(item.CustomFieldValue, @"[^\d]", ""); 
-                        CPF =   reserva.ProxyCPF;   
+                    CPF =   reserva.ProxyCPF;   
                 }
                 if (item.CustomFieldName.Equals("Data de Nascimento"))
                 {
@@ -343,7 +343,7 @@ else
             }
         }
     }
-     
+
     protected async Task Editar()
     {
         Disabled = !Disabled;
@@ -474,7 +474,7 @@ else
         }
 
     }
-     
+
     protected async Task SendCPF()
     {
         try
@@ -557,9 +557,22 @@ else
 
             if (!result.Canceled)
             {
-                string mensagem = result.Data.ToString();
-                FuncoesEmail.EnviarEmail(reserva.Email, mensagem, "Mensagem do Hotel dos Nobres");
-                Snackbar.Add("Encaminhado com sucesso", Severity.Success);
+                var parametro = (object[])result.Data;
+                string mensagem = parametro[0].ToString();
+                bool email = (bool)parametro[1];
+                bool whatsapp = (bool)parametro[2];
+
+                if (email)
+                {
+                    FuncoesEmail.EnviarEmail(reserva.Email, mensagem, "Mensagem do Hotel dos Nobres");
+                    Snackbar.Add("E-mail Encaminhado com sucesso", Severity.Success);
+                }
+                
+                if (whatsapp)
+                {
+                    var retorno = await FunctionWhatsApp.postMensagem(reserva.ProxyCelular!, mensagem);
+                    Snackbar.Add("Whatsapp - Encaminhado com sucesso", Severity.Success);
+                } 
             }
 
 
