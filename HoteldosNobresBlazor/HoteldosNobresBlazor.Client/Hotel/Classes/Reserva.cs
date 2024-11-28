@@ -108,6 +108,16 @@ public class Reserva
         }
     }
 
+    public string ProxyWhatsapp
+    {
+        get
+        {
+            if (string.IsNullOrEmpty(Numerotelefone) && string.IsNullOrEmpty(NumeroCelular))
+                return "553537150180"; 
+            return CelularDDI + CelularDDD + Celular;
+        }
+    }
+
     public string Obs
     {
         get

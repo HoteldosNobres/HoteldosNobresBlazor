@@ -324,7 +324,7 @@
     {
         try
         {
-            string mensagem = " Foi informado o CPF: " + reserva.ProxyCPF + " e Data de Nascimento: " + guest.Birthdate!.Value.ToString("dd/MM/yyyy");
+            string mensagem = " Foi informado o CPF: " + reserva.Cpf + " e Data de Nascimento: " + guest.Birthdate!.Value.ToString("dd/MM/yyyy");
             FuncoesEmail.EnviarEmail(emailota, mensagem, "Mensagem do Hotel dos Nobres");
         }
         catch (Exception ex)

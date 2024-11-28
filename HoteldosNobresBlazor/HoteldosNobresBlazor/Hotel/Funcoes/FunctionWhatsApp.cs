@@ -66,9 +66,9 @@ namespace HoteldosNobresBlazor.Funcoes
                 Console.WriteLine(await response.Content.ReadAsStringAsync());
                 return "";
             }
-            catch (FileNotFoundException e)
+            catch (Exception e)
             {
-                return e.Message + "\n";
+                throw;
             }
 
         }
