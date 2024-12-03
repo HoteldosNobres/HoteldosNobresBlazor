@@ -210,6 +210,8 @@ namespace HoteldosNobresBlazor.Funcoes
                     Status = "PagSeguro"
                 };
 
+                FuncoesEmail.EnviarEmail("hoteldosnobres@hotmail.com", json, "Pagseguro");
+
                 AppState.ListLogPagSeguro.Add(log);
 
             }

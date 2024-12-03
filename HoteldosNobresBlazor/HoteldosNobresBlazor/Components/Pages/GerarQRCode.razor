@@ -24,7 +24,7 @@
             <MudPaper Elevation="2" Class="pa-4  rounded-xl" Style="height: 100%">
                 <br />
                 <MudPaper Class="rounded-xl">
-                    <MudList T="string"  ReadOnly="true" class="rounded-t-xl">
+                    <MudList T="string" ReadOnly="true" class="rounded-t-xl">
                         <MudListItem T="string" style="background-color: #F5F4F4;" class="rounded-t-xl">
                             <MudStack Row="true">
                                 <MudText><b>Instruções para a transferência bancária - PIX</b></MudText>
@@ -34,10 +34,10 @@
                         </MudListItem>
                         <MudDivider />
                         <MudListItem T="string" ReadOnly="true">
-                            <MudText Typo="Typo.caption">NÃO E POSSÍVEL PAGAR NO CHECK-IN !!!</MudText><br />
+                            @* <MudText Typo="Typo.caption">NÃO E POSSÍVEL PAGAR NO CHECK-IN !!!</MudText><br /> *@
                             <br />
                             <MudText Typo="Typo.caption" GutterBottom="true" Class="ml-auto">
-                                Pix nossa <b>CHAVE CELULAR 35 9753-9341 </b> ou<b> EMAIL HOTELDOSNOBRES@HOTMAIL.COM </b> <br />
+                                @*  Pix nossa <b>CHAVE CELULAR 35 9753-9341 </b> ou<b> EMAIL HOTELDOSNOBRES@HOTMAIL.COM </b> <br /> *@
                                 Nome <b>HOTEL DOS NOBRES LTDA</b><br />
                                 Banco <b>PAG SEGURO - PAGBANK </b><br />
                                 @if (valordecimal > 0)
@@ -131,7 +131,7 @@
         }
 
 
-        GerarQrcode();
+        GerarQrcodeOld();
     }
 
     protected async Task Editar()
@@ -139,7 +139,6 @@
         Disabled = !Disabled;
         ReadOnly = !ReadOnly;
     }
-
 
     protected async Task Salvar()
     {
@@ -159,7 +158,7 @@
         }
     }
 
-    public void GerarQrcode()
+    public void GerarQrcodeOld()
     {
         if (Valor is null)
             Valor = "0";
@@ -184,6 +183,21 @@
         stringToQrCode = payload.GenerateStringToQrCode();
 
         qrCode = GenerateQRCode(stringToQrCode);
+    }
+
+    public async Task GerarQrcode()
+    {
+        try
+        {
+            stringToQrCode = await FunctionPagSeguro.PostOrder(reserva, Valor);
+
+            qrCode = GenerateQRCode(stringToQrCode);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("Erro ao GERAR - " + ex.Message, Severity.Error);
+            Console.WriteLine(ex.Message);
+        }
     }
 
     public string GenerateQRCode(string data)

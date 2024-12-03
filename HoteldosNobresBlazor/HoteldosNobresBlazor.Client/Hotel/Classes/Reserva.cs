@@ -24,6 +24,16 @@ public class Reserva
     public string? IDReservaAgencia { get; set; }
     public string? FonteReserva { get; set; }
     public string? Valor { get; set; }
+
+    public long ValorAmount
+    {
+        get
+        {
+            decimal valorcomdecimal = !string.IsNullOrEmpty(Valor) ? decimal.Parse(Valor) : 0;
+            return !string.IsNullOrEmpty(Valor) ? long.Parse(Regex.Replace(valorcomdecimal.ToString("F2"), @"[^\d]", "")) : 0;
+        }
+    }
+
     public decimal? Balance { get; set; }
     public string? Status { get; set; }
     public string? SnNum { get; set; }

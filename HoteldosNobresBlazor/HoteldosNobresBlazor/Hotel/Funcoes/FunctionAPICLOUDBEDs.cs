@@ -697,13 +697,13 @@ public class FunctionAPICLOUDBEDs
     public static async Task<T> LerRespostaComoObjetoAsync<T>(HttpResponseMessage response)
     {
         var jsonString = await response.Content.ReadAsStringAsync();
-        T obj = JsonConvert.DeserializeObject<T>(jsonString);
+        T? obj = JsonConvert.DeserializeObject<T>(jsonString);
         return obj;
     }
 
-    public static async Task<T> LerRespostaComoObjetoAsync<T>(string jsonString)
+    public static async Task<T?> LerRespostaComoObjetoAsync<T>(string jsonString)
     {
-        T obj = JsonConvert.DeserializeObject<T>(jsonString);
+        T? obj = JsonConvert.DeserializeObject<T>(jsonString);
         return obj;
     }
 
