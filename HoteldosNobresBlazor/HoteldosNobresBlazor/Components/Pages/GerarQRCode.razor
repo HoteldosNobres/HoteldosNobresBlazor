@@ -40,7 +40,7 @@
                             <MudText Typo="Typo.caption" GutterBottom="true" Class="ml-auto">
                                 @*  Pix nossa <b>CHAVE CELULAR 35 9753-9341 </b> ou<b> EMAIL HOTELDOSNOBRES@HOTMAIL.COM </b> <br /> *@
                                 Nome <b>HOTEL DOS NOBRES LTDA</b><br />
-                                Banco <b>PAG SEGURO - PAGBANK </b><br />
+                                Banco <b>SICOOB </b><br />
                                 @if (valordecimal > 0)
                                 {
                                     <MudText Typo="Typo.caption">Valor<b> R$ @Valor </b><br /> </MudText>
@@ -79,17 +79,17 @@
                     </MudList>
                     <div class="mt-4">
                         <MudButton Variant="Variant.Filled"
-                                   Color="Color.Primary"
-                                   Class="ml-auto rounded-xl"
-                                   Disabled="@(!Disabled)"
-                                   @onclick="Editar">
+                        Color="Color.Primary"
+                        Class="ml-auto rounded-xl"
+                        Disabled="@(!Disabled)"
+                        @onclick="Editar">
                             Editar
                         </MudButton>
                         <MudButton Variant="Variant.Filled"
-                                   Color="Color.Primary"
-                                   Class="ml-auto rounded-xl"
-                                   Disabled="@Disabled"
-                                   @onclick="Salvar">
+                        Color="Color.Primary"
+                        Class="ml-auto rounded-xl"
+                        Disabled="@Disabled"
+                        @onclick="Salvar">
                             Salvar
                         </MudButton>
                     </div>
@@ -132,7 +132,7 @@
         }
 
 
-        GerarQrcodeOld();
+        GerarQrcode();
     }
 
     protected async Task Editar()
@@ -145,13 +145,19 @@
     {
         try
         {
-            //OrderPagSeguroRecebe pedido = await FunctionPagSeguro.PostOrder(reserva, Valor);
-            OrderPagSeguroRecebe pedido = FunctionPagSeguro.PostOrder(reserva, Valor).Result;
+            // if (reserva is not null)
+            // {
+            //     OrderPagSeguroRecebe pedido = FunctionPagSeguro.PostOrder(reserva, Valor).Result;
 
-            stringToQrCode = pedido is not null && pedido.QrCodes!.Count() > 0 ? pedido.QrCodes[0].Text : "";
+            //     stringToQrCode = pedido is not null && pedido.QrCodes!.Count() > 0 ? pedido.QrCodes[0].Text : "";
 
-            qrCode = GenerateQRCode(stringToQrCode);
+            //     qrCode = GenerateQRCode(stringToQrCode);
 
+            // }
+            // else
+             
+            GerarQrcode();
+             
             Snackbar.Add("Sucesso!", Severity.Success);
 
             Disabled = !Disabled;
@@ -164,29 +170,20 @@
         }
     }
 
-    public void GerarQrcodeOld()
+    public void GerarQrcode()
     {
         if (Valor is null)
             Valor = "0";
 
         valordecimal = decimal.Parse(Valor, new CultureInfo("pt-BR"));
         Valor = valordecimal.ToString("N2", new CultureInfo("pt-BR"));
+         
+        Reserva reservaaqui  = new Reserva();
+        reservaaqui.IDReserva = ReservationId;
+        reservaaqui.Valor = Valor;
 
-        Cobranca cobranca = new Cobranca(_chave: "hoteldosnobres@hotmail.com")
-            {
-                SolicitacaoPagador = "Pagamento do Reserva " + ReservationId,
-                Valor = new Valor
-                {
-                    Original = valordecimal.ToString("N2", CultureInfo.InvariantCulture) // "0.01"
-                }
-            };
-
-        if (ReservationId is null)
-            ReservationId = "Sua reserva";
-
-        var payload = cobranca.ToPayload(ReservationId, new Merchant("HOTEL DOS NOBRES LTDA", "Pocos de Caldas"));
-
-        stringToQrCode = payload.GenerateStringToQrCode();
+        stringToQrCode = FunctionSicoob.QrCode(reservaaqui, reservaaqui.Valor).Result;
+         
 
         qrCode = GenerateQRCode(stringToQrCode);
     }

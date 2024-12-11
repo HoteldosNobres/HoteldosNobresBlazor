@@ -38,7 +38,30 @@ public class FuncoesEmail
         }
 
     }
-  
+
+
+    public static void EnviarEmailHTML(string from, string body, string subject)
+    {
+        SmtpClient smtp = new SmtpClient("smtp.mail.me.com", 587);
+        using (var message = new MailMessage(new MailAddress("reserva@hoteldosnobres.com.br", "Hotel dos Nobres"), new MailAddress(from))
+        {
+            Subject = subject,
+            Body = body,
+            IsBodyHtml = true
+
+        })
+        {
+            smtp.EnableSsl = true;
+            smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
+            smtp.Credentials = new NetworkCredential(KEYs.KEY_EMAILCONTA, KEYs.KEY_EMAILSENHA);
+            smtp.UseDefaultCredentials = false;
+
+
+            smtp.Send(message);
+        }
+
+    }
+
     public static void EnviarEmaiSuporte(string nome)
     {
         string body = "Recebemos a reclamação do hospede " + nome + " que ao reservar ficou muito incomodado com o BRAZIL com isso estou encaminhando essa reclamação para voces tambem. ";

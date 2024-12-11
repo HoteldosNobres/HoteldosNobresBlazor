@@ -1,4 +1,5 @@
 ﻿@using System.Globalization
+@using HoteldosNobresBlazor.Funcoes
 @using QRCoder
 @using pix_payload_generator.net.Models.CobrancaModels
 @using pix_payload_generator.net.Models.PayloadModels
@@ -28,9 +29,8 @@
                     </MudText>
                 }
                 <MudText Typo="Typo.caption" GutterBottom="true" Class="ml-auto">
-                    Pix nossa <b>CHAVE CELULAR 35 9753-9341 </b> ou<b> EMAIL HOTELDOSNOBRES@HOTMAIL.COM </b> <br />
                     Nome <b>HOTEL DOS NOBRES LTDA</b><br />
-                    Banco <b>PAG SEGURO - PAGBANK </b><br />
+                    Banco <b>SICOOB </b><br />
                     @if (valordecimal > 0)
                     {
                         <MudText Typo="Typo.caption">Valor<b> R$ @Valor </b><br /> </MudText>
@@ -50,6 +50,12 @@
                             <MudItem xs="12" sm="6">
                                 <MudTextField T="string" Label="Copia e Cola" Variant="Variant.Text" Text="@stringToQrCode" AutoGrow HelperText="Use no APP pagar PIX Copia e Cola" />
                             </MudItem>
+                            <MudButton Variant="Variant.Filled"
+                            Color="Color.Primary"
+                            Class="ml-auto rounded-xl"
+                            @onclick="Whatsapp">
+                                Enviar para Whatsapp
+                            </MudButton>
                         </MudGrid>
                     </MudItem>
                 </MudGrid>
@@ -89,28 +95,8 @@
     }
 
     public void GerarQrcode()
-    {
-        if (Valor is null)
-            Valor = "0";
-
-        valordecimal = decimal.Parse(Valor, new CultureInfo("pt-BR"));
-        Valor = valordecimal.ToString("N2", new CultureInfo("pt-BR"));
-
-        Cobranca cobranca = new Cobranca(_chave: "hoteldosnobres@hotmail.com")
-            {
-                SolicitacaoPagador = "Pagamento do Reserva " + Reserva!.IDReserva,
-                Valor = new Valor
-                {
-                    Original = valordecimal.ToString("N2", CultureInfo.InvariantCulture) // "0.01"
-                }
-            };
-
-        if (Reserva.IDReserva is null)
-            Reserva.IDReserva = "Sua reserva";
-
-        var payload = cobranca.ToPayload(Reserva.IDReserva, new Merchant("HOTEL DOS NOBRES LTDA", "Pocos de Caldas"));
-
-        stringToQrCode = payload.GenerateStringToQrCode();
+    { 
+        stringToQrCode = FunctionSicoob.QrCode(Reserva!, Reserva.Valor!).Result;
 
         qrCode = GenerateQRCode(stringToQrCode);
     }
@@ -129,5 +115,10 @@
     {
         tamanhoMaximo -= 3;
         return (texto.Length >= tamanhoMaximo) ? $"{texto.Substring(0, tamanhoMaximo)}..." : texto;
+    }
+
+    protected async Task Whatsapp()
+    {
+       FunctionWhatsApp.postMensagemTempletePIX(Reserva.ProxyCelular!, Reserva.IDReserva!, stringToQrCode!);
     }
 }

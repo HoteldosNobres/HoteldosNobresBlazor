@@ -1,6 +1,7 @@
 ﻿using Google.Apis.PeopleService.v1.Data;
 using HoteldosNobresBlazor.Classes;
 using HoteldosNobresBlazor.Classes.PagSeguroRecebe;
+using HoteldosNobresBlazor.Classes.SicoobRecebe;
 using HoteldosNobresBlazor.Components.Pages;
 using HoteldosNobresBlazor.Services;
 using Newtonsoft.Json;
@@ -8,6 +9,8 @@ using pix_payload_generator.net.Models.CobrancaModels;
 using System.Data;
 using System.Globalization;
 using System.IO;
+using System.Xml.Serialization;
+using WhatsappBusiness.CloudApi.Messages.Requests;
 using WhatsappBusiness.CloudApi.Webhook;
 
 namespace HoteldosNobresBlazor.Funcoes
@@ -226,6 +229,74 @@ namespace HoteldosNobresBlazor.Funcoes
 
         #endregion Whatsapp
 
+        #region Siboob 
+
+        public string RecebeSiboob(string json)
+        {
+            try
+            {
+                Thread thread = new Thread(new ParameterizedThreadStart(RecebeSicoobMetodo));
+                thread.Start(json);
+
+                return "OK ";
+            }
+            catch (Exception e)
+            {
+                AppState.MyMessageLogWhatsapp = e.Message + "\n";
+                return e.Message;
+            }
+
+        }
+
+        public void RecebeSicoobMetodo(object objeto)
+        {
+            string json = (string)objeto;
+            try
+            {
+                var log = new LogSistema()
+                {
+                    DataLog = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone),
+                    Log = json,
+                    Status = "RecebeSicoobMetodo"
+                };
+
+                if (json is not null && json.Contains("pix"))
+                { 
+                    SicoobRecebe sicoobRecebe = FunctionAPICLOUDBEDs.LerRespostaComoObjetoAsync<SicoobRecebe>(json).Result;
+                      
+                    string corpoemail = @"Pix Recebido no SICOOB, " +
+                    "<br><br>  ID DA RESERVA: " + sicoobRecebe.Pix[0].Txid +
+                    "<br><br>  Valor recebido: " + sicoobRecebe.Pix[0].Valor +
+                    "<br><br>  InfoPagador: " + sicoobRecebe.Pix[0].InfoPagador +
+                    "<br><br>  Horario: " + sicoobRecebe.Pix[0].Horario +
+                    "<br><br>  Obrigado "; 
+
+                    FuncoesEmail.EnviarEmailHTML("hoteldosnobres@hotmail.com", corpoemail, "PIX PAGO  - Recebe Sicoob");
+                     
+                    var reserva = new Reserva();
+                    reserva.IDReserva = sicoobRecebe.Pix[0].Txid;
+                    reserva = FunctionAPICLOUDBEDs.getReservationAsync(reserva).Result;
+                    if (reserva is not null)
+                    {
+                        reserva.Balance = sicoobRecebe.Pix[0].Valor;
+                        reserva.Origem = "Pix";
+                        log.Log += FunctionAPICLOUDBEDs.PostReservationPagamento(reserva).Result;
+                        log.IDReserva = reserva.IDReserva!;
+                    } 
+                }
+
+                AppState.ListLogPagSeguro.Add(log);
+
+            }
+            catch (Exception e)
+            {
+                AppState.MyMessageLogPagSeguro = "Erro-" + e.Message + "\n" + json + "\n";
+            }
+        }
+
+
+        #endregion Whatsapp
+
         #region CloudBeds 
 
         public async Task<string> CacheCreateReservationAsync(string json)
@@ -318,17 +389,13 @@ namespace HoteldosNobresBlazor.Funcoes
                     ( novareserva.Origem!.Contains("Website/Booking Engine") || novareserva.Origem!.Contains("WhatsApp")))
                 { 
                     if(novareserva.Balance > 0)
-                    {
-                        OrderPagSeguroRecebe pedido = FunctionPagSeguro.PostOrder(novareserva, novareserva.Valor).Result;
+                    { 
+                        string stringToQrCode = FunctionSicoob.QrCode(novareserva, novareserva.Valor).Result;
 
-                        string stringToQrCode = pedido is not null && pedido.QrCodes!.Count() > 0 ? pedido.QrCodes[0].Text : "";
-
-                        logSistema.Log += pedido != null && pedido.Error_messages != null && pedido.Error_messages.Length > 0 ?
-                            pedido.Error_messages.FirstOrDefault().Description + " - " + pedido.Error_messages.FirstOrDefault().ParameterName : stringToQrCode;
+                        logSistema.Log +=  stringToQrCode;
 
                         logSistema.Log += FunctionWhatsApp.postMensagemTempletePIX(novareserva.ProxyCelular!, novareserva.IDReserva!, stringToQrCode).Result;
-
-                        logSistema.Log += FunctionAPICLOUDBEDs.putReservationNote(novareserva.IDReserva!, novareserva.Notas.FirstOrDefault(x => x.Texto == "ORDER:" + pedido).Id!, "ORDER:" + pedido).Result;
+                         
                     } 
                 }
 

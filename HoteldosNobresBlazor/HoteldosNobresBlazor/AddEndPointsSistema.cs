@@ -167,9 +167,55 @@ public static class SistemaExtensions
             }
 
         });
-         
+
         #endregion
 
+        #region Endpoint Sicoob
+        app.MapPost("/sicoob", async (HttpContext httpContext) =>
+        {
+            try
+            {
+                using var reader = new StreamReader(httpContext.Request.Body, Encoding.UTF8);
+                string body = await reader.ReadToEndAsync();
+
+                sCOPP.MyMessageLogPagSeguro = " -Bodi-  " + body + " -Bodi-  ";
+                CacheHotel cache2 = new CacheHotel(sCOPP);
+                cache2.RecebeSiboob(body);
+                 
+                httpContext.Response.StatusCode = 200;
+                
+            }
+            catch (Exception ex)
+            {
+                await httpContext.Response.WriteAsync(ex.Message);
+                httpContext.Response.StatusCode = 500;
+            }
+
+        });
+
+        app.MapPost("/sicoob/pix", async (HttpContext httpContext) =>
+        {
+            try
+            {
+                using var reader = new StreamReader(httpContext.Request.Body, Encoding.UTF8);
+                string body = await reader.ReadToEndAsync();
+
+                sCOPP.MyMessageLogPagSeguro = " -Bodi-  " + body + " -Bodi-  ";
+                CacheHotel cache2 = new CacheHotel(sCOPP);
+                cache2.RecebeSiboob(body);
+
+                httpContext.Response.StatusCode = 200;
+
+            }
+            catch (Exception ex)
+            {
+                await httpContext.Response.WriteAsync(ex.Message);
+                httpContext.Response.StatusCode = 500;
+            }
+
+        });
+
+        #endregion
 
         app.MapPost("/addreserva", async (HttpContext httpContext) =>
         {
