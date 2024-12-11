@@ -170,7 +170,17 @@ public class Reserva
                 return "";
         }
     }
-     
+
+    public string LinkPublico
+    {
+        get
+        {
+            if (string.IsNullOrEmpty(IDReserva))
+                return "";
+            return "https://hoteldosnobres.com.br/reserva?" + IDReserva;
+        }
+    }
+
     public string ProxyPais
     {
         get

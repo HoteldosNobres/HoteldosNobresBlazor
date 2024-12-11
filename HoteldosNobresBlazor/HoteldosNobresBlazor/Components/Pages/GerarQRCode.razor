@@ -1,6 +1,7 @@
 ﻿@page "/GerarQRCode/{ReservationId}"
 @using System.Globalization
 @using HoteldosNobresBlazor.Classes
+@using HoteldosNobresBlazor.Classes.PagSeguroRecebe
 @using HoteldosNobresBlazor.Client.API
 @using HoteldosNobresBlazor.Funcoes
 @using MosaicoSolutions.ViaCep
@@ -144,7 +145,12 @@
     {
         try
         {
-            GerarQrcode();
+            //OrderPagSeguroRecebe pedido = await FunctionPagSeguro.PostOrder(reserva, Valor);
+            OrderPagSeguroRecebe pedido = FunctionPagSeguro.PostOrder(reserva, Valor).Result;
+
+            stringToQrCode = pedido is not null && pedido.QrCodes!.Count() > 0 ? pedido.QrCodes[0].Text : "";
+
+            qrCode = GenerateQRCode(stringToQrCode);
 
             Snackbar.Add("Sucesso!", Severity.Success);
 
@@ -154,7 +160,7 @@
         }
         catch (Exception ex)
         {
-            Snackbar.Add("Erro!", Severity.Error);
+            Snackbar.Add("Erro " + ex.Message, Severity.Error);
         }
     }
 
@@ -184,21 +190,7 @@
 
         qrCode = GenerateQRCode(stringToQrCode);
     }
-
-    public async Task GerarQrcode()
-    {
-        try
-        {
-            stringToQrCode = await FunctionPagSeguro.PostOrder(reserva, Valor);
-
-            qrCode = GenerateQRCode(stringToQrCode);
-        }
-        catch (Exception ex)
-        {
-            Snackbar.Add("Erro ao GERAR - " + ex.Message, Severity.Error);
-            Console.WriteLine(ex.Message);
-        }
-    }
+     
 
     public string GenerateQRCode(string data)
     {

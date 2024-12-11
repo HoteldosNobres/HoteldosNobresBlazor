@@ -479,7 +479,7 @@ else
     {
         try
         {
-            var retorno = await FunctionWhatsApp.postMensagemTempleteDadosFaltando(reserva.ProxyCelular!, reserva.IDReserva, reserva.NomeHospede);
+            var retorno = await FunctionWhatsApp.postMensagemTempleteDadosFaltando(reserva.ProxyCelular!, reserva.IDReserva!, reserva.NomeHospede!, reserva.LinkPublico!);
             FuncoesEmail.EnviarEmailCPF(reserva.Email, reserva.IDReserva, reserva.NomeHospede);
             Snackbar.Add("Encaminhado com sucesso", Severity.Success);
         }

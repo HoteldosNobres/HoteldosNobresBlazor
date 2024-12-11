@@ -6,6 +6,7 @@ using HoteldosNobresBlazor.Classes.PagSeguroRecebe;
 using HoteldosNobresBlazor.Client.FuncoesClient;
 using pix_payload_generator.net.Models.CobrancaModels;
 using System.Text.RegularExpressions;
+using System.Diagnostics.Eventing.Reader;
 
 
 namespace HoteldosNobresBlazor.Funcoes;
@@ -17,7 +18,7 @@ public class FunctionPagSeguro
     static string apiurl = @"https://api.pagseguro.com/";
 
     #region Pedido
-    public static async Task<string> PostOrder(Reserva reserva, string valor)
+    public static async Task<OrderPagSeguroRecebe> PostOrder(Reserva reserva, string valor)
     {
         decimal valorcomdecimal = !string.IsNullOrEmpty(valor) ? decimal.Parse(valor) : 0;
         var value = !string.IsNullOrEmpty(valor) ? long.Parse(Regex.Replace(valorcomdecimal.ToString("F2"), @"[^\d]", "")) : 0;
@@ -25,9 +26,7 @@ public class FunctionPagSeguro
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Post, apiurl + "orders/");
         request.Headers.Add("Authorization", "Bearer " + KEYs.TOKEN_PAGSEGURO);
-
         request.Headers.Add("accept", "*/*");
-
         var orderDTO = new OrderDTO()
         {
             ReferenceId = reserva.IDReserva!,
@@ -75,7 +74,7 @@ public class FunctionPagSeguro
         var json = JsonConvert.SerializeObject(orderDTO);
         var content = new StringContent(json, null, "application/json");
         request.Content = content;
-        var response = await client.SendAsync(request);
+        var response = client.Send(request);
 
         OrderPagSeguroRecebe? responseorder = await LerRespostaJsonComoObjetoAsync<OrderPagSeguroRecebe>(response);
 
@@ -84,13 +83,14 @@ public class FunctionPagSeguro
             throw new Exception(responseorder.Error_messages.FirstOrDefault().Description + " - " + responseorder.Error_messages.FirstOrDefault().ParameterName);
         }
 
-        if (responseorder.QrCodes != null)
-            return responseorder.QrCodes.FirstOrDefault().Text;
+        if (responseorder != null)
+            return responseorder;
         else
-            return responseorder.Id;
-
+            return new OrderPagSeguroRecebe();
 
     }
+
+
     public static async Task<string> getOrder(string checkInFrom)
     {
         try

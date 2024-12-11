@@ -1,8 +1,10 @@
 ﻿using Google.Apis.PeopleService.v1.Data;
 using HoteldosNobresBlazor.Classes;
+using HoteldosNobresBlazor.Classes.PagSeguroRecebe;
 using HoteldosNobresBlazor.Components.Pages;
 using HoteldosNobresBlazor.Services;
 using Newtonsoft.Json;
+using pix_payload_generator.net.Models.CobrancaModels;
 using System.Data;
 using System.Globalization;
 using System.IO;
@@ -210,7 +212,7 @@ namespace HoteldosNobresBlazor.Funcoes
                     Status = "PagSeguro"
                 };
 
-                FuncoesEmail.EnviarEmail("hoteldosnobres@hotmail.com", json, "Pagseguro");
+                //FuncoesEmail.EnviarEmail("hoteldosnobres@hotmail.com", json, "Pagseguro");
 
                 AppState.ListLogPagSeguro.Add(log);
 
@@ -301,7 +303,7 @@ namespace HoteldosNobresBlazor.Funcoes
 
                 if (novareserva is not null && novareserva.Origem is not null && novareserva.Origem!.ToUpper().Contains("BOOKING.COM"))
                 {
-                    logSistema.Log += FunctionWhatsApp.postMensagemTempleteDadosFaltando(novareserva.ProxyCelular!, novareserva.IDReserva!, novareserva.NomeHospede!).Result;
+                    logSistema.Log += FunctionWhatsApp.postMensagemTempleteDadosFaltando(novareserva.ProxyCelular!, novareserva.IDReserva!, novareserva.NomeHospede!, novareserva.LinkPublico).Result;
                     FuncoesEmail.EnviarEmailCPF(novareserva.Email, novareserva.IDReserva, novareserva.NomeHospede);
 
                     var novareservaratedetails = FunctionAPICLOUDBEDs.getReservationsWithRateDetailsAsync(novareserva).Result;
@@ -311,7 +313,25 @@ namespace HoteldosNobresBlazor.Funcoes
                     }
                     
                 }
-                 
+
+                if (novareserva is not null && novareserva.Origem is not null && 
+                    ( novareserva.Origem!.Contains("Website/Booking Engine") || novareserva.Origem!.Contains("WhatsApp")))
+                { 
+                    if(novareserva.Balance > 0)
+                    {
+                        OrderPagSeguroRecebe pedido = FunctionPagSeguro.PostOrder(novareserva, novareserva.Valor).Result;
+
+                        string stringToQrCode = pedido is not null && pedido.QrCodes!.Count() > 0 ? pedido.QrCodes[0].Text : "";
+
+                        logSistema.Log += pedido != null && pedido.Error_messages != null && pedido.Error_messages.Length > 0 ?
+                            pedido.Error_messages.FirstOrDefault().Description + " - " + pedido.Error_messages.FirstOrDefault().ParameterName : stringToQrCode;
+
+                        logSistema.Log += FunctionWhatsApp.postMensagemTempletePIX(novareserva.ProxyCelular!, novareserva.IDReserva!, stringToQrCode).Result;
+
+                        logSistema.Log += FunctionAPICLOUDBEDs.putReservationNote(novareserva.IDReserva!, novareserva.Notas.FirstOrDefault(x => x.Texto == "ORDER:" + pedido).Id!, "ORDER:" + pedido).Result;
+                    } 
+                }
+
                 if (novareserva != null && novareserva.Estado != null && novareserva.CEP != null)
                 {
                     logSistema.Log += AjustarEndereco(novareserva);
@@ -330,12 +350,12 @@ namespace HoteldosNobresBlazor.Funcoes
                   if (logSistema.Log.Contains("CPF inválido"))
                 {
                     if (novareserva.Cpf != null && !ValidarCPF(novareserva.Cpf) && !novareserva.ProxyCelular!.Equals("553537150180"))
-                        logSistema.Log += FunctionWhatsApp.postMensagemTempleteDadosFaltando(novareserva.ProxyCelular!, novareserva.IDReserva!, novareserva.NomeHospede!).Result;
+                        logSistema.Log += FunctionWhatsApp.postMensagemTempleteDadosFaltando(novareserva.ProxyCelular!, novareserva.IDReserva!, novareserva.NomeHospede!, novareserva.LinkPublico).Result;
                 }
 
                 if (novareserva is not null && string.IsNullOrEmpty(novareserva.Cpf) && !novareserva.ProxyCelular!.Equals("553537150180"))
                 {
-                    logSistema.Log += FunctionWhatsApp.postMensagemTempleteDadosFaltando(novareserva.ProxyCelular!, novareserva.IDReserva!, novareserva.NomeHospede!).Result;
+                    logSistema.Log += FunctionWhatsApp.postMensagemTempleteDadosFaltando(novareserva.ProxyCelular!, novareserva.IDReserva!, novareserva.NomeHospede!, novareserva.LinkPublico).Result;
                 }
 
 
@@ -549,7 +569,7 @@ namespace HoteldosNobresBlazor.Funcoes
                     if (voltar)
                     {
                         if (!reserva.ProxyCelular!.Equals("553537150180"))
-                            logSistema.Log += FunctionWhatsApp.postMensagemTempleteDadosFaltando(reserva.ProxyCelular!, reserva.IDReserva!, reserva.NomeHospede!).Result;
+                            logSistema.Log += FunctionWhatsApp.postMensagemTempleteDadosFaltando(reserva.ProxyCelular!, reserva.IDReserva!, reserva.NomeHospede!, reserva.LinkPublico!).Result;
 
 
                         logSistema.Log += FunctionAPICLOUDBEDs.putReservation(reserva.IDReserva, "confirmed").Result;
