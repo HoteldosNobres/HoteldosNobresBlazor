@@ -395,7 +395,14 @@ namespace HoteldosNobresBlazor.Funcoes
                         logSistema.Log +=  stringToQrCode;
 
                         logSistema.Log += FunctionWhatsApp.postMensagemTempletePIX(novareserva.ProxyCelular!, novareserva.IDReserva!, stringToQrCode).Result;
+
+                        string corpoemail = @"Ola recebemos sua reserva, " +
+                       "<br><br>  Temos mais informações no link " + novareserva.LinkPublico + 
+                       "<br><br>  Obrigado ";
                          
+                        FuncoesEmail.EnviarEmailHTML(novareserva.Email!, corpoemail, "MAIS INFORMAÇÕES E QRCODE DO PIX");
+
+
                     } 
                 }
 
