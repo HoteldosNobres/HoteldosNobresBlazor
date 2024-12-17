@@ -1,0 +1,15 @@
+# Apara aecssa a pagina
+name: Automaticamente Pagina
+
+on: 
+  schedule:
+    - cron: '10/40 * * * *'
+      
+jobs:
+  Acessando:
+    runs-on: ubuntu-latest
+    steps: 
+      - name: Acessar página
+        run: |
+          curl -f -s -o /dev/null -w "%{http_code}" https://apihoteldosnobres.azurewebsites.net/actions | grep 200
+ 
