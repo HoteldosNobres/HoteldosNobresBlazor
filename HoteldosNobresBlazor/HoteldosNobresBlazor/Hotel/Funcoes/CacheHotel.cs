@@ -319,15 +319,15 @@ namespace HoteldosNobresBlazor.Funcoes
         public void GetActionsMetodo(object objeto)
         {
             string parametros = (string)objeto;
-            //try
-            //{
-                
+            try
+            {
+                AppState.MyMessageReservation += parametros;
 
-            //}
-            //catch (Exception e)
-            //{
-            //    AppState.MyMessageLogPagSeguro = "Erro-" + e.Message + "\n" + json + "\n";
-            //}
+            }
+            catch (Exception e)
+            {
+                AppState.MyMessageReservation = "Erro-" + e.Message + "\n" + parametros + "\n";
+            }
         }
 
 
@@ -425,16 +425,19 @@ namespace HoteldosNobresBlazor.Funcoes
                     ( novareserva.Origem!.Contains("Website/Booking Engine") || novareserva.Origem!.Contains("WhatsApp")))
                 { 
                     if(novareserva.Balance > 0)
-                    { 
-                        string stringToQrCode = FunctionSicoob.QrCode(novareserva, novareserva.Valor).Result;
+                    {
+                        var valordecimal = novareserva!.BalanceDetailed!.GrandTotal - novareserva!.BalanceDetailed!.Paid;
+                        var valor = valordecimal.ToString("N2", new CultureInfo("pt-BR"));
+
+                        string stringToQrCode = FunctionSicoob.QrCode(novareserva!, valor!).Result; 
 
                         logSistema.Log +=  stringToQrCode;
 
                         logSistema.Log += FunctionWhatsApp.postMensagemTempletePIX(novareserva.ProxyCelular!, novareserva.IDReserva!, stringToQrCode).Result;
 
                         string corpoemail = @"Ola recebemos sua reserva, " +
-                       "<br><br>  Temos mais informações no link " + novareserva.LinkPublico + 
-                       "<br><br>  Obrigado ";
+                        "<br><br>  Temos mais informações no link " + novareserva.LinkPublico + 
+                        "<br><br>  Obrigado ";
                          
                         FuncoesEmail.EnviarEmailHTML(novareserva.Email!, corpoemail, "MAIS INFORMAÇÕES E QRCODE DO PIX");
 

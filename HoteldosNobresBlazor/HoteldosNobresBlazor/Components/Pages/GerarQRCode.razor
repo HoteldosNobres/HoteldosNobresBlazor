@@ -183,9 +183,11 @@
         reservaaqui.IDReserva = ReservationId;
         reservaaqui.Valor = Valor;
 
-        stringToQrCode = FunctionSicoob.QrCode(reservaaqui, reservaaqui.Valor).Result;
-         
+        valordecimal = reserva!.BalanceDetailed!.GrandTotal - reserva!.BalanceDetailed!.Paid;
+        Valor = valordecimal.ToString("N2", new CultureInfo("pt-BR"));
 
+        stringToQrCode = FunctionSicoob.QrCode(reservaaqui!, Valor!).Result;
+          
         qrCode = GenerateQRCode(stringToQrCode);
     }
      

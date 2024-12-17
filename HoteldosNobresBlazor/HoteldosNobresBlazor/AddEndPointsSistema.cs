@@ -222,18 +222,19 @@ public static class SistemaExtensions
         {
             try
             {
-                var queryParams = httpContext.Request.Query.ToString() is not null ? httpContext.Request.Query.ToString() : string.Empty;
-
+                var queryParams = httpContext.Request.Query;
+                var queryString = string.Join("&", queryParams.Select(q => $"{q.Key}={q.Value}"));
+                 
                 //sCOPP.MyMessageLogPagSeguro = " -Bodi-  " + body + " -Bodi-  ";
                 CacheHotel cache2 = new CacheHotel(sCOPP);
-                cache2.GetActionsMetodo(queryParams!);
+                cache2.GetActionsMetodo(queryString);
 
                 httpContext.Response.StatusCode = 200;
 
             }
             catch (Exception ex)
             {
-                sCOPP.MyMessageLogPagSeguro = ex.Message;
+                sCOPP.MyMessageReservation = ex.Message;
                 await httpContext.Response.WriteAsync(ex.Message);
                 httpContext.Response.StatusCode = 500;
             }

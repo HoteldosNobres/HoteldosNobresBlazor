@@ -29,7 +29,7 @@
                     </MudText>
                 }
                 <MudText Typo="Typo.caption" GutterBottom="true" Class="ml-auto">
-                    Nome <b>HOTEL DOS NOBRES LTDA</b><br />
+                    Nome <b>HOTEL DOS NOBRES LTDA (JOSE CARLOS NOBRE - PROPRIETARIO DO HOTEL)</b><br />
                     Banco <b>SICOOB </b><br />
                     @if (valordecimal > 0)
                     {
@@ -55,7 +55,7 @@
                             Class="ml-auto rounded-xl"
                             @onclick="Whatsapp">
                                 Enviar para Whatsapp
-                            </MudButton>
+                            </MudButton> 
                         </MudGrid>
                     </MudItem>
                 </MudGrid>
@@ -95,8 +95,11 @@
     }
 
     public void GerarQrcode()
-    { 
-        stringToQrCode = FunctionSicoob.QrCode(Reserva!, Reserva.Valor!).Result;
+    {
+        valordecimal = Reserva!.BalanceDetailed!.GrandTotal - Reserva!.BalanceDetailed!.Paid;
+        Valor = valordecimal.ToString("N2", new CultureInfo("pt-BR")); 
+
+        stringToQrCode = FunctionSicoob.QrCode(Reserva!, Valor!).Result;
 
         qrCode = GenerateQRCode(stringToQrCode);
     }
@@ -121,4 +124,5 @@
     {
        FunctionWhatsApp.postMensagemTempletePIX(Reserva.ProxyCelular!, Reserva.IDReserva!, stringToQrCode!);
     }
+     
 }
