@@ -3,6 +3,7 @@
 @using HoteldosNobresBlazor.FuncoesClient
 @rendermode InteractiveAuto
 @inject NavigationManager NavigationManager
+@inject ISnackbar Snackbar
 
 <PageTitle>Numero</PageTitle>
 
@@ -13,7 +14,7 @@
     <MudTextField T="string" Label="OrigemPhone" @bind-Value="origem" />
     <MudTextField T="string" Label="NumeroPhone" @bind-Value="numero" />
     <MudTextField T="string" Label="email" @bind-Value="email" />
-
+    <br /><br />
     <button class="btn btn-primary" @onclick="GotoAddNumber">Adicionar</button>
 </MudPaper>
 
@@ -31,8 +32,15 @@
         string tarefadecriar = await FunctionGoogle.AddPeopleAsync(nome, origem, numero, email);
 
         if (tarefadecriar == "OK")
-            NavigationManager.NavigateTo("/");
+        {
+            nome = "";
+            origem = "";
+            numero = "";
+            email = "";
+            Snackbar.Add(tarefadecriar, Severity.Success);
+        }
+
+        if (tarefadecriar.Contains("ERRO"))
+            Snackbar.Add(tarefadecriar, Severity.Error);
     }
-
-
 }

@@ -14,16 +14,16 @@ namespace HoteldosNobresBlazor.Funcoes
         
          
         public FunctionGoogle() { }
-        
+
         public static UserCredential? UserCredential()
         {
             try
-            { 
+            {
                 ClientSecrets secrets = new ClientSecrets()
                 {
                     ClientId = KEYs.ClientId_GOOGLE,
                     ClientSecret = KEYs.ClientSecret_GOOGLE
-                }; 
+                };
                 var token = new TokenResponse { RefreshToken = KEYs.RefreshToken_GOOGLE };
 
                 UserCredential credential = new UserCredential(new GoogleAuthorizationCodeFlow(
@@ -33,17 +33,16 @@ namespace HoteldosNobresBlazor.Funcoes
                     }),
                     "user",
                     token);
-                 
+
 
                 return credential;
-            }
-            catch (FileNotFoundException e)
+            } 
+            catch (Exception e)
             {
-                Console.WriteLine(e.Message);
-                return null;
+                throw new Exception(e.Message);
             }
-
         }
+
           
         public static string AddPeople(string nome, string local, string telefone, string email)
         {
@@ -86,17 +85,23 @@ namespace HoteldosNobresBlazor.Funcoes
                 Person createdContact = request.Execute();
 
                 return " Criou google";
-                 
+
             }
             catch (FileNotFoundException e)
             {
                 Console.WriteLine(e.Message);
-                return e.Message;
+                return null;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return " ERRO: " + e.Message;
             }
         }
 
         public static async Task<string> AddPeopleAsync(string nome, string local, string telefone, string email)
         {
+            string log = "";
             try
             {
                 UserCredential credential = UserCredential();
@@ -132,8 +137,10 @@ namespace HoteldosNobresBlazor.Funcoes
                 });
                 contactToCreate.EmailAddresses = emails;
 
+                log += " - Criou google";
                 var request = service.People.CreateContact(contactToCreate);
 
+                log += " - Criou request";
                 Person createdContact = await request.ExecuteAsync();
 
                 return "OK";
@@ -142,7 +149,10 @@ namespace HoteldosNobresBlazor.Funcoes
             catch (FileNotFoundException e)
             {
                 Console.WriteLine(e.Message);
-                return "ERRO: " + e.Message;
+                if (e.InnerException != null)
+                    return "ERRO: " + e.Message + " - " + e.InnerException.Message + log;
+                else
+                    return "ERRO: " + e.Message + log;
             }
         }
     }

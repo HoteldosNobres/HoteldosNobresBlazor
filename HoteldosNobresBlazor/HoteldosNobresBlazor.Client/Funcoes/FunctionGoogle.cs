@@ -41,11 +41,16 @@ namespace HoteldosNobresBlazor.FuncoesClient
                 Console.WriteLine(e.Message);
                 return null;
             }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return null;
+            }
 
         }
-          
+
         public static async Task<string> AddPeopleAsync(string nome, string local, string telefone, string email)
-        {
+        { 
             try
             {
                 UserCredential credential = UserCredential();
@@ -53,7 +58,7 @@ namespace HoteldosNobresBlazor.FuncoesClient
                 if (!string.IsNullOrEmpty(local))
                     givenome = nome + " - " + local;
 
-                 var service = new PeopleServiceService(new BaseClientService.Initializer()
+                var service = new PeopleServiceService(new BaseClientService.Initializer()
                 {
                     HttpClientInitializer = credential,
                     ApplicationName = "APP_NAME",
@@ -61,41 +66,43 @@ namespace HoteldosNobresBlazor.FuncoesClient
 
                 Person contactToCreate = new Person();
                 List<Name> names = new List<Name>();
-                names.Add(new Name() {
+                names.Add(new Name()
+                {
                     GivenName = givenome,
-                });               
+                });
                 contactToCreate.Names = names;
 
                 List<PhoneNumber> phones = new List<PhoneNumber>();
                 phones.Add(new PhoneNumber()
-                { 
-                    Value = "55"+telefone.Replace("+55",""),
+                {
+                    Value = "55" + telefone.Replace("+55", "").Replace(" ", ""),
                 });
                 contactToCreate.PhoneNumbers = phones;
 
-                List<EmailAddress> emails = new List<EmailAddress>();
-                emails.Add(new EmailAddress()
+                if (email is not null && email != "" && email != "email")
                 {
-                    Value =  email,
-                });
-                contactToCreate.EmailAddresses = emails;
-
+                    List<EmailAddress> emails = new List<EmailAddress>();
+                    emails.Add(new EmailAddress()
+                    {
+                        Value = email,
+                    });
+                    contactToCreate.EmailAddresses = emails;
+                }
+                 
                 var request = service.People.CreateContact(contactToCreate);
-
+                 
                 Person createdContact = await request.ExecuteAsync();
 
-                return "OK";    
-                 
-            }
-            catch (FileNotFoundException e)
-            {
-                Console.WriteLine(e.Message);
-                return "ERRO: " + e.Message;    
+                return "OK";
+
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
-                return "ERRO: " + e.Message;
+                if (e.InnerException != null)
+                    return "ERRO: " + e.Message + " - " + e.InnerException.Message;
+                else
+                    return "ERRO: " + e.Message;
             }
         }
     }
