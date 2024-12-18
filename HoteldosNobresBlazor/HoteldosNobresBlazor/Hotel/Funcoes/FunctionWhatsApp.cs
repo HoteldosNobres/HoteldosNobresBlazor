@@ -72,40 +72,7 @@ namespace HoteldosNobresBlazor.Funcoes
             }
 
         }
-
-        //public static async Task<string> postMensageFlowCPF(string numero)
-        //{
-        //    try
-        //    {
-        //        var client = new HttpClient();
-        //        var request = new HttpRequestMessage(HttpMethod.Post, urlapi);
-        //        request.Headers.Add("Authorization", "Bearer " + KEYs.TOKEN_WHATSAPP);
-        //        var content = new StringContent("{ \n  \"messaging_product\": \"whatsapp\"," +
-        //            "\n  \"to\": \"" + numero + "\", \n  \"type\": \"INTERACTIVE\", \n" +
-        //            "  \"interactive\": { \n    \"type\": \"flow\", \n    \"header\": { \n" +
-        //            "      \"type\": \"text\", \n      \"text\": \"Preeche os dados Faltando\" \n" +
-        //            "    }, \n    \"body\": { \n      \"text\": \"Recebemos sua reserva, porem de acordo com Ministério do Turismo(MTur) precisamos do CPF e Data de nascimento. Abre o preenchimento para envio automático para o sistema do Hotel dos Nobres.\" \n" +
-        //            "    }, \n    \"footer\": { \n      \"text\": \"Enviado pelo sistema do Hotel dos Nobres\" \n    }, \n  " +
-        //            "  \"action\": { \n      \"name\": \"flow\", \n      \"parameters\": { \n   " +
-        //            "     \"flow_message_version\": \"3\", \n        \"flow_token\": \"any_string_for_this_example\", \n    " +
-        //            "    \"flow_id\": \"302483089525226\", \n        \"flow_cta\": \"Abrir prenchimento\", \n   " +
-        //            "     \"flow_action\": \"navigate\", \n        \"flow_action_payload\": { \n   " +
-        //            "       \"screen\": \"SIGN_UP\", \n          \"data\": { \n      " +
-        //            "              \"type\": \"dynamic_object\" \n          " +
-        //            "        } \n        } \n      } \n    } \n  } \n}", null, "application/json");
-        //        request.Content = content;
-        //        var response = await client.SendAsync(request);
-        //        response.EnsureSuccessStatusCode();
-        //        Console.WriteLine(await response.Content.ReadAsStringAsync());
-        //        return "";
-        //    }
-        //    catch (FileNotFoundException e)
-        //    {
-        //        return e.Message + "\n";
-        //    }
-
-        //}
-
+         
         public static async Task<string> postMensageFlowAvaliacao(string numero)
         {
             try

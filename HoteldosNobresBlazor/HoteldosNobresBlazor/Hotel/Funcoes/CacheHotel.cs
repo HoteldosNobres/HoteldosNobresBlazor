@@ -323,6 +323,19 @@ namespace HoteldosNobresBlazor.Funcoes
             {
                 AppState.MyMessageReservation += parametros;
 
+                if(parametros.Contains("confirmareserva"))
+                { 
+                    var listReservacheckin = FunctionAPICLOUDBEDs.getReservationsCheckinAsync(DateTime.Now.ToString("yyyy-MM-dd")).Result;
+                    foreach (Reserva reserva in listReservacheckin)
+                    {
+                        string mensagem = "Olá " + reserva.NomeHospede + " , sua reserva foi confirmada, estamos aguardando sua chegada. Confirme seu horario de chegada no link abaixo ou conversa conosco pelo WhatsApp +55 35 37150180" +
+                            "Mais informações no link " + reserva.LinkPublico;
+                        AppState.MyMessageReservation += FunctionWhatsApp.postMensagem(reserva.ProxyCelular!, mensagem).Result;
+                        AppState.MyMessageReservation += FunctionWhatsApp.postMensagemTempleteInicial(reserva.ProxyCelular!, reserva.IDReserva!, reserva.NomeHospede!).Result;
+                    }
+
+                }
+
             }
             catch (Exception e)
             {
