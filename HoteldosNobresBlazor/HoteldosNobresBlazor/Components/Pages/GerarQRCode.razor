@@ -175,15 +175,12 @@
     {
         if (Valor is null)
             Valor = "0";
-
-        valordecimal = decimal.Parse(Valor, new CultureInfo("pt-BR"));
-        Valor = valordecimal.ToString("N2", new CultureInfo("pt-BR"));
-         
+             
         Reserva reservaaqui  = new Reserva();
         reservaaqui.IDReserva = ReservationId;
         reservaaqui.Valor = Valor;
 
-        valordecimal = reserva!.BalanceDetailed!.GrandTotal - reserva!.BalanceDetailed!.Paid;
+        valordecimal = decimal.Parse(Valor, new CultureInfo("pt-BR"));
         Valor = valordecimal.ToString("N2", new CultureInfo("pt-BR"));
 
         stringToQrCode = FunctionSicoob.QrCode(reservaaqui!, Valor!).Result;

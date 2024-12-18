@@ -859,8 +859,15 @@ namespace HoteldosNobresBlazor.Funcoes
                 {
                     AppState.ListReservas = FunctionAPICLOUDBEDs.getReservationsAsyncGuestDetails().Result;
 
-                    // Dorme por 5000 milissegundos, ou seja, 5 segundos
-
+                    //foreach(Reserva reserva in AppState.ListReservas)
+                    //{
+                    //    Reserva novareserva = FunctionAPICLOUDBEDs.getReservationAsync(reserva).Result;
+                    //    if (!string.IsNullOrEmpty(novareserva.ProxyCelular))
+                    //    {
+                    //        FunctionGoogle.AddPeople(novareserva.NomeHospede, novareserva.Origem, novareserva.ProxyCelular, novareserva.Email.ToString());
+                    //    }
+                    //}
+                     
                     count = count + 1;
                     cache = count.ToString();
                     //Console.WriteLine("Cache executando");
