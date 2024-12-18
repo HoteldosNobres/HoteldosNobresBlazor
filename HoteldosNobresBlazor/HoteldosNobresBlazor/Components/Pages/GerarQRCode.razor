@@ -18,7 +18,7 @@
 @rendermode InteractiveAuto
 @attribute [AllowAnonymous]
 
-<PageTitle>Reserva</PageTitle>
+<PageTitle>Gerar PIX/QRC9de</PageTitle>
 
 <MudContainer Class="px-8 pt-2 mx-4 my-4" MaxWidth="MaxWidth.False">
     <MudGrid>
@@ -40,7 +40,7 @@
                             <br />
                             <MudText Typo="Typo.caption" GutterBottom="true" Class="ml-auto">
                                 @*  Pix nossa <b>CHAVE CELULAR 35 9753-9341 </b> ou<b> EMAIL HOTELDOSNOBRES@HOTMAIL.COM </b> <br /> *@
-                                Nome <b>HOTEL DOS NOBRES LTDA</b><br />
+                                Nome <b>HOTEL DOS NOBRES LTDA </b><br />
                                 Banco <b>SICOOB </b><br />
                                 @if (valordecimal > 0)
                                 {
@@ -76,7 +76,7 @@
                         <MudListItem Icon="@Icons.Material.Filled.Info"> Dados </MudListItem>
                         <MudTextField T="string" Label="Id Reserva" Disabled="@Disabled" @bind-Value="ReservationId" />
                         <MudTextField Disabled="@Disabled" @bind-Value="Valor" Label="Valor" Variant="Variant.Text" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.AttachMoney" AdornmentColor="Color.Warning" />
-
+                        <MudTextField T="string" Label="Numero Celular (Ex: 55 35 37150180)" Disabled="@(!Disabled)" @bind-Value="NumeroWhatsapp" />
                     </MudList>
                     <div class="mt-4">
                         <MudButton Variant="Variant.Filled"
@@ -93,6 +93,13 @@
                         @onclick="Salvar">
                             Salvar
                         </MudButton>
+                        <MudButton Variant="Variant.Filled"
+                        Color="Color.Primary"
+                        Class="ml-auto rounded-xl"
+                        Disabled="@(!Disabled)"
+                        @onclick="Whatsapp">
+                            Enviar WhatApp
+                        </MudButton>
                     </div>
                 </MudForm>
             </MudPaper>
@@ -103,6 +110,7 @@
 @code {
     [Parameter]
     public string ReservationId { get; set; }
+    public string NumeroWhatsapp { get; set; }
 
     public Guest guest { get; set; }
     private UserInfo user = default!;
@@ -121,7 +129,10 @@
     protected override async Task OnInitializedAsync()
     {
         if (ReservationId is null)
+        {
             ReservationId = "Sua reserva";
+            NumeroWhatsapp = "553537150180";
+        } 
 
         if (!ReservationId.Equals("nova"))
             reserva = await cloudbedsAPI.GetReservaAsync(ReservationId);
@@ -145,20 +156,9 @@
     protected async Task Salvar()
     {
         try
-        {
-            // if (reserva is not null)
-            // {
-            //     OrderPagSeguroRecebe pedido = FunctionPagSeguro.PostOrder(reserva, Valor).Result;
-
-            //     stringToQrCode = pedido is not null && pedido.QrCodes!.Count() > 0 ? pedido.QrCodes[0].Text : "";
-
-            //     qrCode = GenerateQRCode(stringToQrCode);
-
-            // }
-            // else
-             
+        { 
             GerarQrcode();
-             
+
             Snackbar.Add("Sucesso!", Severity.Success);
 
             Disabled = !Disabled;
@@ -175,7 +175,7 @@
     {
         if (Valor is null)
             Valor = "0";
-             
+
         Reserva reservaaqui  = new Reserva();
         reservaaqui.IDReserva = ReservationId;
         reservaaqui.Valor = Valor;
@@ -184,10 +184,10 @@
         Valor = valordecimal.ToString("N2", new CultureInfo("pt-BR"));
 
         stringToQrCode = FunctionSicoob.QrCode(reservaaqui!, Valor!).Result;
-          
+
         qrCode = GenerateQRCode(stringToQrCode);
     }
-     
+
 
     public string GenerateQRCode(string data)
     {
@@ -199,5 +199,23 @@
         return qrCodeAsBase64;
     }
 
+
+    protected async Task Whatsapp()
+    {
+        string mensagem = string.Empty;
+        try
+        { 
+            // deixar apenas numero sem espaços
+            NumeroWhatsapp = Regex.Replace(NumeroWhatsapp, @"\s+", "");
+            mensagem  = await FunctionWhatsApp.postMensagemTempletePIX(NumeroWhatsapp, ReservationId!, stringToQrCode!);
+
+            Snackbar.Add("Sucesso!", Severity.Success);
+              
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("Erro " + ex.Message + mensagem, Severity.Error);
+        }
+    }
 
 } 

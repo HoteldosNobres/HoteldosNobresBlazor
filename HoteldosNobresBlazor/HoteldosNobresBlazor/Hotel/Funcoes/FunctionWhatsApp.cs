@@ -391,10 +391,15 @@ namespace HoteldosNobresBlazor.Funcoes
 
                 return "";
             }
-            catch (FileNotFoundException e)
+            catch (WhatsappBusinessCloudAPIException ex)
             {
-                Console.WriteLine(e.Message);
-                return null;
+                Console.Write(ex.Message);
+                throw new Exception(ex.Message);
+            }
+            catch (Exception e)
+            {
+                Console.Write(e.Message);
+                throw new Exception(e.Message);
             }
 
         }
