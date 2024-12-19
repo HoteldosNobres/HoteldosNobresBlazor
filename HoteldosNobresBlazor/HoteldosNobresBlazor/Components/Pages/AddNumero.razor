@@ -29,18 +29,26 @@
 
     public async Task GotoAddNumber()
     {
-        string tarefadecriar = await FunctionGoogle.AddPeopleAsync(nome, origem, numero, email);
-
-        if (tarefadecriar == "OK")
+        try
         {
-            nome = "";
-            origem = "";
-            numero = "";
-            email = "";
-            Snackbar.Add(tarefadecriar, Severity.Success);
-        }
+            string tarefadecriar = await FunctionGoogle.AddPeopleAsync(nome, origem, numero, email);
 
-        if (tarefadecriar.Contains("ERRO"))
-            Snackbar.Add(tarefadecriar, Severity.Error);
+            if (tarefadecriar == "OK")
+            {
+                nome = "";
+                origem = "";
+                numero = "";
+                email = "";
+                Snackbar.Add(tarefadecriar, Severity.Success);
+            } 
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+            Snackbar.Add("ERRO-ADDNUMBER-" + e.Message, Severity.Error);
+            Snackbar.Add("ERRO-ADDNUMBER-StackTrace" + e.StackTrace, Severity.Error);
+            if (e.InnerException != null)
+                Snackbar.Add("ERRO-ADDNUMBER-InnerException" + e.InnerException.Message, Severity.Error);
+        }
     }
-}
+ }
