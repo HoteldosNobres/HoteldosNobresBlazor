@@ -328,10 +328,11 @@ namespace HoteldosNobresBlazor.Funcoes
                     var listReservacheckin = FunctionAPICLOUDBEDs.getReservationsCheckinAsync(DateTime.Now.ToString("yyyy-MM-dd")).Result;
                     foreach (Reserva reserva in listReservacheckin)
                     {
-                        string mensagem = "Olá " + reserva.NomeHospede + " , sua reserva foi confirmada, estamos aguardando sua chegada. Confirme seu horario de chegada no link abaixo ou conversa conosco pelo WhatsApp +55 35 37150180" +
-                            "Mais informações no link " + reserva.LinkPublico;
-                        AppState.MyMessageReservation += FunctionWhatsApp.postMensagem(reserva.ProxyCelular!, mensagem).Result;
-                        AppState.MyMessageReservation += FunctionWhatsApp.postMensagemTempleteInicial(reserva.ProxyCelular!, reserva.IDReserva!, reserva.NomeHospede!).Result;
+                        var reservaaqui = FunctionAPICLOUDBEDs.getReservationAsync(reserva).Result;
+                        string mensagem = "Olá " + reservaaqui.NomeHospede + " , sua reserva foi confirmada, estamos aguardando sua chegada. Confirme seu horario de chegada no link abaixo ou conversa conosco pelo WhatsApp +55 35 37150180" +
+                            "Mais informações no link " + reservaaqui.LinkPublico;
+                        AppState.MyMessageReservation += FunctionWhatsApp.postMensagem(reservaaqui.ProxyCelular!, mensagem).Result;
+                        AppState.MyMessageReservation += FunctionWhatsApp.postMensagemTempleteInicial(reservaaqui.ProxyCelular!, reservaaqui.IDReserva!, reservaaqui.NomeHospede!).Result;
                     }
 
                 }
@@ -872,15 +873,15 @@ namespace HoteldosNobresBlazor.Funcoes
                 {
                     AppState.ListReservas = FunctionAPICLOUDBEDs.getReservationsAsyncGuestDetails().Result;
 
-                    //foreach(Reserva reserva in AppState.ListReservas)
-                    //{
-                    //    Reserva novareserva = FunctionAPICLOUDBEDs.getReservationAsync(reserva).Result;
-                    //    if (!string.IsNullOrEmpty(novareserva.ProxyCelular))
-                    //    {
-                    //        FunctionGoogle.AddPeople(novareserva.NomeHospede, novareserva.Origem, novareserva.ProxyCelular, novareserva.Email.ToString());
-                    //    }
-                    //}
-                     
+                    foreach (Reserva reserva in AppState.ListReservas)
+                    {
+                        Reserva novareserva = FunctionAPICLOUDBEDs.getReservationAsync(reserva).Result;
+                        if (!string.IsNullOrEmpty(novareserva.ProxyCelular))
+                        {
+                            FunctionGoogle.AddPeople(novareserva.NomeHospede, novareserva.Origem, novareserva.ProxyCelular, novareserva.Email.ToString());
+                        }
+                    }
+
                     count = count + 1;
                     cache = count.ToString();
                     //Console.WriteLine("Cache executando");
