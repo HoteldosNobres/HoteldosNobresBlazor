@@ -874,14 +874,14 @@ namespace HoteldosNobresBlazor.Funcoes
                     AppState.ListReservas = FunctionAPICLOUDBEDs.getReservationsAsyncGuestDetails().Result;
 
                     //Cache addcontato
-                    //foreach (Reserva reserva in AppState.ListReservas)
-                    //{
-                    //    Reserva novareserva = FunctionAPICLOUDBEDs.getReservationAsync(reserva).Result;
-                    //    if (!string.IsNullOrEmpty(novareserva.ProxyCelular))
-                    //    {
-                    //        FunctionGoogle.AddPeople(novareserva.NomeHospede, novareserva.Origem, novareserva.ProxyCelular, novareserva.Email.ToString());
-                    //    }
-                    //}
+                    foreach (Reserva reserva in AppState.ListReservas)
+                    {
+                        Reserva novareserva = FunctionAPICLOUDBEDs.getReservationAsync(reserva).Result;
+                        if (!string.IsNullOrEmpty(novareserva.ProxyCelular))
+                        {
+                            FunctionGoogle.AddPeople(novareserva.NomeHospede, novareserva.Origem, novareserva.ProxyCelular, novareserva.Email.ToString());
+                        }
+                    }
 
                     count = count + 1;
                     cache = count.ToString();

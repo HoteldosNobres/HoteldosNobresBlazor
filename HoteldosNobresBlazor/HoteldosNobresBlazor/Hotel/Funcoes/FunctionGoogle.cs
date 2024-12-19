@@ -22,7 +22,7 @@ namespace HoteldosNobresBlazor.Funcoes
                 ClientSecrets secrets = new ClientSecrets()
                 {
                     ClientId = KEYs.ClientId_GOOGLE,
-                    ClientSecret = KEYs.ClientSecret_GOOGLE
+                    ClientSecret = KEYs.ClientSecret_GOOGLE 
                 };
                 var token = new TokenResponse { RefreshToken = KEYs.RefreshToken_GOOGLE };
 
@@ -31,10 +31,9 @@ namespace HoteldosNobresBlazor.Funcoes
                     {
                         ClientSecrets = secrets
                     }),
-                    "user",
+                    "user", 
                     token);
-
-
+                 
                 return credential;
             } 
             catch (Exception e)
@@ -87,73 +86,12 @@ namespace HoteldosNobresBlazor.Funcoes
                 return " Criou google";
 
             }
-            catch (FileNotFoundException e)
-            {
-                Console.WriteLine(e.Message);
-                return null;
-            }
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
-                return " ERRO: " + e.Message;
+                return " ERRO-GOOGLE: " + e.Message;
             }
         }
-
-        public static async Task<string> AddPeopleAsync(string nome, string local, string telefone, string email)
-        {
-            string log = "";
-            try
-            {
-                UserCredential credential = UserCredential();
-                string givenome = nome;
-                if (!string.IsNullOrEmpty(local))
-                    givenome = nome + " - " + local;
-
-                var service = new PeopleServiceService(new BaseClientService.Initializer()
-                {
-                    HttpClientInitializer = credential,
-                    ApplicationName = "APP_NAME",
-                });
-
-                Person contactToCreate = new Person();
-                List<Name> names = new List<Name>();
-                names.Add(new Name()
-                {
-                    GivenName = givenome,
-                });
-                contactToCreate.Names = names;
-
-                List<PhoneNumber> phones = new List<PhoneNumber>();
-                phones.Add(new PhoneNumber()
-                {
-                    Value = "55" + telefone.Replace("+55", ""),
-                });
-                contactToCreate.PhoneNumbers = phones;
-
-                List<EmailAddress> emails = new List<EmailAddress>();
-                emails.Add(new EmailAddress()
-                {
-                    Value = email,
-                });
-                contactToCreate.EmailAddresses = emails;
-
-                log += " - Criou google";
-                var request = service.People.CreateContact(contactToCreate);
-
-                log += " - Criou request";
-                Person createdContact = await request.ExecuteAsync();
-
-                return "OK";
-
-            }
-            catch (FileNotFoundException e)
-            {
-                Console.WriteLine(e.Message);
-                if (e.InnerException != null)
-                    return "ERRO: " + e.Message + " - " + e.InnerException.Message + log;
-                else
-                    return "ERRO: " + e.Message + log;
-            }
-        }
+         
     }
 }
