@@ -1,5 +1,6 @@
 ﻿@page "/"
 @using HoteldosNobresBlazor.Classes
+@using HoteldosNobresBlazor.Classes.BookingComDTO
 @using HoteldosNobresBlazor.Funcoes
 @inject AppState appState
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
@@ -85,7 +86,7 @@
                         }
                         <br />
                     </MudPaper>
-                    
+
                 </MudItem>
                 <MudItem xs="12">
                     <MudPaper Elevation="2" Class="pa-4 flex-column rounded-xl" Style="height:  100%;">
@@ -128,7 +129,7 @@
         <MudItem xs="12" sm="6" md="4">
             <MudPaper Elevation="2" Class="pa-4  d-flex flex-column rounded-xl" Style="height: 200px;">
                 <MudTextField T="string" Label="Consulta" @bind-Value="consulta" TextChanged="@Consulta" OnDebounceIntervalElapsed="Consulta"
-                              Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary" />
+                Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary" />
                 @if (listReservaconsulta == null)
                 {
                     <p><em>Carregando...</em></p>
@@ -159,8 +160,8 @@
                 }
             </MudPaper>
         </MudItem>
-        
-        <MudItem xs="12" sm="12" md="4">           
+
+        <MudItem xs="12" sm="12" md="4">
             <MudPaper Elevation="2" Class="pa-4 d-flex flex-column rounded-xl" Style="height: 200px;">
                 Check-in X Check-out
                 <MudChart ChartType="ChartType.Pie" InputData="@data" @bind-SelectedIndex="Index" InputLabels="@labels" Width="100px" Height="100px" />
@@ -177,9 +178,9 @@
                 }
                 <br />
                 <MudButton Variant="Variant.Filled"
-                           Color="Color.Primary"
-                           Class="ml-auto rounded-xl" 
-                           @onclick="OpenIA">
+                Color="Color.Primary"
+                Class="ml-auto rounded-xl"
+                @onclick="OpenIA">
                     IA
                 </MudButton>
             </MudPaper>
@@ -200,7 +201,7 @@
     public string consulta = "";
 
     private int Index = 0; //default value cannot be 0 -> first selectedindex is 0.
-     
+
     public double[] data;
     string[] labels;
 
@@ -213,7 +214,7 @@
         listReservacheckout = await FunctionAPICLOUDBEDs.getReservationsCheckOutAsync(datanow);
         listReservasnovas = await FunctionAPICLOUDBEDs.getReservationsNovasAsync(datanow);
 
-        
+
         data = new double[] { listReservacheckin.Count(), listReservacheckout.Count() };
         labels = new string[] { "Check-in " + listReservacheckin.Count(), "Check-Out " + listReservacheckout.Count() };
 
@@ -264,9 +265,29 @@
     }
 
     async Task OpenIA()
-    { 
+    {
         // OpenAIAPI api = new OpenAIAPI(new APIAuthentication(KEYs.OPENAI)); // create object manually
-        // var chat = api.Chat.CreateConversation(); 
+        // var chat = api.Chat.CreateConversation();
         // Console.WriteLine(result);
+
+        string checkin = "2025-01-08";
+        string checkout = "2025-01-09";
+
+        BookingComDTO bookingComDTO = await FunctionBookingCom.postBookingCom(checkin, checkout);
+        if (bookingComDTO != null && bookingComDTO.Accommodation != null && bookingComDTO.Accommodation.Count() > 0)
+        {
+            List<Accommodation> accommodations = bookingComDTO.Accommodation.ToList();
+            accommodations = accommodations.Where(m => m.Id == 495875 ||  m.Id == 495875 ).ToList();
+            if (accommodations.Count() > 0)
+            {
+                foreach (Accommodation accommodation in accommodations)
+                {
+                    decimal? price = accommodation.Price!.Total;
+                }
+                
+            }
+        }
+
     }
+}
 } 

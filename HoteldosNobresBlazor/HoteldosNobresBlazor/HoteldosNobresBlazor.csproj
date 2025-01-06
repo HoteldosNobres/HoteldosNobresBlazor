@@ -35,7 +35,7 @@
     <PackageReference Include="OpenAI" Version="2.1.0" />
     <PackageReference Include="pix-payload-generator.net" Version="1.0.21" />
     <PackageReference Include="QRCoder" Version="1.6.0" />
-    <PackageReference Include="WhatsappBusiness.CloudApi" Version="1.0.43" />
+    <PackageReference Include="WhatsappBusiness.CloudApi" Version="1.0.44" />
   </ItemGroup>
 
   <ItemGroup>

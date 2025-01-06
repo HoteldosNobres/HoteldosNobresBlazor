@@ -70,8 +70,7 @@ public class FunctionAPICLOUDBEDs
 
     }
     #endregion Guest
-
-
+     
     #region RatePlan
     public static async Task<Rate> getRatesAsync(string roomTypeID, DateTime DataCheckIn, DateTime DataCheckOut)
     {

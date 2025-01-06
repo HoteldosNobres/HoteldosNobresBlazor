@@ -325,14 +325,30 @@ namespace HoteldosNobresBlazor.Funcoes
 
                 if(parametros.Contains("confirmareserva"))
                 { 
+
                     var listReservacheckin = FunctionAPICLOUDBEDs.getReservationsCheckinAsync(DateTime.Now.ToString("yyyy-MM-dd")).Result;
                     foreach (Reserva reserva in listReservacheckin)
                     {
                         var reservaaqui = FunctionAPICLOUDBEDs.getReservationAsync(reserva).Result;
+
+                        LogSistema logSistema = new LogSistema();
+                        logSistema.Log = "confirmareserva-";
+                        logSistema.IDReserva = reservaaqui.IDReserva.ToString();
+                        logSistema.Status = reservaaqui.Status;
+                        logSistema.DataLog = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone); 
+
                         string mensagem = "Olá " + reservaaqui.NomeHospede + " , sua reserva foi confirmada, estamos aguardando sua chegada. Confirme seu horario de chegada no link abaixo ou conversa conosco pelo WhatsApp +55 35 37150180" +
                             "Mais informações no link " + reservaaqui.LinkPublico;
                         AppState.MyMessageReservation += FunctionWhatsApp.postMensagem(reservaaqui.ProxyCelular!, mensagem).Result;
                         AppState.MyMessageReservation += FunctionWhatsApp.postMensagemTempleteInicial(reservaaqui.ProxyCelular!, reservaaqui.IDReserva!, reservaaqui.NomeHospede!).Result;
+
+                        if (reservaaqui is not null && reservaaqui.Origem is not null && reservaaqui.Origem!.ToUpper().Contains("BOOKING.COM"))
+                        {
+                            FuncoesEmail.EnviarEmail(reservaaqui.Email, mensagem, "HORARIO DO CHECK-IN");
+                        }
+
+                        logSistema.Log += "Enviado";
+                        AppState.ListLogSistemaAddReserva.Add(logSistema);
                     }
 
                 }
@@ -825,6 +841,7 @@ namespace HoteldosNobresBlazor.Funcoes
         }
 
         #endregion CloudBeds
+
         static void ListaReservaMetodo()
         {
             try
@@ -872,6 +889,14 @@ namespace HoteldosNobresBlazor.Funcoes
                 try
                 {
                     AppState.ListReservas = FunctionAPICLOUDBEDs.getReservationsAsyncGuestDetails().Result;
+                    AppState.ListReservas.AddRange(FunctionAPICLOUDBEDs.getReservationsCheckinAsync(DateTime.Now.ToString("yyyy-MM-dd")).Result);
+                    AppState.ListReservas.AddRange(FunctionAPICLOUDBEDs.getReservationsCheckOutAsync(DateTime.Now.AddDays(1).ToString("yyyy-MM-dd")).Result);
+                    AppState.ListReservas.AddRange(FunctionAPICLOUDBEDs.getReservationsCheckOutAsync(DateTime.Now.AddDays(2).ToString("yyyy-MM-dd")).Result);
+                    AppState.ListReservas.AddRange(FunctionAPICLOUDBEDs.getReservationsCheckOutAsync(DateTime.Now.AddDays(3).ToString("yyyy-MM-dd")).Result);
+                    AppState.ListReservas.AddRange(FunctionAPICLOUDBEDs.getReservationsCheckOutAsync(DateTime.Now.AddDays(4).ToString("yyyy-MM-dd")).Result);
+                    AppState.ListReservas.AddRange(FunctionAPICLOUDBEDs.getReservationsCheckOutAsync(DateTime.Now.AddDays(5).ToString("yyyy-MM-dd")).Result);
+                    AppState.ListReservas.AddRange(FunctionAPICLOUDBEDs.getReservationsCheckOutAsync(DateTime.Now.AddDays(6).ToString("yyyy-MM-dd")).Result);
+                    AppState.ListReservas.AddRange(FunctionAPICLOUDBEDs.getReservationsCheckOutAsync(DateTime.Now.AddDays(7).ToString("yyyy-MM-dd")).Result);
 
                     //Cache addcontato
                     foreach (Reserva reserva in AppState.ListReservas)

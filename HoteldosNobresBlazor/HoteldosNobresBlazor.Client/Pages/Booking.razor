@@ -75,6 +75,31 @@
     }
 </MudPaper>
 
+<MudPaper Class="px-8 pt-2 pb-4 mx-4 my-4 rounded-xl" Justify="Justify.Center" hidden="@((Disabled) && (!HorarioFlag))">
+    @if (reserva is not null)
+    {
+        <MudSelect T="string" @bind-Value="HorarioAproximado" Label="Horário estimado de chegada" AnchorOrigin="Origin.BottomCenter" TextChanged="HorarioChange" Variant="Variant.Outlined" Clearable>
+            <MudSelectItem Value="@("14:00")">14:00</MudSelectItem>
+            <MudSelectItem Value="@("15:00")">15:00</MudSelectItem>
+            <MudSelectItem Value="@("16:00")">16:00</MudSelectItem>
+            <MudSelectItem Value="@("17:00")">17:00</MudSelectItem>
+            <MudSelectItem Value="@("18:00")">18:00</MudSelectItem>
+            <MudSelectItem Value="@("19:00")">19:00</MudSelectItem>
+            <MudSelectItem Value="@("20:00")">20:00</MudSelectItem>
+            <MudSelectItem Value="@("21:00")">21:00</MudSelectItem>
+            <MudSelectItem Value="@("22:00")">22:00</MudSelectItem>
+            <MudSelectItem Value="@("23:00")">23:00</MudSelectItem>
+        </MudSelect>
+        <MudButton Variant="Variant.Filled"
+        Color="Color.Primary"
+        Class="ml-auto rounded-xl"
+        Disabled="@DisabledSaveHorario"
+        @onclick="ConfirmaReserva">
+            Confirma reserva no horario: @HorarioAproximado
+        </MudButton>
+    }   
+</MudPaper>
+
 
 <MudPaper Class="px-8 pt-2 pb-4 mx-4 my-4 rounded-xl" Justify="Justify.Center" hidden="@(!Disabled)">
     @if (reserva is not null)
@@ -98,6 +123,7 @@
     public string CPF { get; set; }
     public string CellPhone { get; set; }
     private string emailota { get; set; }
+    public string HorarioAproximado { get; set; }
 
     bool ReadOnly = false;
     bool NestedReadOnly;
@@ -106,6 +132,8 @@
     bool DisabledSave = false;
     bool DisabledCPF = false;
     bool DisableEndereco = false;
+    bool HorarioFlag = false;
+    bool DisabledSaveHorario = true;
 
     protected override async Task OnInitializedAsync()
     {
@@ -138,6 +166,14 @@
 
                     if (reserva.Status is not null && reserva.Status.Equals("canceled"))
                         throw new ArgumentException("Booking canceled.");
+
+                    if (reserva.HorarioAproximado is not null)
+                    {
+                        HorarioAproximado = reserva.HorarioAproximado.GetValueOrDefault().ToString("HH:mm");
+                    }else 
+                    {
+                        HorarioFlag = true;
+                    }
                 }
             }
 
@@ -328,7 +364,7 @@
             FuncoesEmail.EnviarEmail(emailota, mensagem, "Mensagem do Hotel dos Nobres");
         }
         catch (Exception ex)
-        { 
+        {
             Console.WriteLine(ex.Message);
         }
     }
@@ -362,7 +398,8 @@
     {
         if (value.Length >= 8)
         {
-            try{
+            try
+            {
                 Cep cep = value;
                 var viaCepService = ViaCepService.Default();
                 var endereco = viaCepService.ObterEndereco(cep);
@@ -427,5 +464,53 @@
         }
     }
 
+    private async Task HorarioOnValueChangeHandler(string newValue)
+    {
+        try
+        {
+            DateTime horario = DateTime.Parse(newValue);
+            if (horario.Hour >= 14 && horario.Hour <= 23)
+            {
+                cloudbedsAPI.PutReservaAsync(reserva.IDReserva.ToString(), "estimatedArrivalTime", horario.ToString("HH:mm"));
+            }
+            else
+            {
+                Snackbar.Add("O horário previsão de chegada está fora 14 horas e 23 horas.", Severity.Warning);
+            }
 
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("Erro autualizar horario", Severity.Error);
+            Console.WriteLine(ex.Message);
+        }
+    }
+
+    private async Task ConfirmaReserva()
+    {
+        try
+        {
+            if (!string.IsNullOrEmpty(HorarioAproximado))
+            {
+                HorarioFlag = false;
+                HorarioOnValueChangeHandler(HorarioAproximado);
+                Snackbar.Add("Reserva confirmada com sucesso!", Severity.Success);
+            }
+            else 
+                Snackbar.Add("Selecione um horario!", Severity.Warning);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("Erro ao confirmar a reserva!", Severity.Error);
+            HorarioFlag = true;
+        }
+    }
+
+    private async Task HorarioChange()
+    { 
+        if (string.IsNullOrEmpty(HorarioAproximado))
+            DisabledSaveHorario = true; 
+        else
+            DisabledSaveHorario = false;
+    }
 }
