@@ -75,7 +75,7 @@
     }
 </MudPaper>
 
-<MudPaper Class="px-8 pt-2 pb-4 mx-4 my-4 rounded-xl" Justify="Justify.Center" hidden="@((Disabled) && (!HorarioFlag))">
+<MudPaper Class="px-8 pt-2 pb-4 mx-4 my-4 rounded-xl" Justify="Justify.Center" hidden="@(!HorarioFlag)">
     @if (reserva is not null)
     {
         <MudSelect T="string" @bind-Value="HorarioAproximado" Label="Horário estimado de chegada" AnchorOrigin="Origin.BottomCenter" TextChanged="HorarioChange" Variant="Variant.Outlined" Clearable>
@@ -167,13 +167,14 @@
                     if (reserva.Status is not null && reserva.Status.Equals("canceled"))
                         throw new ArgumentException("Booking canceled.");
 
+
                     if (reserva.HorarioAproximado is not null)
                     {
                         HorarioAproximado = reserva.HorarioAproximado.GetValueOrDefault().ToString("HH:mm");
-                    }else 
-                    {
-                        HorarioFlag = true;
+                        HorarioFlag = false;
                     }
+                    else if ((!Disabled) && reserva.DataCheckIn is not null && DateTime.Now >= reserva.DataCheckIn)
+                        HorarioFlag = true;
                 }
             }
 
