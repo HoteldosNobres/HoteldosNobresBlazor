@@ -34,7 +34,7 @@ public class APICloudbeds
         catch (Exception ex)
         {
             Console.WriteLine(ex.Message);
-            throw new Exception(ex.Message);
+            //throw new Exception(ex.Message);
         }
     }
 
