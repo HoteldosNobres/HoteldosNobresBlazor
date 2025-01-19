@@ -33,7 +33,8 @@ public class APICloudbeds
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.Message); 
+            Console.WriteLine(ex.Message);
+            throw new Exception(ex.Message);
         }
     }
 

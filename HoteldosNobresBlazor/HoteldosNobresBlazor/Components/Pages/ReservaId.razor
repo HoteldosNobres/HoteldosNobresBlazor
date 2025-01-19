@@ -114,6 +114,13 @@
                     @onclick="SendEmail">
                         Envia Email
                     </MudButton>
+                    <MudButton Variant="Variant.Filled"
+                               Color="Color.Primary"
+                               Class="ml-auto rounded-xl"
+                               Disabled="@(!Disabled)"
+                               @onclick="ZeraHora">
+                       Zera Hora
+                    </MudButton>
                 </MudList>
             </div>
         </MudForm>
@@ -611,6 +618,21 @@ else
             Console.WriteLine(ex.Message);
         }
     }
+
+    protected async Task ZeraHora()
+    {
+        try
+        {
+            cloudbedsAPI.PutReservaAsync(reserva.IDReserva.ToString(), "estimatedArrivalTime", "null");
+            Snackbar.Add("Sucesso Zera Hora", Severity.Success);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("Erro ao Zera Hora", Severity.Error);
+            Console.WriteLine(ex.Message);
+        }
+    }
+
 
     protected async Task OnValueChangeHandler(string newValue)
     {

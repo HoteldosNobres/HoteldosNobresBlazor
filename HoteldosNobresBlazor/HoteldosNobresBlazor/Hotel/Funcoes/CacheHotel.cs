@@ -431,7 +431,7 @@ namespace HoteldosNobresBlazor.Funcoes
                 {
                     logSistema.Log += AjustarEndereco(novareserva);
                     if (novareserva.GuestID != null)
-                        logSistema.Log += FunctionAPICLOUDBEDs.putGuest(novareserva.GuestID, "guestEmail", "reserva@airbnb.com").Result;
+                        logSistema.Log += FunctionAPICLOUDBEDs.putGuest(novareserva.GuestID, "guestEmail", novareserva.IDReservaAgencia + "@airbnb.com").Result;
                     logSistema.Log += FunctionAPICLOUDBEDs.putGuest(novareserva.GuestID, "guestState", "Minas Gerais").Result;
                     logSistema.Log += FunctionAPICLOUDBEDs.putGuest(novareserva.GuestID, "guestCountry", "BR").Result;
 
@@ -449,6 +449,13 @@ namespace HoteldosNobresBlazor.Funcoes
                         logSistema.Log += PagamentoReserva(novareserva);
                     }
                     
+                }
+
+                if (novareserva is not null && novareserva.Origem is not null && novareserva.Origem!.ToUpper().Contains("EXPEDIA"))
+                {
+                    logSistema.Log += FunctionWhatsApp.postMensagemTempleteDadosFaltando(novareserva.ProxyCelular!, novareserva.IDReserva!, novareserva.NomeHospede!, novareserva.LinkPublico).Result;
+                    FuncoesEmail.EnviarEmailCPF(novareserva.Email, novareserva.IDReserva, novareserva.NomeHospede);
+
                 }
 
                 if (novareserva is not null && novareserva.Origem is not null && 

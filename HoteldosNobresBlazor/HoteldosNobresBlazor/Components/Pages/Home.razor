@@ -2,6 +2,7 @@
 @using HoteldosNobresBlazor.Classes
 @using HoteldosNobresBlazor.Classes.BookingComDTO
 @using HoteldosNobresBlazor.Funcoes
+@using System.Globalization
 @inject AppState appState
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 @inject NavigationManager NavigationManagerHome
@@ -270,19 +271,34 @@
         // var chat = api.Chat.CreateConversation();
         // Console.WriteLine(result);
 
-        string checkin = "2025-01-08";
-        string checkout = "2025-01-09";
+        string checkin = "2025-01-09";
+        string checkout = "2025-01-10";
 
         BookingComDTO bookingComDTO = await FunctionBookingCom.postBookingCom(checkin, checkout);
         if (bookingComDTO != null && bookingComDTO.Accommodation != null && bookingComDTO.Accommodation.Count() > 0)
         {
             List<Accommodation> accommodations = bookingComDTO.Accommodation.ToList();
-            accommodations = accommodations.Where(m => m.Id == 495875 ||  m.Id == 495875 ).ToList();
+            accommodations = accommodations.Where(m => m.Id == 495875 || m.Id == 326051).ToList();
             if (accommodations.Count() > 0)
             {
                 foreach (Accommodation accommodation in accommodations)
                 {
                     decimal? price = accommodation.Price!.Total;
+
+                    Rate rate = FunctionAPICLOUDBEDs.getRatesAsync("463214", DateTime.Parse(checkin), DateTime.Parse(checkout)).Result;
+                    if (rate.Success)
+                    {
+                        foreach (RoomRateDetailed roomRateDetailed in rate.Data.RoomRateDetailed)
+                        {
+                            decimal valornovo = roomRateDetailed.Rate;
+                            // valornovo += (roomRateDetailed.Rate * desconto / 100);
+                            // string stringvalor = valornovo.ToString("N", new CultureInfo("en-US"));
+                            // retorno = FunctionAPICLOUDBEDs.postRateAsync(rate.Data.RateId, roomRateDetailed.Date.DateTime, roomRateDetailed.Date.DateTime, stringvalor).Result + " \n";
+
+                        }
+
+                    }
+
                 }
                 
             }
