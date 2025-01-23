@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Google.Apis.Auth" Version="1.68.0" />
+    <PackageReference Include="Google.Apis.Auth" Version="1.69.0" />
     <PackageReference Include="Google.Apis.PeopleService.v1" Version="1.68.0.3359" />
     <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="9.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.1" />
@@ -25,7 +25,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.1" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.1" />
     <PackageReference Include="MosaicoSolutions.ViaCep" Version="5.0.0" />
-    <PackageReference Include="MudBlazor" Version="7.16.0" />
+    <PackageReference Include="MudBlazor" Version="8.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="OpenAC.Net.NFSe" Version="1.6.0.1" />
     <PackageReference Include="pix-payload-generator.net" Version="1.0.21" />
@@ -34,7 +34,7 @@
     <PackageReference Include="System.Net.NetworkInformation" Version="4.3.0" />
     <PackageReference Include="System.Private.Uri" Version="4.3.2" />
     <PackageReference Include="System.Text.Json" Version="9.0.1" />
-    <PackageReference Include="WhatsappBusiness.CloudApi" Version="1.0.45" />
+    <PackageReference Include="WhatsappBusiness.CloudApi" Version="1.0.46" />
   </ItemGroup>
 
   <ItemGroup>
