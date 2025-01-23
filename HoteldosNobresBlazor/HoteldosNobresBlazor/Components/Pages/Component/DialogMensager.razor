@@ -11,7 +11,7 @@
     </DialogActions>
 </MudDialog>
 @code {
-    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; }
     string mensagem = "Olá, seja bem vindo ao Hotel dos Nobres, estamos aguardando sua chegada, qualquer dúvida ou informação estamos a disposição. Lembrando que a recepção esta pronta para te atender qualquer duvida pode chamar. Se precisar de mais coberta ou troca de algum item pode solicitar. Obrigado ";
 
     public bool CheckBoxEmail { get; set; } = true;
