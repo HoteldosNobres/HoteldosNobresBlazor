@@ -995,7 +995,7 @@ namespace HoteldosNobresBlazor.Funcoes
             string retorno = "";
             if (string.IsNullOrEmpty(reserva.SnNum) && reserva.Status!.ToUpper() != "CHECKED_OUT" && reserva.Status.ToUpper() != "CANCELED")
                 retorno = FuncoesFNRH.Inserir(reserva);
-            else if (!string.IsNullOrEmpty(reserva.SnNum))
+            else if (!string.IsNullOrEmpty(reserva.SnNum) && reserva.Status.ToUpper() != "CANCELED")
                 retorno = FuncoesFNRH.Atualizar(reserva);
 
             if (retorno.Contains("SNRHos-MS0001") || retorno.Contains("SNRHos-ME0026"))
@@ -1034,7 +1034,7 @@ namespace HoteldosNobresBlazor.Funcoes
                 retorno += " SnNum: " + reserva.SnNum + " ";
                 CheckInFNRH(reserva);
 
-                if ((reserva.Status!.ToUpper() == "CHECK OUT FEITO" || reserva.Status.ToUpper() == "CHECKED_OUT"))
+                if (reserva.Status!.ToUpper() == "CHECK OUT FEITO" || reserva.Status.ToUpper() == "CHECKED_OUT" || reserva.Status.ToUpper() != "CANCELED")
                     CheckOutFNRH(reserva);
 
             }
@@ -1058,7 +1058,7 @@ namespace HoteldosNobresBlazor.Funcoes
                 retorno = FuncoesFNRH.CheckIn(reserva);
 
                 if (!string.IsNullOrEmpty(reservationNoteID))
-                    retorno += FunctionAPICLOUDBEDs.putReservationNote(reserva.IDReserva, reservationNoteID, "SNRHos-MS0003(" + reserva.SnNum + ")").Result;
+                    retorno += FunctionAPICLOUDBEDs.putReservationNote(reserva.IDReserva!, reservationNoteID, "SNRHos-MS0003(" + reserva.SnNum + ")").Result;
             }
             return retorno;
         }
@@ -1068,11 +1068,14 @@ namespace HoteldosNobresBlazor.Funcoes
             string retorno = string.Empty;
             string reservationNoteID = reserva.Notas.Where(x => x.Texto.Contains("SNRHos-")).FirstOrDefault().Id!.ToString();
 
-            if ((reserva.Status!.ToUpper() == "CHECK OUT FEITO" || reserva.Status.ToUpper() == "CHECKED_OUT")
+            if ((reserva.Status!.ToUpper() == "CHECK OUT FEITO" || reserva.Status.ToUpper() == "CHECKED_OUT" || reserva.Status.ToUpper() != "CANCELED")
                  && !string.IsNullOrEmpty(reserva.SnNum))
             {
                 reserva.DataCheckOutRealizado = DateTime.Parse(TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone).ToString("yyyy-MM-dd HH:mm:ss"));
                 retorno = FuncoesFNRH.CheckOut(reserva);
+
+                if (!string.IsNullOrEmpty(reservationNoteID))
+                    retorno += FunctionAPICLOUDBEDs.putReservationNote(reserva.IDReserva!, reservationNoteID, "SNRHos-MS0004(" + reserva.SnNum + ")").Result;
             }
 
             if (retorno.Contains("SNRHos-MS0004"))
