@@ -624,6 +624,7 @@ else
         try
         {
             cloudbedsAPI.PutReservaAsync(reserva.IDReserva.ToString(), "estimatedArrivalTime", "null");
+            FuncoesEmail.EnviarEmailSuporte(reserva.IDReserva, reserva.NomeHospede, 4);
             Snackbar.Add("Sucesso Zera Hora", Severity.Success);
         }
         catch (Exception ex)
@@ -642,6 +643,7 @@ else
             if (horario.Hour >= 14 && horario.Hour <= 23)
             {
                 cloudbedsAPI.PutReservaAsync(reserva.IDReserva.ToString(), "estimatedArrivalTime", horario.ToString("HH:mm"));
+                FuncoesEmail.EnviarEmailSuporte(reserva.IDReserva, reserva.NomeHospede, 4);
             }
             else
             {

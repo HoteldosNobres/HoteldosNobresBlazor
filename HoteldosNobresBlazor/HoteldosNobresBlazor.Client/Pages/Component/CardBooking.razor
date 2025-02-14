@@ -118,6 +118,8 @@
             if (horario.Hour >= 14 && horario.Hour <= 23)
             {
                 cloudbedsAPI.PutReservaAsync(reserva.IDReserva.ToString(), "estimatedArrivalTime", horario.ToString("HH:mm"));
+                FuncoesEmail.EnviarEmailSuporte(reserva.IDReserva, reserva.NomeHospede, 4);
+                Snackbar.Add("O horário previsão de chegada foi ajustado", Severity.Success);
             }
             else
             {

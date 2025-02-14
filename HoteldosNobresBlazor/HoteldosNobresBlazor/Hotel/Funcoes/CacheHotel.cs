@@ -409,7 +409,7 @@ namespace HoteldosNobresBlazor.Funcoes
                 {
                     logSistema.Log += AjustarEndereco(novareserva);
                     if (novareserva.GuestID != null)
-                        logSistema.Log += FunctionAPICLOUDBEDs.putGuest(novareserva.GuestID, "guestEmail", "reserva@cvc.com").Result;
+                        logSistema.Log += FunctionAPICLOUDBEDs.putGuest(novareserva.GuestID, "guestEmail", "reserva@DESPEGAR.com").Result;
                     logSistema.Log += FunctionAPICLOUDBEDs.putGuest(novareserva.GuestID, "guestState", "Minas Gerais").Result;
                     logSistema.Log += FunctionAPICLOUDBEDs.putGuest(novareserva.GuestID, "guestCountry", "BR").Result;
 
@@ -442,6 +442,7 @@ namespace HoteldosNobresBlazor.Funcoes
                 {
                     logSistema.Log += FunctionWhatsApp.postMensagemTempleteDadosFaltando(novareserva.ProxyCelular!, novareserva.IDReserva!, novareserva.NomeHospede!, novareserva.LinkPublico).Result;
                     FuncoesEmail.EnviarEmailCPF(novareserva.Email, novareserva.IDReserva, novareserva.NomeHospede);
+                    FuncoesEmail.EnviarEmailSuporte(novareserva.IDReserva, novareserva.NomeHospede, 3);
 
                     var novareservaratedetails = FunctionAPICLOUDBEDs.getReservationsWithRateDetailsAsync(novareserva).Result;
                     if(novareservaratedetails is not null && novareservaratedetails.Source is not null && novareservaratedetails.Source.PaymentCollect.ToLower().Equals("collect"))
@@ -479,7 +480,9 @@ namespace HoteldosNobresBlazor.Funcoes
                         FuncoesEmail.EnviarEmailHTML(novareserva.Email!, corpoemail, "MAIS INFORMAÇÕES E QRCODE DO PIX");
 
 
-                    } 
+                    }
+
+                    FuncoesEmail.EnviarEmailSuporte(novareserva.IDReserva, novareserva.NomeHospede, 3);
                 }
 
                 if (novareserva != null && novareserva.Estado != null && novareserva.CEP != null)
@@ -515,6 +518,11 @@ namespace HoteldosNobresBlazor.Funcoes
                 }
 
                 logSistema.Log += AjusteRate(novareserva.IDReserva);
+
+                //E-mail para o suporte Cloubeds
+                FuncoesEmail.EnviarEmailSuporte(novareserva.IDReserva, novareserva.NomeHospede, 1);
+
+
 
                 AppState.ListLogSistemaAddReserva.Add(logSistema);
             }

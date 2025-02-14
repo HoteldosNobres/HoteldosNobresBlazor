@@ -336,17 +336,30 @@ public class Reserva
             }
         }
 
+        
+        var ListaQuartosHospede = new List<Quarto>();
+        if (guest.Rooms is not null && guest.Rooms.Length > 0)
+        {
+            foreach (var item in guest.Rooms)
+            {
+                Quarto quarto = new Quarto();
+                quarto.ID = item.RoomTypeId.ToString();
+                quarto.Descricao = item.RoomTypeName;
+                ListaQuartosHospede.Add(quarto);
+            }
+        } 
+
         ListaQuartos = new List<Quarto>();
         foreach (var item in reservation.Data.Assigned)
-        { 
-            Quarto quarto = new Quarto();
-            quarto.ID = item.RoomTypeId.ToString();
-            quarto.Descricao = item.RoomTypeName;
-            quarto.Adults = item.Adults;
-            quarto.Children = item.Children;
-            quarto.Total = item.RoomTotal;
-            ListaQuartos.Add(quarto);
-        }
+            {
+                Quarto quarto = new Quarto();
+                quarto.ID = item.RoomTypeId.ToString();
+                quarto.Descricao = ListaQuartosHospede.Where(x => x.ID.Equals(quarto.ID)).Count() > 0 ?  ListaQuartosHospede.Where(x=> x.ID.Equals(quarto.ID)).FirstOrDefault().Descricao :  item.RoomTypeName;
+                quarto.Adults = item.Adults;
+                quarto.Children = item.Children;
+                quarto.Total = item.RoomTotal;
+                ListaQuartos.Add(quarto);
+            }
 
         ListaQuartosCancelados = new List<Quarto>();
         foreach (var item in reservation.Data.Unassigned)
