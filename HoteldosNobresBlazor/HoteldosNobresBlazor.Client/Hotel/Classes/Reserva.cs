@@ -137,6 +137,8 @@ public class Reserva
         }
     }
 
+    public string ObsFnhr { get; set; }
+
     public string LinkReserva
     {
         get
@@ -246,6 +248,7 @@ public class Reserva
 
     public void Converte(Reservation reservation)
     {
+        ObsFnhr = Obs;
         CustomerID = reservation.Data.ReservationId;
         DataCheckIn = DateTime.Parse(reservation.Data.StartDate.ToString());
         // DataCheckInRealizado = reserva.DataCheckInRealizado;
@@ -374,6 +377,7 @@ public class Reserva
 
     public void Converte(Reservations reservationdata)
     {
+        ObsFnhr = Obs;
         ReservationsData reservation = reservationdata.Data[0];
         CustomerID = reservation.ReservationId;
         DataCheckIn = DateTime.Parse(reservation.StartDate.ToString());
@@ -494,6 +498,7 @@ public class Reserva
 
     public void Converte(ReservationsData reservation)
     {
+        ObsFnhr = Obs;
         CustomerID = reservation.ReservationId;
         DataCheckIn = DateTime.Parse(reservation.StartDate.ToString());
         DataCheckOut = DateTime.Parse(reservation.EndDate.ToString());
@@ -517,8 +522,7 @@ public class Reserva
 
 
     }
-
-
+     
 }
 
 public class Nota
