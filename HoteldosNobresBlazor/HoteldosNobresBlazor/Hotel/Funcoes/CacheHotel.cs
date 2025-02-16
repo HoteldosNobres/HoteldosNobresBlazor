@@ -34,6 +34,31 @@ namespace HoteldosNobresBlazor.Funcoes
             AppState = appState;
         }
 
+        public void CacheExecutanado()
+        {
+            Thread threadreserva = new Thread(ListaReservaMetodo);
+            threadreserva.Start();
+
+            Thread thread = new Thread(NovoMetodo);
+            thread.Start();
+
+            Thread thread2 = new Thread(FNRHMetodo);
+            thread2.Start();
+
+            Thread thread3 = new Thread(PagamentoMetodo);
+            thread3.Start();
+             
+            //Reserva reserva = new Reserva();
+            //reserva.IDReserva = "9317965093589";
+            //reserva = FunctionAPICLOUDBEDs.getReservationAsync(reserva).Result;
+            //AjustarEndereco(reserva);
+            //string log;
+            ////log = FunctionWhatsApp.postMensagemTemplete(reserva.ProxyCelular, "inf_mtur").Result;
+            ////log += FunctionWhatsApp.postMensageFlowCPF(reserva.ProxyCelular).Result;
+            //log = FunctionWhatsApp.postMensagemTemplete("5511998958811", "inf_inicial").Result;
+
+        }
+
         #region Whatsapp 
 
         public string RecebeMensagem(string json)
@@ -861,34 +886,7 @@ namespace HoteldosNobresBlazor.Funcoes
             }
 
         }
-
-        public void CacheExecutanado()
-        {
-            Thread threadreserva = new Thread(ListaReservaMetodo);
-            threadreserva.Start();
-
-            Thread thread = new Thread(NovoMetodo);
-            thread.Start();
-
-            Thread thread2 = new Thread(FNRHMetodo);
-            thread2.Start();
-
-            Thread thread3 = new Thread(PagamentoMetodo);
-            thread3.Start();
-
-            //Reserva reserva = new Reserva();
-            //reserva.IDReserva = "9317965093589";
-            //reserva = FunctionAPICLOUDBEDs.getReservationAsync(reserva).Result;
-            //AjustarEndereco(reserva);
-            //string log;
-            ////log = FunctionWhatsApp.postMensagemTemplete(reserva.ProxyCelular, "inf_mtur").Result;
-            ////log += FunctionWhatsApp.postMensageFlowCPF(reserva.ProxyCelular).Result;
-            //log = FunctionWhatsApp.postMensagemTemplete("5511998958811", "inf_inicial").Result;
-
-
-
-        }
-
+         
         #endregion CloudBeds
 
         static void ListaReservaMetodo()
