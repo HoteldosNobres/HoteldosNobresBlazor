@@ -1,0 +1,15 @@
+# Apara aecssa a pagina
+name: Confirmar reserva
+
+on: 
+  schedule:
+    - cron: '0 17 * * *'
+      
+jobs:
+  Acessando:
+    runs-on: ubuntu-latest
+    steps: 
+      - name: Acessar página
+        run: |
+          curl -f -s -o /dev/null -w "%{http_code}" https://apihoteldosnobres.azurewebsites.net/actions?funcao=limparHotel | grep 200
+ 

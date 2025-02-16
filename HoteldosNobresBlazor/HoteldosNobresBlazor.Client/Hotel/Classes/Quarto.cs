@@ -8,6 +8,7 @@ public class Quarto
 {
     //nformações da reserva
     public string? ID { get; set; }
+    public string? TypeID { get; set; }
     public string? Descricao { get; set; }
 
     public long? Adults { get; set; }

@@ -1,15 +1,45 @@
-﻿using HoteldosNobresBlazor.Classes;
+﻿using Google.Apis.PeopleService.v1.Data;
+using HoteldosNobresBlazor.Classes;
 using HoteldosNobresBlazor.Client.FuncoesClient;
 using HoteldosNobresBlazor.Components.Pages;
 using HoteldosNobresBlazor.FuncoesClient;
 using Newtonsoft.Json;
 using System.Globalization;
+using System.Text.RegularExpressions;
 
 namespace HoteldosNobresBlazor.Funcoes;
 
 public class FunctionAPICLOUDBEDs
 {
     static string urlapi = @"https://api.cloudbeds.com/api/v1.2";
+
+    #region hOUSEKEEPING
+    public static async Task<string> PostHousekeepingStatus(string roomID, string roomCondition)
+    {
+        try
+        {
+            var client = new HttpClient();
+            var request = new HttpRequestMessage(HttpMethod.Post, urlapi + "/postHousekeepingStatus");
+            request.Headers.Add("Accept", "application/json");
+            request.Headers.Add("Authorization", "Bearer " + KEYs.TOKEN_CLOUDBEDS); 
+            var collection = new List<KeyValuePair<string, string>>();
+            collection.Add(new("roomID", roomID));
+            collection.Add(new("roomCondition", roomCondition));
+            var content = new FormUrlEncodedContent(collection);
+            request.Content = content;
+            var response = await client.SendAsync(request);
+            response.EnsureSuccessStatusCode(); 
+            return "";
+        }
+        catch (FileNotFoundException e)
+        {
+            Console.WriteLine(e.Message);
+            return e.Message;
+        }
+    }
+
+    #endregion hOUSEKEEPING
+
 
     #region Guest
     public static async Task<string> putGuest(string guestID, string campo, string valor)
@@ -470,10 +500,8 @@ public class FunctionAPICLOUDBEDs
                 foreach (var note in notes.Data)
                 {
                     reserva.Notas.Add(new Nota(note.ReservationNoteId.ToString(), note.ReservationNote));
-                    if (note.ReservationNote.Contains("SNRHos"))
-                    {
-                        reserva.SnNum = note.ReservationNote.Replace("SNRHos-MS0001(", "").Replace("SNRHos-MS0003(", "").Replace(")", "");
-                    }
+                    if (note.ReservationNote.Contains("SNRHos-MS"))
+                        reserva.SnNum = Regex.Replace(note.ReservationNote, @"SNRHos-MS000[1-4]\(|\)", ""); 
 
                 }
             }
@@ -512,11 +540,8 @@ public class FunctionAPICLOUDBEDs
                 foreach (var note in notes.Data)
                 {
                     reserva.Notas.Add(new Nota(note.ReservationNoteId.ToString(), note.ReservationNote));
-                    if (note.ReservationNote.Contains("SNRHos"))
-                    {
-                        reserva.SnNum = note.ReservationNote.Replace("SNRHos-MS0001(", "").Replace("SNRHos-MS0003(", "").Replace(")", "");
-                    }
-
+                    if (note.ReservationNote.Contains("SNRHos-MS"))
+                        reserva.SnNum = Regex.Replace(note.ReservationNote, @"SNRHos-MS000[1-4]\(|\)", ""); 
                 }
             }
             return reserva;
@@ -597,6 +622,8 @@ public class FunctionAPICLOUDBEDs
             request.Content = content;
             var response = await client.SendAsync(request);
             response.EnsureSuccessStatusCode();
+
+            reserva.Notas!.Add(new Nota("", note));
 
             return reserva;
         }

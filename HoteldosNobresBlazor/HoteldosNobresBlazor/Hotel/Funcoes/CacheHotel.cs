@@ -4,11 +4,14 @@ using HoteldosNobresBlazor.Classes.PagSeguroRecebe;
 using HoteldosNobresBlazor.Classes.SicoobRecebe;
 using HoteldosNobresBlazor.Components.Pages;
 using HoteldosNobresBlazor.Services;
+using Microsoft.Win32;
 using Newtonsoft.Json;
+using OpenAC.Net.Core.Extensions;
 using pix_payload_generator.net.Models.CobrancaModels;
 using System.Data;
 using System.Globalization;
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Xml.Serialization;
 using WhatsappBusiness.CloudApi.Messages.Requests;
 using WhatsappBusiness.CloudApi.Webhook;
@@ -353,6 +356,31 @@ namespace HoteldosNobresBlazor.Funcoes
 
                 }
 
+                if (parametros.Contains("limparHotel"))
+                {
+
+                    var listReservacheckin = FunctionAPICLOUDBEDs.getReservationsCheckinAsync(DateTime.Now.ToString("yyyy-MM-dd")).Result;
+                    foreach (Reserva reserva in listReservacheckin)
+                    {
+                        var reservaaqui = FunctionAPICLOUDBEDs.getReservationAsync(reserva).Result;
+
+                        LogSistema logSistema = new LogSistema();
+                        logSistema.Log = "confirmareserva-";
+                        logSistema.IDReserva = reservaaqui.IDReserva.ToString();
+                        logSistema.Status = reservaaqui.Status;
+                        logSistema.DataLog = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone);
+
+                        foreach(Quarto quarto in reservaaqui.ListaQuartos)
+                        {
+                            if(quarto.ID is not null)
+                                logSistema.Log += FunctionAPICLOUDBEDs.PostHousekeepingStatus(quarto.ID!, "clean").Result;
+                        } 
+                        logSistema.Log += "- Quarto marcado como Limpo";
+                        AppState.ListLogSistemaAddReserva.Add(logSistema);
+                    }
+
+                }
+
             }
             catch (Exception e)
             {
@@ -551,7 +579,7 @@ namespace HoteldosNobresBlazor.Funcoes
                     {
                         foreach (Quarto quarto in reservalocal.ListaQuartos)
                         {
-                            Rate rate = FunctionAPICLOUDBEDs.getRatesAsync(quarto.ID.ToString(), reservalocal.DataCheckIn.GetValueOrDefault(), reservalocal.DataCheckOut.GetValueOrDefault()).Result;
+                            Rate rate = FunctionAPICLOUDBEDs.getRatesAsync(quarto.TypeID.ToString(), reservalocal.DataCheckIn.GetValueOrDefault(), reservalocal.DataCheckOut.GetValueOrDefault()).Result;
                             if (rate.Success)
                             {
                                 foreach (RoomRateDetailed roomRateDetailed in rate.Data.RoomRateDetailed)
@@ -571,7 +599,7 @@ namespace HoteldosNobresBlazor.Funcoes
                     {
                         foreach (Quarto quarto in reservalocal.ListaQuartosCancelados)
                         {
-                            Rate rate = FunctionAPICLOUDBEDs.getRatesAsync(quarto.ID.ToString(), reservalocal.DataCheckIn.GetValueOrDefault(), reservalocal.DataCheckOut.GetValueOrDefault()).Result;
+                            Rate rate = FunctionAPICLOUDBEDs.getRatesAsync(quarto.TypeID.ToString(), reservalocal.DataCheckIn.GetValueOrDefault(), reservalocal.DataCheckOut.GetValueOrDefault()).Result;
                             if (rate.Success)
                             {
                                 foreach (RoomRateDetailed roomRateDetailed in rate.Data.RoomRateDetailed)
@@ -692,11 +720,13 @@ namespace HoteldosNobresBlazor.Funcoes
                 string retorno = "";
                 DateTime brazilTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone);
 
-                if (reserva != null && reserva.Status != null && reserva.Status.ToUpper() == "CHECKED_IN")
+                if (reserva is null || reserva.Status is null)
+                    throw new Exception("Reserva ou Status não informado");
+
+                if (reserva.Status.ToUpper() == "CHECKED_IN")
                 {
                     bool voltar = false;
-                    if (reserva != null && reserva.Origem != null
-                        && (reserva.Origem.ToUpper().Contains("AIRBNB") || reserva.Origem.ToUpper().Contains("BOOKING.COM")))
+                    if (reserva != null)
                     {
                         if (string.IsNullOrEmpty(reserva.Cpf) || (reserva.Cpf != null && !ValidarCPF(reserva.Cpf)))
                         {
@@ -735,7 +765,7 @@ namespace HoteldosNobresBlazor.Funcoes
 
                 }
 
-                if (reserva.Status != null && reserva.Status.ToUpper() == "CANCELED")
+                if (reserva.Status.ToUpper() == "CANCELED")
                 {
                     logSistema.Log += AjusteRate(reserva.IDReserva);
 
@@ -750,8 +780,12 @@ namespace HoteldosNobresBlazor.Funcoes
                     }
                 }
 
+                if (reserva!.Status.ToUpper() == "CHECKED_OUT" && !reserva.ProxyCelular!.Equals("553537150180"))
+                {
+                    logSistema.Log += FunctionWhatsApp.postMensagemTempleteFeedback(reserva.ProxyCelular!, reserva.IDReserva, reserva.NomeHospede!).Result;
+                }
 
-                logSistema.Log += CheckInOrCheckOutFNRH(reserva);
+                logSistema.Log += CheckInOrCheckOutFNRH(reserva!);
 
                 logSistema.Log += retorno + "\n";
 
@@ -992,34 +1026,58 @@ namespace HoteldosNobresBlazor.Funcoes
 
         private static string SaveOrUpdateFNRH(Reserva reserva)
         {
-            string retorno = "";
+            string retorno = string.Empty;
+            string mensagem = string.Empty;
+
             if (string.IsNullOrEmpty(reserva.SnNum) && reserva.Status!.ToUpper() != "CHECKED_OUT" && reserva.Status.ToUpper() != "CANCELED")
                 retorno = FuncoesFNRH.Inserir(reserva);
             else if (!string.IsNullOrEmpty(reserva.SnNum) && reserva.Status.ToUpper() != "CANCELED")
                 retorno = FuncoesFNRH.Atualizar(reserva);
 
-            if (retorno.Contains("SNRHos-MS0001") || retorno.Contains("SNRHos-ME0026"))
+            retorno = retorno.Replace("Não foi possivel gravar o registro", "");
+
+            if (retorno.Contains("SNRHos-MS0001") || retorno.Contains("SNRHos-MS0002"))
             {
-                retorno = retorno.Contains("SNRHos-ME0026") ? "CPF inválido" : retorno;
-                if (reserva.Notas == null)
-                    reserva.Notas = new List<Nota>();
-                if (reserva.Notas.Where(x => x.Texto == retorno).Count() == 0)
+                reserva.SnNum = Regex.Replace(retorno, @"SNRHos-MS000[1-4]\(|\)", "");
+                mensagem = "SNRHos-MS0001(" + reserva.SnNum + ")"; 
+            }
+
+            if (retorno.Contains("SNRHos-ME"))
+            {
+                var match = Regex.Match(retorno!, @"SNRHos-ME00[0-9][0-9]");
+                string sNRHosME = match.Success ? match.Groups[0].Value : string.Empty;
+
+                int mensagemerro = Convert.ToInt32(Regex.Replace(sNRHosME, @"SNRHos-ME0", ""));
+                var sNRHosException = (SNRHosException)mensagemerro;
+
+                mensagem = sNRHosException.GetDescription();
+
+                if (mensagemerro == 31)
+                    return mensagem; 
+
+            } 
+
+            reserva.Notas = reserva.Notas ?? new List<Nota>();
+            retorno = mensagem;
+
+            if (reserva.Notas.Where(x => x.Texto == mensagem).Count() == 0)
+            {  
+
+                if (reserva.Notas.Where(x => x.Texto.Contains("SNRHos-ME")).Count() > 0)
                 {
-                    reserva.Notas.Add(new Nota("", retorno));
-                    if (retorno.Contains("SNRHos-MS0001") || retorno.Contains("SNRHos-ME0026"))
-                    {
-                        reserva.SnNum = retorno.Replace("SNRHos-MS0003(", "").Replace("SNRHos-MS0001(", "").Replace(")", "");
-                        if (reserva.Notas.Where(x => x.Texto == "CPF inválido").Count() > 0)
-                        {
-                            retorno += FunctionAPICLOUDBEDs.putReservationNote(reserva.IDReserva!, reserva.Notas.FirstOrDefault(x => x.Texto == "CPF inválido").Id!, retorno).Result;
-                        }
-                        else
-                            reserva = FunctionAPICLOUDBEDs.postReservationNote(reserva, retorno).Result;
-                    }
-
+                    retorno += FunctionAPICLOUDBEDs.putReservationNote(reserva.IDReserva!, reserva.Notas!.FirstOrDefault(x => x.Texto.Contains("SNRHos-ME")).Id!, mensagem).Result;
                 }
-
-
+                else if (reserva.Notas.Where(x => x.Texto.Contains("SNRHos-MS0002")).Count() > 0)
+                {
+                    retorno += FunctionAPICLOUDBEDs.putReservationNote(reserva.IDReserva!, reserva.Notas!.FirstOrDefault(x => x.Texto.Contains("SNRHos-MS0002")).Id!, mensagem).Result;
+                }else if (reserva.Notas.Where(x => x.Texto!.Contains(reserva.SnNum!)).Count() > 0)
+                {
+                    retorno = mensagem;
+                }
+                else
+                {
+                    reserva = FunctionAPICLOUDBEDs.postReservationNote(reserva, retorno).Result; 
+                }
             }
 
             return retorno;
@@ -1034,7 +1092,7 @@ namespace HoteldosNobresBlazor.Funcoes
                 retorno += " SnNum: " + reserva.SnNum + " ";
                 CheckInFNRH(reserva);
 
-                if (reserva.Status.ToUpper() == "CHECKED_OUT" || reserva.Status.ToUpper() != "CANCELED")
+                if (reserva.Status.ToUpper() == "CHECKED_OUT" || reserva.Status.ToUpper() == "CANCELED")
                     CheckOutFNRH(reserva);
 
             }
@@ -1049,9 +1107,9 @@ namespace HoteldosNobresBlazor.Funcoes
         {
             string retorno = string.Empty;
 
-            if ((reserva.Status!.ToUpper() == "HOSPEDADO" || reserva.Status.ToUpper() == "CHECKED_IN" || reserva.Status.ToUpper() == "CHECKED_OUT" || reserva.Status.ToUpper() == "CHECK OUT FEITO") 
+            if ((reserva.Status!.ToUpper() == "HOSPEDADO" || reserva.Status.ToUpper() == "CHECKED_IN" || reserva.Status.ToUpper() == "CHECKED_OUT" || reserva.Status.ToUpper() == "CHECK OUT FEITO")
                 && reserva.Notas is not null)
-            { 
+            {
                 reserva.Notas = reserva.Notas.Where(x => x.Texto is not null && x.Texto.Contains("SNRHos-")).ToList();
 
                 foreach (var nota in reserva.Notas)
@@ -1060,22 +1118,20 @@ namespace HoteldosNobresBlazor.Funcoes
                     {
                         string reservationNoteID = nota.Id.ToString();
 
+                        if (nota.Texto.Contains("SNRHos-MS"))
+                            reserva.SnNum = Regex.Replace(nota.Texto, @"SNRHos-MS000[1-4]\(|\)", "");
+
                         if (nota.Texto.Contains("SNRHos-MS0001(" + reserva.SnNum + ")"))
                         {
                             // PEGAR HORARIO DO CHCKin reserva = FunctionAPICLOUDBEDs.getReservationAsync(reserva).Result;
                             reserva.DataCheckInRealizado = DateTime.Parse(TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone).ToString("yyyy-MM-dd HH:mm:ss"));
                             retorno += FuncoesFNRH.CheckIn(reserva);
-
-                            reserva.DataCheckOutRealizado = DateTime.Parse(TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone).ToString("yyyy-MM-dd HH:mm:ss"));
-                            retorno += FuncoesFNRH.CheckOut(reserva);
-                             
                             retorno += FunctionAPICLOUDBEDs.putReservationNote(reserva.IDReserva!, reservationNoteID, "SNRHos-MS0003(" + reserva.SnNum + ")").Result;
-                             
+
                         }
                         else
                         {
-                            reserva.SnNum = nota.Texto.Replace("SNRHos-MS0001(", "").Replace(")", "");
-                            reserva.ObsFnhr +=  " SNRHos duplicado ";
+                            reserva.ObsFnhr += " SNRHos duplicado ";
                             retorno = FuncoesFNRH.Atualizar(reserva);
 
                             reserva.DataCheckInRealizado = DateTime.Parse(TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone).ToString("yyyy-MM-dd HH:mm:ss"));
@@ -1101,24 +1157,20 @@ namespace HoteldosNobresBlazor.Funcoes
             string retorno = string.Empty;
             string reservationNoteID = reserva.Notas.Where(x => x.Texto.Contains("SNRHos-")).FirstOrDefault().Id!.ToString();
 
-            if ((reserva.Status!.ToUpper() == "CHECK OUT FEITO" || reserva.Status.ToUpper() == "CHECKED_OUT" || reserva.Status.ToUpper() != "CANCELED")
-                 && !string.IsNullOrEmpty(reserva.SnNum))
+            if (reserva.Status is not null
+                && (reserva.Status.ToUpper() == "CHECKED_OUT" || reserva.Status.ToUpper() == "CANCELED")
+                && !string.IsNullOrEmpty(reserva.SnNum))
             {
                 reserva.DataCheckOutRealizado = DateTime.Parse(TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone).ToString("yyyy-MM-dd HH:mm:ss"));
                 retorno = FuncoesFNRH.CheckOut(reserva);
 
-                if ( retorno.Contains("SNRHos-MS0004") && !string.IsNullOrEmpty(reservationNoteID))
+                if (retorno.Contains("SNRHos-MS0004") && !string.IsNullOrEmpty(reservationNoteID))
                     retorno += FunctionAPICLOUDBEDs.putReservationNote(reserva.IDReserva!, reservationNoteID, "SNRHos-MS0004(" + reserva.SnNum + ")").Result;
             }
 
             if (retorno.Contains("SNRHos-MS0004"))
             {
-                retorno += FunctionAPICLOUDBEDs.deleteReservationNote(reserva, "SNRHos-").Result;
-
-                if (!reserva.ProxyCelular!.Equals("553537150180"))
-                {
-                    retorno += FunctionWhatsApp.postMensagemTempleteFeedback(reserva.ProxyCelular!, reserva.IDReserva, reserva.NomeHospede).Result;
-                }
+                retorno += FunctionAPICLOUDBEDs.deleteReservationNote(reserva, "SNRHos-MS0004").Result;
             }
             return retorno;
         }

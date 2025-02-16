@@ -314,7 +314,7 @@ public class Reserva
         Address = guest.GuestAddress;
         Postalcode = guest.GuestZip;
 
-        Contry = guest.GuestCountry == null || guest.GuestCountry.Contains("BR")  ? "BRASIL" : guest.GuestCountry;
+        Contry = guest.GuestCountry == null || guest.GuestCountry.Contains("BR") || guest.GuestCountry.Equals("00") ? "BRASIL" : guest.GuestCountry;
         CEP = guest.GuestZip.Replace("-", "").Replace(" ", "");
         Cidade = guest.GuestCity;
         Estado = guest.GuestState;
@@ -346,7 +346,8 @@ public class Reserva
             foreach (var item in guest.Rooms)
             {
                 Quarto quarto = new Quarto();
-                quarto.ID = item.RoomTypeId.ToString();
+                quarto.ID = item.RoomId.ToString();
+                quarto.TypeID = item.RoomTypeId.ToString();
                 quarto.Descricao = item.RoomTypeName;
                 ListaQuartosHospede.Add(quarto);
             }
@@ -356,8 +357,9 @@ public class Reserva
         foreach (var item in reservation.Data.Assigned)
             {
                 Quarto quarto = new Quarto();
-                quarto.ID = item.RoomTypeId.ToString();
-                quarto.Descricao = ListaQuartosHospede.Where(x => x.ID.Equals(quarto.ID)).Count() > 0 ?  ListaQuartosHospede.Where(x=> x.ID.Equals(quarto.ID)).FirstOrDefault().Descricao :  item.RoomTypeName;
+                quarto.ID = item.RoomId.ToString();
+                quarto.TypeID = item.RoomTypeId.ToString();
+                quarto.Descricao = ListaQuartosHospede.Where(x => x.ID.Equals(quarto.TypeID)).Count() > 0 ?  ListaQuartosHospede.Where(x=> x.TypeID.Equals(quarto.TypeID)).FirstOrDefault().Descricao :  item.RoomTypeName;
                 quarto.Adults = item.Adults;
                 quarto.Children = item.Children;
                 quarto.Total = item.RoomTotal;
@@ -368,7 +370,7 @@ public class Reserva
         foreach (var item in reservation.Data.Unassigned)
         {
             Quarto quarto = new Quarto();
-            quarto.ID = item.RoomTypeId.ToString();
+            quarto.TypeID = item.RoomTypeId.ToString();
             quarto.Descricao = item.RoomTypeName;
             ListaQuartosCancelados.Add(quarto);
         }

@@ -1,6 +1,7 @@
 ﻿using HoteldosNobresBlazor.Classes;
 using Newtonsoft.Json;
 using System.Net.Http.Json;
+using System.Text.RegularExpressions;
 
 namespace HoteldosNobresBlazor.Client.API;
 
@@ -62,9 +63,9 @@ public class APICloudbeds
                 foreach (var note in notes.Data)
                 {
                     reserva.Notas.Add(new Nota(note.ReservationNoteId.ToString(), note.ReservationNote));
-                    if (note.ReservationNote.Contains("SNRHos"))
+                    if (note.ReservationNote.Contains("SNRHos-MS"))
                     {
-                        reserva.SnNum = note.ReservationNote.Replace("SNRHos-MS0001(", "").Replace("SNRHos-MS0003(", "").Replace(")", "");
+                        reserva.SnNum = Regex.Replace(note.ReservationNote, @"SNRHos-MS000[1-4]\(|\)", ""); 
                     }
 
                 }
