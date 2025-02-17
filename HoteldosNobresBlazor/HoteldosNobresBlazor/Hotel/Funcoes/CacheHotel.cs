@@ -1024,61 +1024,71 @@ namespace HoteldosNobresBlazor.Funcoes
 
         private static string SaveOrUpdateFNRH(Reserva reserva)
         {
-            string retorno = string.Empty;
-            string mensagem = string.Empty;
-
-            if (string.IsNullOrEmpty(reserva.SnNum) && reserva.Status!.ToUpper() != "CHECKED_OUT" && reserva.Status.ToUpper() != "CANCELED")
-                retorno = FuncoesFNRH.Inserir(reserva);
-            else if (!string.IsNullOrEmpty(reserva.SnNum) && reserva.Status.ToUpper() != "CANCELED")
-                retorno = FuncoesFNRH.Atualizar(reserva);
-
-            retorno = retorno.Replace("Não foi possivel gravar o registro", "");
-
-            if (retorno.Contains("SNRHos-MS0001") || retorno.Contains("SNRHos-MS0002"))
+            try
             {
-                reserva.SnNum = Regex.Replace(retorno, @"SNRHos-MS000[1-4]\(|\)", "");
-                mensagem = "SNRHos-MS0001(" + reserva.SnNum + ")"; 
-            }
+                string retorno = string.Empty;
+                string mensagem = string.Empty;
 
-            if (retorno.Contains("SNRHos-ME"))
-            {
-                var match = Regex.Match(retorno!, @"SNRHos-ME00[0-9][0-9]");
-                string sNRHosME = match.Success ? match.Groups[0].Value : string.Empty;
+                if (string.IsNullOrEmpty(reserva.SnNum) && reserva.Status!.ToUpper() != "CHECKED_OUT" && reserva.Status.ToUpper() != "CANCELED")
+                    retorno = FuncoesFNRH.Inserir(reserva);
+                else if (!string.IsNullOrEmpty(reserva.SnNum) && reserva.Status.ToUpper() != "CANCELED" && reserva.Status.ToUpper() != "CHECKED_OUT")
+                    retorno = FuncoesFNRH.Atualizar(reserva);
 
-                int mensagemerro = Convert.ToInt32(Regex.Replace(sNRHosME, @"SNRHos-ME0", ""));
-                var sNRHosException = (SNRHosException)mensagemerro;
+                retorno = retorno.Replace("Não foi possivel gravar o registro.", "");
 
-                mensagem = sNRHosException.GetDescription();
-
-                if (mensagemerro == 31)
-                    return mensagem; 
-
-            } 
-
-            reserva.Notas = reserva.Notas ?? new List<Nota>();
-            retorno = mensagem;
-
-            if (reserva.Notas.Where(x => x.Texto == mensagem).Count() == 0)
-            {  
-
-                if (reserva.Notas.Where(x => x.Texto.Contains("SNRHos-ME")).Count() > 0)
+                if (retorno.Contains("SNRHos-MS0001") || retorno.Contains("SNRHos-MS0002"))
                 {
-                    retorno += FunctionAPICLOUDBEDs.putReservationNote(reserva.IDReserva!, reserva.Notas!.FirstOrDefault(x => x.Texto.Contains("SNRHos-ME")).Id!, mensagem).Result;
-                }
-                else if (reserva.Notas.Where(x => x.Texto.Contains("SNRHos-MS0002")).Count() > 0)
-                {
-                    retorno += FunctionAPICLOUDBEDs.putReservationNote(reserva.IDReserva!, reserva.Notas!.FirstOrDefault(x => x.Texto.Contains("SNRHos-MS0002")).Id!, mensagem).Result;
-                }else if (reserva.Notas.Where(x => x.Texto!.Contains(reserva.SnNum!)).Count() > 0)
-                {
+                    reserva.SnNum = Regex.Replace(retorno, @"SNRHos-MS000[1-4]\(|\)", "");
+                    mensagem = "SNRHos-MS0001(" + reserva.SnNum + ")";
                     retorno = mensagem;
                 }
-                else
-                {
-                    reserva = FunctionAPICLOUDBEDs.postReservationNote(reserva, retorno).Result; 
-                }
-            }
 
-            return retorno;
+                if (retorno.Contains("SNRHos-ME"))
+                {
+                    var match = Regex.Match(retorno!, @"SNRHos-ME00[0-9][0-9]");
+                    string sNRHosME = match.Success ? match.Groups[0].Value : string.Empty;
+
+                    int mensagemerro = Convert.ToInt32(Regex.Replace(sNRHosME, @"SNRHos-ME0", ""));
+                    var sNRHosException = (SNRHosException)mensagemerro;
+
+                    mensagem = sNRHosException.GetDescription();
+
+                    if (mensagemerro == 31)
+                        return mensagem;
+
+                    retorno = mensagem;
+                }
+
+                reserva.Notas = reserva.Notas ?? new List<Nota>();
+
+                if (reserva.Notas.Where(x => x.Texto == mensagem).Count() == 0 && !string.IsNullOrEmpty(mensagem))
+                { 
+                    if (reserva.Notas.Where(x => x.Texto.Contains("SNRHos-ME")).Count() > 0)
+                    {
+                        retorno += FunctionAPICLOUDBEDs.putReservationNote(reserva.IDReserva!, reserva.Notas!.FirstOrDefault(x => x.Texto.Contains("SNRHos-ME")).Id!, mensagem).Result;
+                    }
+                    else if (reserva.Notas.Where(x => x.Texto.Contains("SNRHos-MS0002")).Count() > 0)
+                    {
+                        retorno = FunctionAPICLOUDBEDs.putReservationNote(reserva.IDReserva!, reserva.Notas!.FirstOrDefault(x => x.Texto.Contains("SNRHos-MS0002")).Id!, mensagem).Result;
+                    }
+                    else if (reserva.Notas.Where(x => x.Texto!.Contains(reserva.SnNum!)).Count() > 0)
+                    {
+                        retorno = mensagem;
+                    }
+                    else
+                    {
+                        reserva = FunctionAPICLOUDBEDs.postReservationNote(reserva, retorno).Result;
+                    }
+                }
+
+                return retorno;
+
+            }
+            catch (Exception e)
+            {
+                return e.Message;
+            }
+           
         }
 
         private static string CheckInOrCheckOutFNRH(Reserva reserva)

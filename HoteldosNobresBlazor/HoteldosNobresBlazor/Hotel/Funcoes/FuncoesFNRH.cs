@@ -23,7 +23,7 @@ namespace HoteldosNobresBlazor.Funcoes
                     return retornoObj;
                 }else
                 {
-                    return "Erro " + retorno;
+                    return retorno;
                 }
                     
             }
@@ -46,7 +46,7 @@ namespace HoteldosNobresBlazor.Funcoes
             catch (FileNotFoundException e)
             {
                 Console.WriteLine(e.Message);
-                return "Erro";
+                return "Erro " + e.Message;
             }
 
         }
