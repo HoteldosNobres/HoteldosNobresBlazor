@@ -26,39 +26,51 @@ public class FuncoesEmail
         string emailsuporte = "support@cloudbeds.com";
         if (tipo == 1)
         {
-            body = "Ola, recebemos a reserva" + id;
-            body += @"  com isso esta dando erro em nossa API pois nao tem o tipo de pagamento. Esse chamado vai ser aberto ate vim essa informacao pois e importante para a nossa API. Pois na  https://developers.cloudbeds.com/reference/get_getreservation não consta essa informação. Como consta https://developers.cloudbeds.com/docs/how-to-report-an-api-bug Se você ainda estiver enfrentando problemas, envie um e-mail. ";
+            body = $@"
+            <p>Olá,</p>
+            <p>Recebemos a reserva <strong>{id}</strong>.</p>
+            <p>Com isso, está dando erro em nossa API pois não tem o tipo de pagamento. Esse chamado vai ser aberto até vir essa informação, pois é importante para a nossa API. Pois na <a href='https://developers.cloudbeds.com/reference/get_getreservation'>documentação</a> não consta essa informação. Como consta <a href='https://developers.cloudbeds.com/docs/how-to-report-an-api-bug'>aqui</a>, se você ainda estiver enfrentando problemas, envie um e-mail.</p>
+            <p>Atenciosamente,<br>Hotel dos Nobres</p>";
 
-            subject = "PMS - NOVA RESERVA POREM ERRO COM API POIS NÃO TEM O Tipo de pagamento NUMERO " + id;
+            subject = $"PMS - NOVA RESERVA POREM ERRO COM API POIS NÃO TEM O Tipo de pagamento NUMERO {id}";
             emailsuporte = "integrations@cloudbeds.com";
         }
         if (tipo == 2)
         {
-            body = "Ola, recebemos a reserva " + id;
-            body += @"  com isso o cliente  " +nome;
-            body += @"  reclamou que o sistema estaca com os valores fora do padrao Brasileiro com isso solicitamos o ajuste do TK #2491327. Att Obrigado ";
+            body = $@"
+            <p>Olá,</p>
+            <p>Recebemos a reserva <strong>{id}</strong>.</p>
+            <p>Com isso, o cliente <strong>{nome}</strong> reclamou que o sistema estava com os valores fora do padrão Brasileiro. Solicitamos o ajuste do TK #2491327.</p>
+            <p>Atenciosamente,<br>Hotel dos Nobres</p>";
 
-            subject = "PMS - VISUAL BUG - COMMA FOR DECIMAL SEPARATION IN PT-BR na reserva NUMERO " + id;
+            subject = $"PMS - VISUAL BUG - COMMA FOR DECIMAL SEPARATION IN PT-BR na reserva NUMERO {id}";
         }
         if (tipo == 3)
         {
-            body = "Ola, recebemos a reserva " + id; 
-            body += @" com isso meu operacional tem problema em visualizar em  INGLES o SISTEMA DA CLOUBEDS. Quando foi contratado falou que o sistema estaria em portugues. Ja foi solicitamos o ajuste do TK #2647520 estou no aguardo de vim em portugues. Att Obrigado ";
+            body = $@"
+            <p>Olá,</p>
+            <p>Recebemos a reserva <strong>{id}</strong>.</p>
+            <p>Com isso, meu operacional tem problema em visualizar em inglês o sistema da Cloudbeds. Quando foi contratado, foi informado que o sistema estaria em português. Já solicitamos o ajuste do TK #2647520 e estamos no aguardo.</p>
+            <p>Atenciosamente,<br>Hotel dos Nobres</p>";
 
-            subject = @"PMS - Tradução para pt br em solicitações especiais Booking.com na Reserva de numero " + id;
+            subject = $"PMS - Tradução para pt br em solicitações especiais Booking.com na Reserva de numero {id}";
         }
         if (tipo == 4)
         {
-            body = "Ola, recebemos a reserva " + id;
-            body += @" com isso precisamos que apagar o horario de chegada da reserva via API #2682643 OU PMS #2730774 Soliciatamos que seja ajustado esses TK.";
+            body = $@"
+            <p>Olá,</p>
+            <p>Recebemos a reserva <strong>{id}</strong>.</p>
+            <p>Com isso, precisamos apagar o horário de chegada da reserva via API #2682643 ou PMS #2730774. Solicitamos que seja ajustado esses TK.</p>
+            <p>Atenciosamente,<br>Hotel dos Nobres</p>";
 
-            subject = @"PMS e API - Não e possivel apagar o horario de chegada na Reserva de numero " + id;
+            subject = $"PMS e API - Não é possível apagar o horário de chegada na Reserva de número {id}";
             emailsuporte += "; integrations@cloudbeds.com";
         }
 
-        if (!string.IsNullOrEmpty(body)) 
+        if (!string.IsNullOrEmpty(body))
             EnviarEmailHTML(emailsuporte, "hoteldosnobres@hotmail.com", body, subject);
     }
+
 
 
     public static void EnviarEmail(string from, string body, string subject)
