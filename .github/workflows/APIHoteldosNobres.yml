@@ -9,17 +9,22 @@ env:
   CONFIGURATION: Release
   DOTNET_CORE_VERSION: 9.0.x
   WORKING_DIRECTORY: HoteldosNobresBlazor\HoteldosNobresBlazor
+  WORKING_DIRECTORYClient: HoteldosNobresBlazor\HoteldosNobresBlazor.Client
 jobs:
   build:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v4
     - name: Setup .NET SDK
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v4.3.0
       with:
         dotnet-version: ${{ env.DOTNET_CORE_VERSION }}
+    - name: Restore Client
+      run: dotnet restore "${{ env.WORKING_DIRECTORYClient }}"
     - name: Restore
-      run: dotnet restore "${{ env.WORKING_DIRECTORY }}"
+      run: dotnet restore "${{ env.WORKING_DIRECTORY }}" 
+    - name: Build Client
+      run: dotnet build "${{ env.WORKING_DIRECTORYClient }}" --configuration ${{ env.CONFIGURATION }} --no-restore
     - name: Build
       run: dotnet build "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --no-restore
     - name: Test
