@@ -39,7 +39,7 @@
                 <MudTextField T="string" Label="E-mail" Disabled="@Disabled" @bind-Value="guest.Email" Variant="Variant.Outlined" />
                 <MudListItem Class="deep-purple-text mt-2" IconColor="Color.Primary" Icon="@Icons.Material.Filled.House"> Endereço </MudListItem>
                 <MudTextField T="string" Label="CEP" @bind-Value="guest.Zip" TextChanged="@SearchCEP"
-                Disabled="@Disabled" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary" Variant="Variant.Outlined" />
+                              Disabled="@Disabled" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary" Variant="Variant.Outlined" />
                 <MudTextField T="string" Label="Endereço - Rua/Avenida + Número + Compl." Disabled="DisableEndereco" @bind-Value="guest.Address" Variant="Variant.Outlined" />
                 <MudListItem T="string">
                     <div class="d-flex">
@@ -56,10 +56,10 @@
             </MudList>
             <div class="mt-4">
                 <MudButton Variant="Variant.Filled"
-                Color="Color.Primary"
-                Class="ml-auto rounded-xl"
-                Disabled="@DisabledSave"
-                @onclick="OpenDialog">
+                           Color="Color.Primary"
+                           Class="ml-auto rounded-xl"
+                           Disabled="@DisabledSave"
+                           @onclick="OpenDialog">
                     Salvar
                 </MudButton>
             </div>
@@ -91,13 +91,13 @@
             <MudSelectItem Value="@("23:00")">23:00</MudSelectItem>
         </MudSelect>
         <MudButton Variant="Variant.Filled"
-        Color="Color.Primary"
-        Class="ml-auto rounded-xl"
-        Disabled="@DisabledSaveHorario"
-        @onclick="ConfirmaReserva">
+                   Color="Color.Primary"
+                   Class="ml-auto rounded-xl"
+                   Disabled="@DisabledSaveHorario"
+                   @onclick="ConfirmaReserva">
             Confirma reserva no horario: @HorarioAproximado
         </MudButton>
-    }   
+    }
 </MudPaper>
 
 
@@ -184,16 +184,18 @@
                 if (!string.IsNullOrEmpty(userId) && !guest.GuestId.ToString().Equals(userId))
                     throw new ArgumentException("Booking canceled.");
 
-                if (guest.Phone!.Length > 10)
-                    CellPhone = guest.Phone!.Substring(0, 10) + "**-****";
-                else
-                    CellPhone = guest.Phone!.Substring(0, 6) + "**-****";
+                if (!string.IsNullOrEmpty(guest.Phone))
+                    if (guest.Phone.Length > 10)
+                        CellPhone = guest.Phone.Substring(0, 10) + "**-****";
+                    else if (guest.Phone.Length > 6)
+                        CellPhone = guest.Phone.Substring(0, 6) + "**-****";
 
-                if (guest.Email!.Contains("guest.booking.com") || guest.Email!.Contains("expediapartnercentral.com"))
-                {
-                    emailota = guest.Email.ToString();
-                    guest.Email = null;
-                }
+                if (!string.IsNullOrEmpty(guest.Email))
+                    if (guest.Email.Contains("guest.booking.com") || guest.Email!.Contains("expediapartnercentral.com"))
+                    {
+                        emailota = guest.Email.ToString();
+                        guest.Email = null;
+                    }
 
                 DisabledCPF = false;
                 foreach (var item in guest.CustomFields)
@@ -222,8 +224,13 @@
         catch (Exception ex)
         {
             Snackbar.Add("Erro ao carregar a reserva!", Severity.Error);
-            if (!string.IsNullOrEmpty(userId))
-                Navigation.NavigateTo("/minhareserva");
+            if (!string.IsNullOrEmpty(userId) && reserva is not null)
+            {
+                if (!string.IsNullOrEmpty(ReservationId) && user.Role.Contains("admin"))
+                    Navigation.NavigateTo("/reserva/" + ReservationId);
+                else
+                    Navigation.NavigateTo("/minhareserva");
+            }
             else
                 Navigation.NavigateTo("https://hoteldosnobres.com.br/");
         }
@@ -498,7 +505,7 @@
                 HorarioOnValueChangeHandler(HorarioAproximado);
                 Snackbar.Add("Reserva confirmada com sucesso!", Severity.Success);
             }
-            else 
+            else
                 Snackbar.Add("Selecione um horario!", Severity.Warning);
         }
         catch (Exception ex)
@@ -509,9 +516,9 @@
     }
 
     private async Task HorarioChange()
-    { 
+    {
         if (string.IsNullOrEmpty(HorarioAproximado))
-            DisabledSaveHorario = true; 
+            DisabledSaveHorario = true;
         else
             DisabledSaveHorario = false;
     }

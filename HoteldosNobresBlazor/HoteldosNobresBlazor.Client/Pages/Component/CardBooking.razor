@@ -78,7 +78,7 @@
 }
 <br /> 
 @if (reserva is not null && reserva.Origem is not null 
-   && (reserva.Origem.Contains("Website/Booking Engine") || reserva.Origem.Contains("Phone")))
+   && (reserva.Origem.Contains("Website/Booking Engine") || reserva.Origem.Contains("WhatsApp") || reserva.Origem.Contains("Walk-In") || reserva.Origem.Contains("Phone")))
 {
     <CardPix Reserva=reserva />
 }
