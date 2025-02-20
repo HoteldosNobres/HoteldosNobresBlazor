@@ -35,7 +35,7 @@ public class Reserva
     }
 
     public decimal? Balance { get; set; }
-    public string? Status { get; set; }
+    public string? Status { get; set; } 
     public string? SnNum { get; set; }
     public string? Snuhnum { get; set; }
 
@@ -244,7 +244,16 @@ public class Reserva
             return status.GetEnumDescription(); 
         }
     }
-  
+
+    public EStatus StatusENum
+    {
+        get
+        {
+            EStatus status = Status != null ? (EStatus)Enum.Parse(typeof(EStatus), Status) : EStatus.None;
+            return status;
+        }
+    }
+
 
     public void Converte(Reservation reservation)
     {

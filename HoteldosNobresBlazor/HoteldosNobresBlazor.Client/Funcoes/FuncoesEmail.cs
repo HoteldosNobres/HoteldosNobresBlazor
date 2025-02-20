@@ -28,18 +28,18 @@ public class FuncoesEmail
         {
             body = $@"
             <p>Olá,</p>
-            <p>Recebemos a reserva <strong>{id}</strong>.</p>
+            <p>Recebemos a reserva <a href='https://hotels.cloudbeds.com/connect/235132#/reservations/r{id}'><strong>{id}</strong></a>.</p>
             <p>Com isso, está dando erro em nossa API pois não tem o tipo de pagamento. Esse chamado vai ser aberto até vir essa informação, pois é importante para a nossa API. Pois na <a href='https://developers.cloudbeds.com/reference/get_getreservation'>documentação</a> não consta essa informação. Como consta <a href='https://developers.cloudbeds.com/docs/how-to-report-an-api-bug'>aqui</a>, se você ainda estiver enfrentando problemas, envie um e-mail.</p>
             <p>Atenciosamente,<br>Hotel dos Nobres</p>";
 
-            subject = $"PMS - NOVA RESERVA POREM ERRO COM API POIS NÃO TEM O Tipo de pagamento NUMERO {id}";
+            subject = $"NÃO TEM O Tipo de pagamento NUMERO {id} gerando ERRO";
             emailsuporte = "integrations@cloudbeds.com";
         }
         if (tipo == 2)
         {
             body = $@"
             <p>Olá,</p>
-            <p>Recebemos a reserva <strong>{id}</strong>.</p>
+            <p>Recebemos a reserva <a href='https://hotels.cloudbeds.com/connect/235132#/reservations/r{id}'><strong>{id}</strong></a>.</p>
             <p>Com isso, o cliente <strong>{nome}</strong> reclamou que o sistema estava com os valores fora do padrão Brasileiro. Solicitamos o ajuste do TK #2491327.</p>
             <p>Atenciosamente,<br>Hotel dos Nobres</p>";
 
@@ -49,7 +49,7 @@ public class FuncoesEmail
         {
             body = $@"
             <p>Olá,</p>
-            <p>Recebemos a reserva <strong>{id}</strong>.</p>
+            <p>Recebemos a reserva <a href='https://hotels.cloudbeds.com/connect/235132#/reservations/r{id}'><strong>{id}</strong></a>.</p>
             <p>Com isso, meu operacional tem problema em visualizar em inglês o sistema da Cloudbeds. Quando foi contratado, foi informado que o sistema estaria em português. Já solicitamos o ajuste do TK #2647520 e estamos no aguardo.</p>
             <p>Atenciosamente,<br>Hotel dos Nobres</p>";
 
@@ -59,7 +59,7 @@ public class FuncoesEmail
         {
             body = $@"
             <p>Olá,</p>
-            <p>Recebemos a reserva <strong>{id}</strong>.</p>
+            <p>Recebemos a reserva <a href='https://hotels.cloudbeds.com/connect/235132#/reservations/r{id}'><strong>{id}</strong></a>.</p>
             <p>Com isso, precisamos apagar o horário de chegada da reserva via API #2682643 ou PMS #2730774. Solicitamos que seja ajustado esses TK.</p>
             <p>Atenciosamente,<br>Hotel dos Nobres</p>";
 
