@@ -207,7 +207,8 @@
         { 
             // deixar apenas numero sem espaços
             NumeroWhatsapp = Regex.Replace(NumeroWhatsapp, @"\s+", "");
-            mensagem  = await FunctionWhatsApp.postMensagemTempletePIX(NumeroWhatsapp, ReservationId!, stringToQrCode!);
+            mensagem = await FunctionWhatsApp.postMensagemTempletePIX(NumeroWhatsapp, ReservationId!, stringToQrCode!);
+            mensagem = await FunctionWhatsApp.postMensagem(NumeroWhatsapp, stringToQrCode!);
 
             Snackbar.Add("Sucesso!", Severity.Success);
               

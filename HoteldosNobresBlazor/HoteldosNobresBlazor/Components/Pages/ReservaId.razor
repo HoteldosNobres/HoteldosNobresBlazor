@@ -29,7 +29,7 @@
                 <MudTextField T="string" Label="Nome" @bind-Value="guest.FirstName" TextChanged="TextChangedName" />
                 <MudTextField T="string" Label="Sobrenome" @bind-Value="guest.LastName" TextChanged="TextChangedLastName" />
                 <MudTextField T="string" Label="E-mail" @bind-Value="guest.Email" TextChanged="TextChangedEmail" />
-                <MudTextField T="string" Label="Celular ou Telefone Principal" Disabled="true" @bind-Value="guest.Phone" />  
+                <MudTextField T="string" Label="Celular ou Telefone Principal" Disabled="true" @bind-Value="guest.Phone" />
                 <MudSelect T="string" Label="Genero" disabled="@Disabled" @bind-Value="guest.Gender">
                     <MudSelectItem Value="@("N/A")"></MudSelectItem>
                     <MudSelectItem Value="@("M")">Masculino</MudSelectItem>
@@ -37,12 +37,12 @@
                 </MudSelect>
                 <MudTextField T="string" Label="CPF" Disabled="@DisabledCPF" @bind-Value="CPF" />
                 @*  <MudDatePicker Label="Data de Nascimento" PickerVariant="PickerVariant.Dialog" Format="dd/MM/yyyy"  Editable="@(!Disabled)" Elevation="12" Disabled="@Disabled" @bind-Date="guest.Birthdate" DateFormat="dd/MM/yyyy" /> *@
-                <MudDatePicker Label="Data de Nascimento*" Editable="true" Date="guest.Birthdate" ImmediateText="true" Placeholder="dia/mes/ano" DateFormat="dd/MM/yyyy" TextChanged="DatePickerTextChanged" Variant="@Variant.Outlined" Clearable="true" /> 
+                <MudDatePicker Label="Data de Nascimento*" Editable="true" Date="guest.Birthdate" ImmediateText="true" Placeholder="dia/mes/ano" DateFormat="dd/MM/yyyy" TextChanged="DatePickerTextChanged" Variant="@Variant.Outlined" Clearable="true" />
                 <MudText Typo="Typo.subtitle1" Class="deep-purple-text mt-2">Foi informado o CPF @reserva.ProxyCPF e Data de Nascimento @reserva.DataNascimento.ToString("dd/MM/yyyy") </MudText>
                 <MudDivider />
                 <MudListItem Icon="@Icons.Material.Filled.House"> Endereço </MudListItem>
                 <MudTextField T="string" Label="CEP" @bind-Value="guest.Zip" TextChanged="@SearchCEP" Editable="@Disabled"
-                Disabled="@Disabled" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary" />
+                              Disabled="@Disabled" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary" />
                 <MudTextField T="string" Label="Endereço" Disabled="DisableEndereco" @bind-Value="guest.Address" />
                 <MudTextField T="string" Label="Bairro" Disabled="true" @bind-Value="guest.Address2" />
                 <MudTextField T="string" Label="Cidade" Disabled="true" @bind-Value="guest.City" />
@@ -50,78 +50,98 @@
                 <MudTextField T="string" Label="Pais" Disabled="true" @bind-Value="guest.GuestCountry" />
             </MudList>
             <div class="mt-4">
-                <MudList T="string">
-                    <MudButton Variant="Variant.Filled"
-                    Color="Color.Primary"
-                    Class="ml-auto rounded-xl"
-                    Disabled="@(!Disabled)"
-                    @onclick="Editar">
-                        Editar
-                    </MudButton>
-                    <MudButton Variant="Variant.Filled"
-                    Color="Color.Primary"
-                    Class="ml-auto rounded-xl"
-                    Disabled="@DisabledSave"
-                    @onclick="Salvar">
-                        Salvar
-                    </MudButton>
-                    <MudButton Variant="Variant.Filled"
-                    Color="Color.Primary"
-                    Class="ml-auto rounded-xl"
-                    Disabled="@(!Disabled)"
-                    @onclick="SendCPF">
-                        Envia CPF
-                    </MudButton>
-                    <MudButton Variant="Variant.Filled"
-                    Color="Color.Primary"
-                    Class="ml-auto rounded-xl"
-                    Disabled="@(!Disabled)"
-                    @onclick="SendMtur">
-                        Envia MTur
-                    </MudButton>
-                    <MudButton Variant="Variant.Filled"
-                    Color="Color.Primary"
-                    Class="ml-auto rounded-xl"
-                    Disabled="@(!Disabled)"
-                    @onclick="SendRecepcao">
-                        Envia Recepcao
-                    </MudButton>
-                    <MudButton Variant="Variant.Filled"
-                    Color="Color.Primary"
-                    Class="ml-auto rounded-xl"
-                    Disabled="@(!Disabled)"
-                    @onclick="SendInf">
-                        Envia Inf
-                    </MudButton>
-                    <MudButton Variant="Variant.Filled"
-                    Color="Color.Primary"
-                    Class="ml-auto rounded-xl"
-                    Disabled="@(!Disabled)"
-                    @onclick="SendCloubeds">
-                        Cloudbeds
-                    </MudButton>
-                    <MudButton Variant="Variant.Filled"
-                    Color="Color.Primary"
-                    Class="ml-auto rounded-xl"
-                    Disabled="@(!Disabled)"
-                    @onclick="SendOrigem">
-                        Origem
-                    </MudButton>
-                    <MudButton Variant="Variant.Filled"
-                    Color="Color.Primary"
-                    Class="ml-auto rounded-xl"
-                    Disabled="@(!Disabled)"
-                    @onclick="SendEmail">
-                        Envia Email
-                    </MudButton>
-                    <MudButton Variant="Variant.Filled"
-                               Color="Color.Primary"
-                               Class="ml-auto rounded-xl"
-                               Disabled="@(!Disabled)"
-                               @onclick="ZeraHora">
-                       Zera Hora
-                    </MudButton>
-                </MudList>
+                <MudGrid Spacing="2">
+                    <MudItem xs="12" sm="6" md="4">
+                        <MudButton Variant="Variant.Filled"
+                                   Color="Color.Primary"
+                                   Class="w-100 rounded-xl"
+                                   Disabled="@(!Disabled)"
+                                   @onclick="Editar">
+                            Editar
+                        </MudButton>
+                    </MudItem>
+                    <MudItem xs="12" sm="6" md="4">
+                        <MudButton Variant="Variant.Filled"
+                                   Color="Color.Primary"
+                                   Class="w-100 rounded-xl"
+                                   Disabled="@DisabledSave"
+                                   @onclick="Salvar">
+                            Salvar
+                        </MudButton>
+                    </MudItem>
+                    <MudItem xs="12" sm="6" md="4">
+                        <MudButton Variant="Variant.Filled"
+                                   Color="Color.Primary"
+                                   Class="w-100 rounded-xl"
+                                   Disabled="@(!Disabled)"
+                                   @onclick="SendCPF">
+                            Envia CPF
+                        </MudButton>
+                    </MudItem>
+                    <MudItem xs="12" sm="6" md="4">
+                        <MudButton Variant="Variant.Filled"
+                                   Color="Color.Primary"
+                                   Class="w-100 rounded-xl"
+                                   Disabled="@(!Disabled)"
+                                   @onclick="SendMtur">
+                            Envia MTur
+                        </MudButton>
+                    </MudItem>
+                    <MudItem xs="12" sm="6" md="4">
+                        <MudButton Variant="Variant.Filled"
+                                   Color="Color.Primary"
+                                   Class="w-100 rounded-xl"
+                                   Disabled="@(!Disabled)"
+                                   @onclick="SendRecepcao">
+                            Envia Recepcao
+                        </MudButton>
+                    </MudItem>
+                    <MudItem xs="12" sm="6" md="4">
+                        <MudButton Variant="Variant.Filled"
+                                   Color="Color.Primary"
+                                   Class="w-100 rounded-xl"
+                                   Disabled="@(!Disabled)"
+                                   @onclick="SendInf">
+                            Envia Inf
+                        </MudButton>
+                    </MudItem>
+                    <MudItem xs="12" sm="6" md="4">
+                        <MudButton Variant="Variant.Filled"
+                                   Color="Color.Primary"
+                                   Class="w-100 rounded-xl"
+                                   Disabled="@(!Disabled)"
+                                   @onclick="SendCloubeds">
+                            Cloudbeds
+                        </MudButton>
+                    </MudItem>
+                    <MudItem xs="12" sm="6" md="4">
+                        <MudButton Variant="Variant.Filled"
+                                   Color="Color.Primary"
+                                   Class="w-100 rounded-xl"
+                                   Disabled="@(!Disabled)"
+                                   @onclick="SendOrigem">
+                            Origem
+                        </MudButton>
+                    </MudItem>
+                    <MudItem xs="12" sm="6" md="4">
+                        <MudButton Variant="Variant.Filled"
+                                   Color="Color.Primary"
+                                   Class="w-100 rounded-xl"
+                                   Disabled="@(!Disabled)"
+                                   @onclick="SendEmail">
+                            Envia Email
+                        </MudButton>
+                    </MudItem>
+                    <MudItem xs="12" sm="6" md="4">
+                        <MudButton Variant="Variant.Filled"
+                                   Color="Color.Primary"
+                                   Class="w-100 rounded-xl"
+                                   Disabled="@(!Disabled)"
+                                   @onclick="ZeraHora">
+                            Zera Hora
+                        </MudButton>
+                    </MudItem>
+                </MudGrid>
             </div>
         </MudForm>
     }
@@ -169,7 +189,7 @@ else
                             </MudItem>
                         </MudGrid>
                         <MudText Typo="Typo.h6" Align="Align.Center" GutterBottom="true">Agradecemos seu pedido!</MudText>
-                    } 
+                    }
                     <MudText Align="Align.Center"> O número da reserva é #@reserva.IDReserva  </MudText>
                     <MudText Align="Align.Center"> Enviamos a confirmação do pedido para o e-mail: @reserva.Email  </MudText>
                     <MudGrid Justify="Justify.Center">
@@ -215,7 +235,7 @@ else
                     }
                     <MudItem Align="Align.Center">
                         <MudTextField T="string" Label="Horário previsto de chegada" HelperText="Horário tem que ser entre 14:00 e 23:00 (Brasilia)"
-                        @bind-Value="HorarioAproximado" InputType="InputType.Time" TextChanged="OnValueChangeHandler" />
+                                      @bind-Value="HorarioAproximado" InputType="InputType.Time" TextChanged="OnValueChangeHandler" />
                     </MudItem>
                     <MudSpacer />
                     <br />
@@ -328,8 +348,8 @@ else
             {
                 if (item.CustomFieldName.Equals("CPF"))
                 {
-                    string cpfstring = Regex.Replace(item.CustomFieldValue, @"[^\d]", ""); 
-                    CPF =   reserva.ProxyCPF;   
+                    string cpfstring = Regex.Replace(item.CustomFieldValue, @"[^\d]", "");
+                    CPF = reserva.ProxyCPF;
                 }
                 if (item.CustomFieldName.Equals("Data de Nascimento"))
                 {
@@ -346,7 +366,7 @@ else
                             guest.Birthdate = null;
                         }
                     }
-                } 
+                }
             }
         }
     }
@@ -460,21 +480,27 @@ else
     {
         if (value.Length >= 8)
         {
-            Cep cep = value;
-            var viaCepService = ViaCepService.Default();
-            var endereco = viaCepService.ObterEndereco(cep);
-            string Cidade = endereco.Localidade;
-            guest.City = Cidade;
-            if (string.IsNullOrEmpty(guest.Address))
-                guest.Address = endereco.Logradouro;
-            guest.State = endereco.UF;
-            guest.Country = "BRASIL";
-            guest.Address2 = endereco.Bairro;
-            guest.Zip = endereco.Cep;
+            try
+            {
+                Cep cep = value;
+                var viaCepService = ViaCepService.Default();
+                var endereco = viaCepService.ObterEndereco(cep);
+                string Cidade = endereco.Localidade;
+                guest.City = Cidade;
+                if (string.IsNullOrEmpty(guest.Address))
+                    guest.Address = endereco.Logradouro;
+                guest.State = endereco.UF;
+                guest.Country = "BRASIL";
+                guest.Address2 = endereco.Bairro;
+                guest.Zip = endereco.Cep;
 
-            if (!Disabled && DisableEndereco)
-                DisableEndereco = false;
+                if (!Disabled && DisableEndereco)
+                    DisableEndereco = false;
+            }
+            catch (Exception e)
+            {
 
+            }
         }
         else
         {
@@ -574,12 +600,12 @@ else
                     FuncoesEmail.EnviarEmail(reserva.Email, mensagem, "Mensagem do Hotel dos Nobres");
                     Snackbar.Add("E-mail Encaminhado com sucesso", Severity.Success);
                 }
-                
+
                 if (whatsapp)
                 {
                     var retorno = await FunctionWhatsApp.postMensagem(reserva.ProxyWhatsapp, mensagem);
                     Snackbar.Add("Whatsapp - Encaminhado com sucesso", Severity.Success);
-                } 
+                }
             }
 
 
@@ -624,8 +650,6 @@ else
         try
         {
             cloudbedsAPI.PutReservaAsync(reserva.IDReserva.ToString(), "estimatedArrivalTime", "null");
-            FuncoesEmail.EnviarEmailSuporte(reserva.IDReserva, reserva.NomeHospede, 4);
-            Snackbar.Add("Sucesso Zera Hora", Severity.Success);
         }
         catch (Exception ex)
         {
@@ -643,7 +667,6 @@ else
             if (horario.Hour >= 14 && horario.Hour <= 23)
             {
                 cloudbedsAPI.PutReservaAsync(reserva.IDReserva.ToString(), "estimatedArrivalTime", horario.ToString("HH:mm"));
-                FuncoesEmail.EnviarEmailSuporte(reserva.IDReserva, reserva.NomeHospede, 4);
             }
             else
             {
@@ -661,7 +684,7 @@ else
     protected async Task TextChangedName(string newValue)
     {
         try
-        { 
+        {
             if (!string.IsNullOrEmpty(newValue))
             {
                 cloudbedsAPI.PutGuestAsync(guest.GuestId.ToString(), "guestName", newValue);
@@ -739,4 +762,4 @@ else
 
     }
 
-} 
+}

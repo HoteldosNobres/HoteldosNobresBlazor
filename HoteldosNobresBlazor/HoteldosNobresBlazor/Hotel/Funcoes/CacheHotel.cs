@@ -104,7 +104,7 @@ namespace HoteldosNobresBlazor.Funcoes
                 // Identificar Texto
                 if (mensagem.Entry[0].Changes[0].Value.Messages != null && mensagem.Entry[0].Changes[0].Value.Messages[0].Text != null)
                 {
-                    texto = " WHATSAPP CHAT - Falou: " + mensagem.Entry[0].Changes[0].Value.Messages[0].Text.Body;
+                    texto = " WHATSAPP MENSAGEM: " + mensagem.Entry[0].Changes[0].Value.Messages[0].Text.Body;
                     log.Log = texto;
                     log.Status = "texto";
                 }
@@ -179,17 +179,16 @@ namespace HoteldosNobresBlazor.Funcoes
                 {
                     if (reserva != null && !string.IsNullOrEmpty(reserva.IDReserva))
                     {
-                        if (reserva.Notas.Where(x => x.Texto.Contains("WHATSAPP CHAT")).Count() > 0)
+                        if (reserva.Notas.Where(x => x.Texto.Contains("WHATSAPP MENSAGEM")).Count() > 0 && !texto.Contains("WHATSAPP STATUS"))
                         {
-                            Nota nota = reserva.Notas.Where(x => x.Texto.Contains("WHATSAPP CHAT")).FirstOrDefault();
-                            nota.Texto += log.Log;
+                            Nota nota = reserva.Notas.Where(x => x.Texto.Contains("WHATSAPP MENSAGEM")).FirstOrDefault();
+                            nota.Texto += "\n" + texto;
                             AppState.MyMessageLogWhatsapp += FunctionAPICLOUDBEDs.putReservationNote(reserva.IDReserva!, nota.Id, nota.Texto).Result;
                         }
                         else
                         {
                             if (!texto.Contains("WHATSAPP STATUS"))
-                                reserva = FunctionAPICLOUDBEDs.postReservationNote(reserva, log.Log).Result;
-
+                                reserva = FunctionAPICLOUDBEDs.postReservationNote(reserva, texto).Result;
                         }
 
                     }
@@ -292,12 +291,17 @@ namespace HoteldosNobresBlazor.Funcoes
                 {
                     SicoobRecebe sicoobRecebe = FunctionAPICLOUDBEDs.LerRespostaComoObjetoAsync<SicoobRecebe>(json).Result;
 
-                    string corpoemail = @"Pix Recebido no SICOOB, " +
-                    "<br><br>  ID DA RESERVA: " + sicoobRecebe.Pix[0].Txid +
-                    "<br><br>  Valor recebido: " + sicoobRecebe.Pix[0].Valor +
-                    "<br><br>  InfoPagador: " + sicoobRecebe.Pix[0].InfoPagador +
-                    "<br><br>  Horario: " + sicoobRecebe.Pix[0].Horario +
-                    "<br><br>  Obrigado ";
+                    string corpoemail = @"<h2>Confirmação de Recebimento de Pix</h2>
+                                    <p>Prezado(a) Cliente,</p>
+                                    <p>Informamos que recebemos um pagamento via Pix no SICOOB com os seguintes detalhes:</p>
+                                    <ul>
+                                        <li><strong>ID da Reserva:</strong> " + sicoobRecebe.Pix[0].Txid + @"</li>
+                                        <li><strong>Valor Recebido:</strong> " + sicoobRecebe.Pix[0].Valor + @"</li>
+                                        <li><strong>Informações do Pagador:</strong> " + sicoobRecebe.Pix[0].InfoPagador + @"</li>
+                                        <li><strong>Horário:</strong> " + sicoobRecebe.Pix[0].Horario + @"</li>
+                                    </ul> 
+                                    <p>Atenciosamente,</p>
+                                    <p><strong>SISTEMA - Hotel dos Nobres</strong></p>";
 
                     FuncoesEmail.EnviarEmailHTML("hoteldosnobres@hotmail.com", corpoemail, "PIX PAGO  - Recebe Sicoob");
 
@@ -494,8 +498,8 @@ namespace HoteldosNobresBlazor.Funcoes
                 if (novareserva is not null && novareserva.Origem is not null && novareserva.Origem!.ToUpper().Contains("BOOKING.COM"))
                 {
                     logSistema.Log += FunctionWhatsApp.postMensagemTempleteDadosFaltando(novareserva.ProxyCelular!, novareserva.IDReserva!, novareserva.NomeHospede!, novareserva.LinkPublico).Result;
+
                     FuncoesEmail.EnviarEmailCPF(novareserva.Email, novareserva.IDReserva, novareserva.NomeHospede);
-                    FuncoesEmail.EnviarEmailSuporte(novareserva.IDReserva, novareserva.NomeHospede, 3);
 
                     var novareservaratedetails = FunctionAPICLOUDBEDs.getReservationsWithRateDetailsAsync(novareserva).Result;
                     if (novareservaratedetails is not null && novareservaratedetails.Source is not null && novareservaratedetails.Source.PaymentCollect.ToLower().Equals("collect"))
@@ -538,6 +542,9 @@ namespace HoteldosNobresBlazor.Funcoes
                     FuncoesEmail.EnviarEmailSuporte(novareserva.IDReserva, novareserva.NomeHospede, 3);
                 }
 
+                if (novareserva is not null && novareserva.IDReserva is not null && novareserva.NomeHospede is not null)
+                    FuncoesEmail.EnviarEmailSuporte(novareserva.IDReserva, novareserva.NomeHospede, 4);
+
                 if (novareserva != null && novareserva.Estado != null && novareserva.CEP != null)
                 {
                     logSistema.Log += AjustarEndereco(novareserva);
@@ -570,10 +577,23 @@ namespace HoteldosNobresBlazor.Funcoes
                     logSistema.Log += FunctionGoogle.AddPeople(novareserva.NomeHospede, novareserva.Origem, novareserva.ProxyCelular, novareserva.Email.ToString());
                 }
 
-                logSistema.Log += AjusteRate(novareserva.IDReserva);
+                logSistema.Log += AjusteRate(novareserva.IDReserva!);
 
                 //E-mail para o suporte Cloubeds
-                FuncoesEmail.EnviarEmailSuporte(novareserva.IDReserva, novareserva.NomeHospede, 1);
+                FuncoesEmail.EnviarEmailSuporte(novareserva.IDReserva, novareserva.NomeHospede!, 1);
+                 
+                //Limpar Quarto
+                if (novareserva.DataCheckIn is not null && novareserva.DataCheckIn.Value.Date.Equals(TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone).Date))
+                {
+                    if (novareserva.ListaQuartos is not null && novareserva.ListaQuartos.Count() > 0)
+                    {
+                        foreach (Quarto quarto in novareserva.ListaQuartos)
+                        {
+                            if (quarto.ID is not null)
+                                logSistema.Log += FunctionAPICLOUDBEDs.PostHousekeepingStatus(quarto.ID!, "clean").Result;
+                        }
+                    }
+                }
 
 
 
@@ -755,12 +775,12 @@ namespace HoteldosNobresBlazor.Funcoes
                     {
                         if (string.IsNullOrEmpty(reserva.Cpf) || (reserva.Cpf != null && !ValidarCPF(reserva.Cpf)))
                         {
-                            if (reserva.Notas is not null && reserva.Notas.Where(x => x.Texto == "CPF inválido").Count() > 0)
+                            if (reserva.Notas is not null && reserva.Notas.Where(x => x.Texto.Contains("CPF inválido")).Count() > 0)
                             {
-                                retorno += FunctionAPICLOUDBEDs.putReservationNote(reserva.IDReserva!, reserva.Notas.FirstOrDefault(x => x.Texto == "CPF inválido").Id!, retorno).Result;
+                                retorno += FunctionAPICLOUDBEDs.putReservationNote(reserva.IDReserva!, reserva.Notas.FirstOrDefault(x => x.Texto.Contains("CPF inválido")).Id!, retorno).Result;
                             }
                             else
-                                logSistema.Log += FunctionAPICLOUDBEDs.postReservationNote(reserva.IDReserva, "CPF inválido").Result;
+                                logSistema.Log += FunctionAPICLOUDBEDs.postReservationNote(reserva.IDReserva, SNRHosException.CPFInvalido.GetDescription()).Result;
                             voltar = true;
                         }
 
@@ -1037,10 +1057,8 @@ namespace HoteldosNobresBlazor.Funcoes
                 switch (status)
                 {
                     case EStatus.checked_out:
-                        if (string.IsNullOrEmpty(reserva.SnNum))
-                        {
-                            retorno = FuncoesFNRH.Inserir(reserva);
-                        }
+                        if (!string.IsNullOrEmpty(reserva.SnNum))
+                            retorno = FuncoesFNRH.Atualizar(reserva);
                         break;
 
                     case EStatus.no_show:
@@ -1052,7 +1070,7 @@ namespace HoteldosNobresBlazor.Funcoes
                             reserva.ObsFnhr = reserva.Obs + " " + status.GetEnumDescription();
                             retorno = FuncoesFNRH.Atualizar(reserva);
                         }
-                        break; 
+                        break;
 
                     case EStatus.checked_in:
                     case EStatus.not_confirmed:
@@ -1065,7 +1083,7 @@ namespace HoteldosNobresBlazor.Funcoes
 
 
                     default:
-                        return "Status não informado"; 
+                        return "Status não informado";
                 }
 
                 retorno = retorno.Replace("Não foi possivel gravar o registro.", "");
@@ -1100,9 +1118,10 @@ namespace HoteldosNobresBlazor.Funcoes
                     {
                         retorno += FunctionAPICLOUDBEDs.putReservationNote(reserva.IDReserva!, reserva.Notas!.FirstOrDefault(x => x.Texto.Contains("SNRHos-ME")).Id!, mensagem).Result;
                     }
-                    else if (reserva.Notas.Where(x => x.Texto.Contains("SNRHos-MS0002")).Count() > 0)
+                    else if (reserva.Notas.Where(x => x.Texto.Contains("SNRHos-MS0002")).Count() > 0 || reserva.Notas.Where(x => x.Texto.Contains("SNRHos-MS0001")).Count() > 0)
                     {
-                        retorno += FunctionAPICLOUDBEDs.putReservationNote(reserva.IDReserva!, reserva.Notas!.FirstOrDefault(x => x.Texto.Contains("SNRHos-MS0002")).Id!, mensagem).Result;
+                        retorno += FunctionAPICLOUDBEDs.putReservationNote(reserva.IDReserva!, reserva.Notas!.FirstOrDefault(x => x.Texto.Contains("SNRHos-MS0002") || x.Texto.Contains("SNRHos-MS0001")).Id!, mensagem).Result;
+                        retorno += FunctionAPICLOUDBEDs.deleteReservationNote(reserva, SNRHosException.CPFInvalido.GetDescription()).Result;
                     }
                     else if (reserva.Notas.Where(x => x.Texto!.Contains(reserva.SnNum!)).Count() > 0)
                     {
@@ -1133,7 +1152,7 @@ namespace HoteldosNobresBlazor.Funcoes
                 retorno += " SnNum: " + reserva.SnNum + " ";
                 CheckInFNRH(reserva);
 
-                if (reserva.Status.ToUpper() == "CHECKED_OUT" || reserva.Status.ToUpper() == "CANCELED")
+                if (reserva.StatusENum.Equals(EStatus.checked_out) || reserva.StatusENum.Equals(EStatus.canceled))
                     CheckOutFNRH(reserva);
 
             }
@@ -1199,7 +1218,7 @@ namespace HoteldosNobresBlazor.Funcoes
             string reservationNoteID = reserva.Notas.Where(x => x.Texto.Contains("SNRHos-")).FirstOrDefault().Id!.ToString();
 
             if (reserva.Status is not null
-                && (reserva.Status.ToUpper() == "CHECKED_OUT" || reserva.Status.ToUpper() == "CANCELED")
+                && (reserva.StatusENum.Equals(EStatus.checked_out) || reserva.StatusENum.Equals(EStatus.canceled))
                 && !string.IsNullOrEmpty(reserva.SnNum))
             {
                 reserva.DataCheckOutRealizado = DateTime.Parse(TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone).ToString("yyyy-MM-dd HH:mm:ss"));
