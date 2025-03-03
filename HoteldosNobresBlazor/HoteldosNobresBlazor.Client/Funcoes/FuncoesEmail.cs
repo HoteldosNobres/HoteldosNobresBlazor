@@ -67,8 +67,8 @@ public class FuncoesEmail
             emailsuporte += "; integrations@cloudbeds.com";
         }
 
-        if (!string.IsNullOrEmpty(body))
-            EnviarEmailHTML(emailsuporte, "hoteldosnobres@hotmail.com", body, subject);
+        //if (!string.IsNullOrEmpty(body))
+        //    EnviarEmailHTML(emailsuporte, "hoteldosnobres@hotmail.com", body, subject);
     }
 
 

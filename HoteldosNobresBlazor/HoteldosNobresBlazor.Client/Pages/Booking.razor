@@ -21,7 +21,7 @@
 
 <PageTitle> Reserva Hotel dos Nobres</PageTitle>
 
-<MudPaper Class="px-8 pt-2 pb-4 mx-4 my-4 rounded-xl" Justify="Justify.Center" hidden="@(Disabled)">
+<MudPaper Class="px-8 pt-2 pb-4 mx-4 my-4 rounded-xl" Outlined="true" Justify="Justify.Center" hidden="@(Disabled)">
     @if (guest is not null)
     {
         <MudForm>
@@ -75,7 +75,7 @@
     }
 </MudPaper>
 
-<MudPaper Class="px-8 pt-2 pb-4 mx-4 my-4 rounded-xl" Justify="Justify.Center" hidden="@(!HorarioFlag)">
+<MudPaper Class="px-8 pt-2 pb-4 mx-4 my-4 rounded-xl" Outlined="true" Justify="Justify.Center" hidden="@(!HorarioFlag)">
     @if (reserva is not null)
     {
         <MudSelect T="string" @bind-Value="HorarioAproximado" Label="Horário estimado de chegada" AnchorOrigin="Origin.BottomCenter" TextChanged="HorarioChange" Variant="Variant.Outlined" Clearable>
@@ -99,9 +99,8 @@
         </MudButton>
     }
 </MudPaper>
-
-
-<MudPaper Class="px-8 pt-2 pb-4 mx-4 my-4 rounded-xl" Justify="Justify.Center" hidden="@(!Disabled)">
+ 
+<MudPaper Class="px-8 pt-2 pb-4 mx-4 my-4 rounded-xl" Outlined="true" Justify="Justify.Center" hidden="@(!Disabled)">
     @if (reserva is not null)
     {
         <CardBooking reserva=reserva />
@@ -203,7 +202,7 @@
                     if (item.CustomFieldName.Equals("CPF"))
                     {
                         string cpfstring = Regex.Replace(item.CustomFieldValue, @"[^\d]", "");
-                        if (!string.IsNullOrEmpty(cpfstring))
+                        if (!string.IsNullOrEmpty(cpfstring) && cpfstring.Length > 4)
                         {
                             DisabledCPF = true;
                             ReadOnly = true;

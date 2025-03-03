@@ -3,45 +3,43 @@
 
 <PageTitle>Log Pagamento Airbnb</PageTitle>
 
-<MudPaper Class="px-8 pt-2 pb-4 mx-4 my-4 rounded-xl" Justify="Justify.Center">
-    <MudContainer>
-        <h1>Log Pagamentos</h1>
+<MudPaper Class="px-4 pt-2 pb-4 mx-4 my-4 rounded-xl" Justify="Justify.Center">
+    <h1>Log Pagamentos</h1>
 
-        @foreach (var linha in arrayDeLinhas)
-        {
-            @linha
-            <br />
-        }
+    @foreach (var linha in arrayDeLinhas)
+    {
+        @linha
         <br />
-        @if (listLog == null)
-        {
-            <p><em>Carregando...</em></p>
-        }
-        else
-        {
-            <MudSimpleTable Hover="true" Striped="true" Style="overflow-x: auto;">
-                <thead>
+    }
+    <br />
+    @if (listLog == null)
+    {
+        <p><em>Carregando...</em></p>
+    }
+    else
+    {
+        <MudSimpleTable Hover="true" Striped="true" Style="overflow-x: auto;">
+            <thead>
+                <tr>
+                    <th>Data </th>
+                    <th>IdReserva</th>
+                    <th>Status</th>
+                    <th>Log</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (LogSistema logs in listLog)
+                {
                     <tr>
-                        <th>Data </th>
-                        <th>IdReserva</th>
-                        <th>Status</th>
-                        <th>Log</th>
+                        <td>@logs.DataLog.ToString("dd/MM/yyyy HH:mm:ss")</td>
+                        <td><a href='@logs.LinkReserva' target='_blank'> @logs.IDReserva</a></td>
+                        <td>@logs.Status</td>
+                        <td>@logs.Log</td>
                     </tr>
-                </thead>
-                <tbody>
-                    @foreach (LogSistema logs in listLog)
-                    {
-                        <tr>
-                            <td>@logs.DataLog.ToString("dd/MM/yyyy HH:mm:ss")</td>
-                            <td><a href='@logs.LinkReserva' target='_blank'> @logs.IDReserva</a></td>
-                            <td>@logs.Status</td>
-                            <td>@logs.Log</td>
-                        </tr>
-                    }
-                </tbody>
-            </MudSimpleTable>
-        }
-    </MudContainer>
+                }
+            </tbody>
+        </MudSimpleTable>
+    }
 </MudPaper>
 
 @code
@@ -54,4 +52,4 @@
         arrayDeLinhas = appState.MyMessagePagamento.Split('\n');
 
     }
-} 
+}

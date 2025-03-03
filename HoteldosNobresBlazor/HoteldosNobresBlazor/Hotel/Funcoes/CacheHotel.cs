@@ -265,7 +265,7 @@ namespace HoteldosNobresBlazor.Funcoes
                 Thread thread = new Thread(new ParameterizedThreadStart(RecebeSicoobMetodo));
                 thread.Start(json);
 
-                return "OK ";
+                return "OK";
             }
             catch (Exception e)
             {
@@ -284,7 +284,7 @@ namespace HoteldosNobresBlazor.Funcoes
                 {
                     DataLog = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, brazilTimeZone),
                     Log = json,
-                    Status = "RecebeSicoobMetodo"
+                    Status = "Recebido"
                 };
 
                 if (json is not null && json.Contains("pix"))
@@ -296,7 +296,7 @@ namespace HoteldosNobresBlazor.Funcoes
                                     <p>Informamos que recebemos um pagamento via Pix no SICOOB com os seguintes detalhes:</p>
                                     <ul>
                                         <li><strong>ID da Reserva:</strong> " + sicoobRecebe.Pix[0].Txid + @"</li>
-                                        <li><strong>Valor Recebido:</strong> " + sicoobRecebe.Pix[0].Valor + @"</li>
+                                        <li><strong>Valor Recebido:</strong> R$" + sicoobRecebe.Pix[0].Valor.ToString("N2", new CultureInfo("pt-BR")) + @"</li>
                                         <li><strong>Informações do Pagador:</strong> " + sicoobRecebe.Pix[0].InfoPagador + @"</li>
                                         <li><strong>Horário:</strong> " + sicoobRecebe.Pix[0].Horario + @"</li>
                                     </ul> 
@@ -305,20 +305,34 @@ namespace HoteldosNobresBlazor.Funcoes
 
                     FuncoesEmail.EnviarEmailHTML("hoteldosnobres@hotmail.com", corpoemail, "PIX PAGO  - Recebe Sicoob");
 
-                    var reserva = new Reserva();
-                    reserva.IDReserva = sicoobRecebe.Pix[0].Txid;
-                    reserva = FunctionAPICLOUDBEDs.getReservationAsync(reserva).Result;
-                    if (reserva is not null)
+                    log.IDReserva = sicoobRecebe.Pix[0].Txid;
+                    log.Log = " Valor Recebido: R$" + sicoobRecebe.Pix[0].Valor.ToString("N2", new CultureInfo("pt-BR"));
+                    log.Log += " InfoPagador: " +  sicoobRecebe.Pix[0].InfoPagador; 
+                    AppState.ListLogPagSeguro.Add(log);
+
+                    try
                     {
-                        reserva.Balance = sicoobRecebe.Pix[0].Valor;
-                        reserva.Origem = "Pix";
-                        log.Log += FunctionAPICLOUDBEDs.PostReservationPagamento(reserva).Result;
-                        log.IDReserva = reserva.IDReserva!;
+                        var reserva = new Reserva();
+                        reserva.IDReserva = Regex.Replace(log.IDReserva, @"\D", "").ToString();
+                        if (reserva.IDReserva is not null && reserva.IDReserva.Length > 2)
+                        {
+                            reserva = FunctionAPICLOUDBEDs.getReservationAsync(reserva).Result;
+                        }
+                        if (reserva is not null && reserva.IDReserva.Length > 2)
+                        {
+                            reserva.Balance = sicoobRecebe.Pix[0].Valor;
+                            reserva.Origem = "Pix";
+                            log.Log += FunctionAPICLOUDBEDs.PostReservationPagamento(reserva).Result;
+
+                        }
                     }
+                    catch (Exception e)
+                    {
+                        AppState.MyMessageLogPagSeguro = "ErroAcharReserva-" + e.Message + "\n" + json + "\n";
+                    }
+                    
                 }
-
-                AppState.ListLogPagSeguro.Add(log);
-
+                 
             }
             catch (Exception e)
             {

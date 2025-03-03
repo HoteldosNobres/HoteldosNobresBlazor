@@ -245,16 +245,13 @@ public class FunctionAPICLOUDBEDs
                 collection.Add(new("cardType", "Despegar/Decolar"));
                 collection.Add(new("description", "Despegar/Decolar"));
             }
-
             else if (reserva is not null && reserva.Origem is not null && reserva.Origem.Contains("Pix"))
             {
                 collection.Add(new("type", "Sicoob"));
                 collection.Add(new("cardType", "Sicoob"));
                 collection.Add(new("description", "Sicoob"));
             }
-
-
-
+             
             var content = new FormUrlEncodedContent(collection);
             request.Content = content;
             var response = await client.SendAsync(request);

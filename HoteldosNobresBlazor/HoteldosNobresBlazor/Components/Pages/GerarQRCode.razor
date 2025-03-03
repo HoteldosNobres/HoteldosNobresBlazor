@@ -14,98 +14,137 @@
 @inject NavigationManager navigationManager
 @inject APICloudbeds cloudbedsAPI
 @inject ISnackbar Snackbar
+@inject AppState appState
 
 @rendermode InteractiveAuto
 @attribute [AllowAnonymous]
 
-<PageTitle>Gerar PIX/QRC9de</PageTitle>
+<PageTitle>Gerar PIX/QRCode</PageTitle>
 
-<MudContainer Class="px-8 pt-2 mx-4 my-4" MaxWidth="MaxWidth.False">
-    <MudGrid>
-        <MudItem xs="12" sm="7">
-            <MudPaper Elevation="2" Class="pa-4  rounded-xl" Style="height: 100%">
-                <br />
-                <MudPaper Class="rounded-xl">
-                    <MudList T="string" ReadOnly="true" class="rounded-t-xl">
-                        <MudListItem T="string" style="background-color: #F5F4F4;" class="rounded-t-xl">
-                            <MudStack Row="true">
-                                <MudText><b>Instruções para a transferência bancária - PIX</b></MudText>
-                                <MudSpacer />
-                                <MudIcon Icon="fa-solid fa-building-columns" Title="Favorite" />
-                            </MudStack>
-                        </MudListItem>
-                        <MudDivider />
-                        <MudListItem T="string" ReadOnly="true">
-                            @* <MudText Typo="Typo.caption">NÃO E POSSÍVEL PAGAR NO CHECK-IN !!!</MudText><br /> *@
-                            <br />
+<MudGrid Justify="Justify.SpaceAround">
+    <MudItem xs="12" sm="12" md="6">
+        <MudPaper Elevation="2" Class="pa-4 my-2 my-2 rounded-xl" Outlined="true" Justify="Justify.Center">
+            <MudPaper Outlined="true" Class="rounded-xl">
+                <MudList T="string" ReadOnly="true" class="rounded-t-xl">
+                    <MudListItem T="string" style="background-color: #F5F4F4;" class="rounded-t-xl">
+                        <MudStack Row="true">
+                            <MudText><b>Instruções para a transferência bancária - PIX</b></MudText>
+                            <MudSpacer />
+                            <MudIcon Icon="fa-solid fa-building-columns" Title="Favorite" />
+                        </MudStack>
+                    </MudListItem>
+                    <MudDivider />
+                    <MudListItem T="string" ReadOnly="true">
+                        @* <MudText Typo="Typo.caption">NÃO E POSSÍVEL PAGAR NO CHECK-IN !!!</MudText><br /> *@ 
                             <MudText Typo="Typo.caption" GutterBottom="true" Class="ml-auto">
-                                @*  Pix nossa <b>CHAVE CELULAR 35 9753-9341 </b> ou<b> EMAIL HOTELDOSNOBRES@HOTMAIL.COM </b> <br /> *@
-                                Nome <b>HOTEL DOS NOBRES LTDA </b><br />
-                                Banco <b>SICOOB </b><br />
-                                @if (valordecimal > 0)
-                                {
-                                    <MudText Typo="Typo.caption">Valor<b> R$ @Valor </b><br /> </MudText>
-                                }
-                                @if (ReservationId is not null && ReservationId != "nova")
-                                {
-                                    <MudText Typo="Typo.caption">Identificador/Reserva <b> @ReservationId </b><br /> </MudText>
-                                }
-
-                            </MudText>
-                            <br />
-                            <MudGrid>
-                                <MudItem xs="12">
-                                    <MudGrid Justify="Justify.SpaceBetween">
-                                        <MudItem xs="12" sm="6">
-                                            <MudImage Fluid="true" Align="Align.Center" src="@($"data:image/png;base64,{qrCode}")" Alt="QRCode" Elevation="25" Width="250" Height="250" Class="rounded-lg" />
-                                        </MudItem>
-                                        <MudItem xs="12" sm="6">
-                                            <MudTextField T="string" Label="Copia e Cola" Variant="Variant.Text" Text="@stringToQrCode" AutoGrow HelperText="Use no APP pagar PIX Copia e Cola" />
-                                        </MudItem>
-                                    </MudGrid>
-                                </MudItem>
-                            </MudGrid>
-                        </MudListItem>
-                    </MudList>
-                </MudPaper>
-                <br />
-                <br />
-
-                <MudForm>
+                            @*  Pix nossa <b>CHAVE CELULAR 35 9753-9341 </b> ou<b> EMAIL HOTELDOSNOBRES@HOTMAIL.COM </b> <br /> *@
+                            Nome <b>HOTEL DOS NOBRES LTDA </b><br />
+                            Banco <b>SICOOB </b><br />
+                            @if (valordecimal > 0)
+                            {
+                                <MudText Typo="Typo.caption">Valor<b> R$ @Valor </b><br /> </MudText>
+                            }
+                            @if (ReservationId is not null && ReservationId != "nova")
+                            {
+                                <MudText Typo="Typo.caption">Identificador/Reserva <b> @ReservationId </b><br /> </MudText>
+                            }
+                        </MudText>
+                        <MudGrid>
+                            <MudItem xs="12">
+                                <MudGrid Justify="Justify.SpaceBetween">
+                                    <MudItem xs="12" sm="6">
+                                        <MudImage Fluid="true" Align="Align.Center" src="@($"data:image/png;base64,{qrCode}")" Alt="QRCode" Elevation="25" Width="250" Height="250" Class="rounded-lg" />
+                                    </MudItem>
+                                    <MudItem xs="12" sm="6">
+                                        <MudTextField T="string" Label="Copia e Cola" Variant="Variant.Text" Text="@stringToQrCode" AutoGrow HelperText="Use no APP pagar PIX Copia e Cola" />
+                                    </MudItem>
+                                </MudGrid>
+                            </MudItem>
+                        </MudGrid>
+                    </MudListItem>
+                </MudList>
+            </MudPaper>
+            <MudForm>
+                <MudList T="string">
+                    <MudListItem Icon="@Icons.Material.Filled.Info"> Dados </MudListItem>
+                    <MudTextField T="string" Label="Id - Numero da Reserva ou Id Informacao do Pagamento" Disabled="@Disabled" @bind-Value="ReservationId" />
+                    <MudTextField Disabled="@Disabled" @bind-Value="Valor" Label="Valor" Variant="Variant.Text" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.AttachMoney" AdornmentColor="Color.Warning" />
+                </MudList>
+                <div class="mt-4">
+                    <MudButton Variant="Variant.Filled"
+                               Color="Color.Primary"
+                               Class="ml-auto rounded-xl"
+                               Disabled="@(!Disabled)"
+                               @onclick="Editar">
+                        Editar
+                    </MudButton>
+                    <MudButton Variant="Variant.Filled"
+                               Color="Color.Primary"
+                               Class="ml-auto rounded-xl"
+                               Disabled="@Disabled"
+                               @onclick="Salvar">
+                        Salvar
+                    </MudButton>
+                </div>
+            </MudForm>
+        </MudPaper>
+        <MudPaper Elevation="2" Class="pa-4 my-2 my-2 rounded-xl" Outlined="true" Justify="Justify.Center">
+            <MudForm>
+                <MudList T="string">
+                    <MudListItem Icon="@Icons.Material.Filled.Phone"> Envio WhatsaApp </MudListItem>
                     <MudList T="string">
-                        <MudListItem Icon="@Icons.Material.Filled.Info"> Dados </MudListItem>
-                        <MudTextField T="string" Label="Id Reserva" Disabled="@Disabled" @bind-Value="ReservationId" />
-                        <MudTextField Disabled="@Disabled" @bind-Value="Valor" Label="Valor" Variant="Variant.Text" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.AttachMoney" AdornmentColor="Color.Warning" />
                         <MudTextField T="string" Label="Numero Celular (Ex: 55 35 37150180)" Disabled="@(!Disabled)" @bind-Value="NumeroWhatsapp" />
                     </MudList>
-                    <div class="mt-4">
-                        <MudButton Variant="Variant.Filled"
-                        Color="Color.Primary"
-                        Class="ml-auto rounded-xl"
-                        Disabled="@(!Disabled)"
-                        @onclick="Editar">
-                            Editar
-                        </MudButton>
-                        <MudButton Variant="Variant.Filled"
-                        Color="Color.Primary"
-                        Class="ml-auto rounded-xl"
-                        Disabled="@Disabled"
-                        @onclick="Salvar">
-                            Salvar
-                        </MudButton>
-                        <MudButton Variant="Variant.Filled"
-                        Color="Color.Primary"
-                        Class="ml-auto rounded-xl"
-                        Disabled="@(!Disabled)"
-                        @onclick="Whatsapp">
-                            Enviar WhatApp
-                        </MudButton>
-                    </div>
-                </MudForm>
-            </MudPaper>
-        </MudItem>
-    </MudGrid>
-</MudContainer>
+                </MudList>
+                <div class="mt-4">
+                    <MudButton Variant="Variant.Filled"
+                               Color="Color.Primary"
+                               Class="ml-auto rounded-xl"
+                               Disabled="@(!Disabled)"
+                               @onclick="Whatsapp">
+                        Enviar WhatApp
+                    </MudButton>
+                </div>
+            </MudForm>
+        </MudPaper>
+    </MudItem>
+    <MudItem xs="12" sm="4">
+        <MudGrid>
+            <MudItem xs="12">
+                @if (listLog != null && listLog.Count > 0)
+                {
+                    <MudPaper Elevation="2" Outlined="true" Class="pa-2 mx-2 my-2 align-items-center rounded-xl">
+                        <MudSimpleTable Hover="true" Striped="true" Style="overflow-x: auto;">
+                            <thead>
+                                <tr>
+                                    <th>Data </th>
+                                    <th>Id </th>
+                                    <th>Status</th>
+                                    <th>Log</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (listLog.Count > 0)
+                                {
+                                    @foreach (LogSistema logs in listLog)
+                                    {
+                                        <tr>
+                                            <td>@logs.DataLog.ToString("dd/MM/yyyy HH:mm:ss")</td>
+                                            <td><a href='@logs.LinkReserva' target='_blank'> @logs.IDReserva</a></td>
+                                            <td>@logs.Status</td>
+                                            <td>@logs.Log.Substring(0,25)</td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </MudSimpleTable>
+                    </MudPaper>
+                }
+            </MudItem>
+        </MudGrid>
+    </MudItem>
+</MudGrid>
+
 
 @code {
     [Parameter]
@@ -126,13 +165,15 @@
     bool NestedReadOnly;
     bool Disabled = true;
 
+    public List<LogSistema>? listLog;
+
     protected override async Task OnInitializedAsync()
     {
         if (ReservationId is null)
         {
             ReservationId = "Sua reserva";
             NumeroWhatsapp = "553537150180";
-        } 
+        }
 
         if (!ReservationId.Equals("nova"))
             reserva = await cloudbedsAPI.GetReservaAsync(ReservationId);
@@ -145,6 +186,21 @@
 
 
         GerarQrcode();
+
+        listLog = appState.ListLogPagSeguro;
+        Thread thread = new Thread(RecebePagamento);
+        thread.Start();
+
+        StateHasChanged();
+    }
+
+    public void RecebePagamento()
+    {
+        while (true)
+        {
+            listLog = appState.ListLogPagSeguro;
+            Thread.Sleep(5000);
+        }
     }
 
     protected async Task Editar()
@@ -156,7 +212,7 @@
     protected async Task Salvar()
     {
         try
-        { 
+        {
             GerarQrcode();
 
             Snackbar.Add("Sucesso!", Severity.Success);
@@ -176,7 +232,7 @@
         if (Valor is null)
             Valor = "0";
 
-        Reserva reservaaqui  = new Reserva();
+        Reserva reservaaqui = new Reserva();
         reservaaqui.IDReserva = ReservationId;
         reservaaqui.Valor = Valor;
 
@@ -188,7 +244,6 @@
         qrCode = GenerateQRCode(stringToQrCode);
     }
 
-
     public string GenerateQRCode(string data)
     {
         QRCodeGenerator qrGenerator = new QRCodeGenerator();
@@ -199,19 +254,18 @@
         return qrCodeAsBase64;
     }
 
-
     protected async Task Whatsapp()
     {
         string mensagem = string.Empty;
         try
-        { 
+        {
             // deixar apenas numero sem espaços
             NumeroWhatsapp = Regex.Replace(NumeroWhatsapp, @"\s+", "");
             mensagem = await FunctionWhatsApp.postMensagemTempletePIX(NumeroWhatsapp, ReservationId!, stringToQrCode!);
             mensagem = await FunctionWhatsApp.postMensagem(NumeroWhatsapp, stringToQrCode!);
 
             Snackbar.Add("Sucesso!", Severity.Success);
-              
+
         }
         catch (Exception ex)
         {
@@ -219,4 +273,4 @@
         }
     }
 
-} 
+}
